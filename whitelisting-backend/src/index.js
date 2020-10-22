@@ -1,13 +1,13 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv');
+import express from "express";
+import bodyParser from "body-parser";
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 
-const authController = require("./controllers/authController");
+import authController from "./controllers/authController";
 
-const {checkToken} = require("./services/authService");
+import { checkToken } from "./services/authService";
 
-const sql = require("./services/sqlService");
+import sql from "./services/sqlService";
 
 const app = express();
 
