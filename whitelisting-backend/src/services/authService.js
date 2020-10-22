@@ -9,7 +9,7 @@ function checkToken (req, res, next) {
         if(err){
             res.sendStatus(403)
         }
-        else if(data.user){
+        else if(data.user){ 
             req.user = data.user
             next()
         }

@@ -4,7 +4,6 @@ import { checkToken } from "../services/authService";
 import { hash, compare } from "bcrypt";
 
 const authController = (app, sql) => {
-
     app.post('/auth/login', async (req,res)=>{
         // get username from request's body, eg. from login form
         const body = req.body;
@@ -32,18 +31,6 @@ const authController = (app, sql) => {
         res.clearCookie("authcookie");
         res.sendStatus(200)
     })
-
-    // app.get('/validate', (req, res) => {
-    //     sql.query("SELECT * FROM panel_users WHERE pid = '76561198049947102'", [
-    //         "76561198049947102",
-    //     ], (error, results) => {
-    //         const oof = compare("test", results[0].password, (err, isValid) => {
-    //             console.log(isValid)
-    //         })
-    //         res.send(results)
-    //     });
-
-    // })
 
     app.post('/auth/user/create', (req, res) => {
 
