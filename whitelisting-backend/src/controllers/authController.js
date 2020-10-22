@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
-import { resourceLimits } from "worker_threads";
-import { checkToken } from "../services/authService";
+const jwt = require("jsonwebtoken");
+const { resourceLimits } = require("worker_threads");
+const { checkToken } = require("../services/authService");
 
-import { hash, compare } from "bcrypt";
+const { hash, compare } = require("bcrypt");
 
 const authController = (app, sql) => {
 
@@ -63,4 +63,4 @@ const authController = (app, sql) => {
     })
 }
 
-export default authController;
+module.exports = authController;

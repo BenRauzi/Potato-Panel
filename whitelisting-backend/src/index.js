@@ -1,13 +1,13 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cookieParser from 'cookie-parser'
-import dotenv from 'dotenv';
+const express = require("express");
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
 
-import authController from "./controllers/authController";
+const authController = require("./controllers/authController");
 
-import {checkToken} from "./services/authService";
+const {checkToken} = require("./services/authService");
 
-import sql from "./services/sqlService";
+const sql = require("./services/sqlService");
 
 const app = express();
 
@@ -20,7 +20,6 @@ app.use(cookieParser())
 
 // listen
 
-console.log(process.env.DB_USER)
 const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, () => {

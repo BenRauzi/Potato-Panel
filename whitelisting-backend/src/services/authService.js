@@ -1,7 +1,7 @@
-import { NextFunction } from "express";
-import jwt from "jsonwebtoken";
+const { NextFunction } = require("express");
+const jwt = require("jsonwebtoken");
 
-function checkToken (req, res, next: NextFunction   ) {
+function checkToken (req, res, next   ) {
     // get authcookie from request
     const authcookie = req.cookies.authcookie
 
@@ -17,6 +17,6 @@ function checkToken (req, res, next: NextFunction   ) {
     })
 }
 
-export {
+module.exports = {
     checkToken
-};
+}
