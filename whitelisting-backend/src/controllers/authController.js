@@ -15,7 +15,7 @@ const authController = (app, sql) => {
         ], (error, result) => {
             compare(password, result[0].password, (err, isValid) => {
                 if(isValid === true) {
-                    const token = jwt.sign({user:username}, process.env.JWT_SECRET)
+                    const token = jwt.sign({user:username, pid: result[0].pid}, process.env.JWT_SECRET)
                     // save token in cookie
                     res.cookie('authcookie',token,{maxAge:900000,httpOnly:true})
 
@@ -45,6 +45,25 @@ const authController = (app, sql) => {
             ], (error, results) => {
                 res.send(200)
             })
+        })
+    })
+
+    app.get('/auth/verifyToken', checkToken, (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(err){
+                res.sendStatus(403)
+            }
+            else if(data.pid){ 
+                sql.query('SELECT * from panel_users WHERE pid = ?', [
+                    data.pid
+                ], (err, result) => {
+                    if(err){
+                        res.sendStatus(403)
+                    } else {
+                        res.send(result[0])
+                    }
+                })
+            }
         })
     })
 }
