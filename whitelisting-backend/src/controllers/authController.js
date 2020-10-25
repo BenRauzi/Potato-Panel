@@ -9,15 +9,18 @@ const authController = (app, sql) => {
         const body = req.body;
 
         const { username, password } = body
-
+        console.log(`SELECT * from panel_users WHERE username = ${username}`)
         sql.query("SELECT * from panel_users WHERE username = ?", [
             username
         ], (error, result) => {
+            if(error) console.log(error)
+            if(result.length == 0) return res.sendStatus(401)
+            
             compare(password, result[0].password, (err, isValid) => {
                 if(isValid === true) {
                     const token = jwt.sign({user:username, pid: result[0].pid}, process.env.JWT_SECRET)
                     // save token in cookie
-                    res.cookie('authcookie',token,{maxAge:900000,httpOnly:true})
+                    res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true})
 
                     res.send(result[0])
                 } else {
@@ -51,12 +54,15 @@ const authController = (app, sql) => {
     app.get('/auth/verifyToken', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(err){
+                res.clearCookie("authCookie");
                 res.sendStatus(403)
             }
             else if(data.pid){ 
+                console.log(`SELECT * from panel_users WHERE pid = ${data.pid}`)
                 sql.query('SELECT * from panel_users WHERE pid = ?', [
                     data.pid
                 ], (err, result) => {
+                    console.log(result)
                     if(err){
                         res.sendStatus(403)
                     } else {
