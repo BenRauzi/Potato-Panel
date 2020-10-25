@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authController from "./controllers/authController";
 import userController from "./controllers/userController";
-import { checkToken } from "./services/authService";
 
 import sql from "./services/sqlService";
 
@@ -31,12 +30,8 @@ app.listen(PORT, () => {
     console.log("API Online!");
 });
 
-app.get('/api', checkToken , (req,res)=>{
-    /*if checkToken function succeed, api reach this block
-    you can do whatever you want, also you can access to req.user      which sent from checkToken function
-    */
-
-    res.send("Test")
+app.get('/api' , (req,res)=>{
+    res.sendStatus(200);
 })
 
 // init controllers
