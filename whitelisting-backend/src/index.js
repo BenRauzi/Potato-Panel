@@ -9,6 +9,7 @@ import userController from "./controllers/userController";
 import sql from "./services/sqlService";
 import policeController from "./controllers/policeController";
 import medicController from "./controllers/medicController";
+import staffController from "./controllers/staffController";
 
 const app = express();
 
@@ -41,3 +42,4 @@ authController(app, sql);
 userController(app, sql);
 policeController(app, sql);
 medicController(app, sql);
+staffController(app, sql);
