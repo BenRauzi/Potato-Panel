@@ -6,7 +6,10 @@ import { getUsers } from "../services/UserService";
 import { formatMoney } from "../services/HelperService";
 const Users = () => {
 
-    const [users, setUsers] = React.useState([])
+    const [users, setUsers] = React.useState({
+        count: 0,
+        result: []
+    })
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,7 +37,7 @@ const Users = () => {
                     <div>Bank Account</div>
                 </div>
                 {
-                    users.map(({uid, name, pid, exp_level, coplevel, mediclevel, cash, bankacc, }, idx) => (
+                    users.result.map(({uid, name, pid, exp_level, coplevel, mediclevel, cash, bankacc, }, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{name}</div>

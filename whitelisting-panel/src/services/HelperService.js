@@ -4,5 +4,5 @@ export const formatMoney = (string) => {
 }
 
 export default {
-    formatMoney
+   formatMoney
 }
