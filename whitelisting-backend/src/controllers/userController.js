@@ -53,8 +53,8 @@ const userController = (app, sql) => {
     // Set Users Cash Amount
     app.post('/user/setCash', (req, res) => {
         const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+        const { pid, amount } = body;
+        sql.query(`UPDATE players SET cash = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
@@ -62,10 +62,10 @@ const userController = (app, sql) => {
     })
 
     // Set Users Bank Amount
-    app.post('/police/whitelist', (req, res) => {
+    app.post('/user/setBank', (req, res) => {
         const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+        const { pid, amount } = body;
+        sql.query(`UPDATE players SET bankacc = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
@@ -73,10 +73,10 @@ const userController = (app, sql) => {
     })
 
     // Compensate User (Bank Account)
-    app.post('/police/whitelist', (req, res) => {
+    app.post('/user/compensate', (req, res) => {
         const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+        const { pid, amount } = body;
+        sql.query(`UPDATE players SET bankacc = bankacc + ? WHERE pid = ?`, [amount, pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
