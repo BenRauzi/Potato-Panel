@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authController from "./controllers/authController";
-
+import userController from "./controllers/userController";
 import { checkToken } from "./services/authService";
 
 import sql from "./services/sqlService";
@@ -40,4 +40,5 @@ app.get('/api', checkToken , (req,res)=>{
 })
 
 // init controllers
-authController(app, sql)
+authController(app, sql);
+userController(app, sql);

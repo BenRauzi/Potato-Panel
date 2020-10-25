@@ -9,7 +9,6 @@ const authController = (app, sql) => {
         const body = req.body;
 
         const { username, password } = body
-        console.log(`SELECT * from panel_users WHERE username = ${username}`)
         sql.query("SELECT * from panel_users WHERE username = ?", [
             username
         ], (error, result) => {
