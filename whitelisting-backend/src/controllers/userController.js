@@ -32,9 +32,12 @@ const userController = (app, sql) => {
     // Search User (By Username)
     app.get('/user/search', (req, res) => {
         const uname = req.query.uname; // Players Username
+        const pageN = req.query.p || 1; // Page Number
+        const count = parseInt(req.query.c) || 10; // Total Entires Gathered
         if(uname === undefined) return res.sendStatus(404);
-
-        sql.query(`SELECT uid, name, pid, exp_level, cash, bankacc, coplevel, mediclevel from players WHERE name like concat('%', ?, '%') order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname], (err, result) => {
+        const startingPoint = (pageN - 1) * count;
+        
+        sql.query(`SELECT uid, name, pid, exp_level, cash, bankacc, coplevel, mediclevel from players WHERE name like concat('%', ?, '%') order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
         })
