@@ -11,8 +11,8 @@ const Header = () => {
             </div>
             <div className="header-right">
                 {user ? 
-                <div>
-                    <span className="user-name">{user.username}</span>
+                <div className="user-info">
+                    <span className="user-name"><b>{user.username}</b></span>
                     <span className="role">Administrator</span>
                 </div> : 
                     <div></div>

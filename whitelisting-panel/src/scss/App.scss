@@ -1,6 +1,26 @@
-@import "./Header.scss";
+$bg-primary: #1C1C1C;
+$bg-secondary: #3A3A3A;
+$bg-tertiary: #2C2C2C;
+
+$text-primary: #fff;
+$text-secondary: #fff;
+
+$accent-primary: #fff;
+$accent-secondary: #fff;
 
 body {
+    background-color: $bg-primary;
+    color: $text-primary;
     margin: 0;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+.content {
+    margin-top: 60px;
+    margin-left: 70px;
+}
+
+@import "./Header.scss";
+@import "./Nav.scss";
