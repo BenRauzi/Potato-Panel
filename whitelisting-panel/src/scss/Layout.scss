@@ -1,0 +1,39 @@
+
+.table {
+    display: table;
+    flex-direction: column;
+    width: 100%;
+    .table-head {
+        display: table-header-group;
+        
+        & > div {
+            display: table-cell;
+            padding: 10px 20px;
+           
+        }
+    }   
+}
+
+.table-row {
+    display: table-row;
+    text-decoration: none;
+    color:white;
+    &:nth-child(2n) {
+        background-color: $bg-tertiary;
+    }
+    &:visited {
+        color: white;
+    }
+    a {
+        text-decoration: none;
+        color: white;
+        &:visited {
+            color: white;
+        }
+    }
+    & > div {
+        display: table-cell;
+        padding: 20px;
+        
+    }
+}

@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 
-import { login } from '../services/AuthService';
+import { login, logout } from '../services/AuthService';
 import UserContext from '../services/UserContext';
 
 const Login = () => {
@@ -18,20 +18,6 @@ const Login = () => {
 
         login(username, password, setUser)
     }
-    
-    const logout = async () => {
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/auth/logout`, {
-            method: "get",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include"
-        })
-
-        const data = await response.status;
-        setUser(undefined)
-        console.log(data)
-    }
 
     return (
         <div className="login-form">
@@ -48,7 +34,7 @@ const Login = () => {
 
             <br/>Test: {JSON.stringify(user)}
 
-            <button onClick={() => logout()}>Logout</button>
+            <button onClick={() => logout(setUser)}>Logout</button>
         </div>
     )
 }
