@@ -61,7 +61,6 @@ const authController = (app, sql) => {
                 sql.query('SELECT * from panel_users WHERE pid = ?', [
                     data.pid
                 ], (err, result) => {
-                    console.log(result)
                     if(err){
                         res.sendStatus(403)
                     } else {

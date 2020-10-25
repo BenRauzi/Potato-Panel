@@ -8,9 +8,8 @@ const medicController = (app, sql) => {
         const startingPoint = (pageN - 1) * count;
 
         sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE medicLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count] , (err, result) => {
-            console.log(err)
-            if(err) res.sendStatus(400)
-            res.send(result)
+            if(err) res.sendStatus(400);
+            res.send(result);
         })
     })
 
@@ -24,9 +23,8 @@ const medicController = (app, sql) => {
         const startingPoint = (pageN - 1) * count;
 
         sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (medicLevel >= ? AND medicdept = ?) LIMIT ?, ?`, [minRank, department, startingPoint, count] , (err, result) => {
-            console.log(err)
-            if(err) res.sendStatus(400)
-            res.send(result)
+            if(err) res.sendStatus(400);
+            res.send(result);
         })
     })
 
@@ -36,9 +34,19 @@ const medicController = (app, sql) => {
         if(pid === undefined) return res.sendStatus(404);
 
         sql.query(`SELECT uid, name, mediclevel, medicdept, med_licenses, med_gear, med_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-            console.log(err)
-            if(err) res.sendStatus(400)
-            res.send(result)
+            if(err) res.sendStatus(400);
+            res.send(result);
+        })
+    })
+
+    // Search Medic User (By Username)
+    app.get('/medic/search', (req, res) => {
+        const uname = req.query.uname; // Players Username
+        if(uname === undefined) return res.sendStatus(404);
+
+        sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname], (err, result) => {
+            if(err) res.sendStatus(400);
+            res.send(result);
         })
     })
 };
