@@ -4,6 +4,7 @@ import NotFoundPage from '../pages/404';
 
 import {Switch, Route, Redirect} from 'react-router-dom';
 import UserContext from "../services/UserContext";
+import Users from "../pages/users";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -67,6 +68,7 @@ const Main = () => {
         <>
             <Switch> {/* The Switch decides which component to show based on the current URL.*/}
                 <ProtectedRoute exact path='/dashboard' component={NotFoundPage}/>
+                <ProtectedRoute exact path='/users' component={Users}/>
                 <GuardedRoute exact path='/dashboard2' roles={{adminLevel: 0, copLevel: 2}} component={NotFoundPage}/>
                 <Route exact path='/login' component={Login}/>
                 <Route path="*" component={NotFoundPage} />
