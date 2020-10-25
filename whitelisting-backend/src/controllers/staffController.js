@@ -53,7 +53,7 @@ const staffController = (app, sql) => {
     })
 
     // Change Users Admin Whitelist Level (In-Game)
-    app.post('/admin/whitelist', (req, res) => {
+    app.post('/admin/setLevel', (req, res) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {

@@ -82,6 +82,25 @@ const userController = (app, sql) => {
             res.sendStatus(200);
         })
     })
+
+    // Set Users Civilian License
+    app.post('/user/setLicense', (req, res) => {
+        const body = req.body;
+        const { pid, license, value } = body;
+
+        sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.send(result);
+        })
+
+
+        //sql.query(`UPDATE players SET bankacc = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
+        //    console.log(err);
+        //    if(err) return res.sendStatus(400);
+        //    res.sendStatus(200);
+        //})
+    })
 }
 
 export default userController;
