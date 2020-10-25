@@ -91,7 +91,16 @@ const userController = (app, sql) => {
         sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
-            res.send(result);
+
+            const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => x.split(','))
+
+            const test2 = civLicences.map(x => {
+                if(x[0] === `\`${license}\``) return [x[0], value];
+                return x;
+            });
+            
+            console.log(test2)
+            res.send(result[0].civ_licenses);
         })
 
 
