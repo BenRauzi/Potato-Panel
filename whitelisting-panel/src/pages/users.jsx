@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { getUsers } from "../services/UserService";
 
+import { formatMoney } from "../services/HelperService";
 const Users = () => {
 
     const [users, setUsers] = React.useState([])
@@ -40,8 +41,8 @@ const Users = () => {
                             <div>{exp_level}</div>
                             <div>{coplevel}</div>
                             <div>{mediclevel}</div>
-                            <div>{cash}</div>
-                            <div>{bankacc}</div>
+                            <div>{formatMoney(cash)}</div>
+                            <div>{formatMoney(bankacc)}</div>
                         </Link>
                     ))
                 }
