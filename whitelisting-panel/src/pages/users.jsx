@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { getUsers } from "../services/UserService";
 
 import { formatMoney } from "../services/HelperService";
+
+import ReactPaginate from 'react-paginate';
+
 const Users = () => {
 
     const [users, setUsers] = React.useState({
@@ -11,20 +14,32 @@ const Users = () => {
         result: []
     })
 
+    const [pageLength, setPageLength] = React.useState(10);
+    const [page, setPage] = React.useState(1);
+
     useEffect(() => {
         const fetchUsers = async () => {
-            const users = await getUsers(1, 10);
+            const users = await getUsers(page, pageLength);
 
             setUsers(users)
         }
        
         fetchUsers()
-    }, [setUsers])
+    }, [setUsers, page, pageLength])
     
     return (
         <>
             <h1>Users</h1>
             Search for Users
+
+            <div className="page-count">
+                Page Length: 
+                <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
 
             <div className="table">
                 <div className="table-head">
@@ -49,6 +64,21 @@ const Users = () => {
                         </Link>
                     ))
                 }
+                
+
+                <ReactPaginate
+                    previousLabel={'Previous'}
+                    nextLabel={'Next'}
+                    breakLabel={'...'}
+                    breakClassName={'break-me'}
+                    pageCount={Math.ceil(users.count / pageLength)}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={(e) => {setPage(e.selected + 1)}}
+                    containerClassName={'pagination'}
+                    subContainerClassName={'pages pagination'}
+                    activeClassName={'active'}
+                />
             </div>
         </>
     )

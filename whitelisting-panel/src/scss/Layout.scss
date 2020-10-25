@@ -1,13 +1,12 @@
 
 .table {
-    display: table;
-    flex-direction: column;
     width: 100%;
     .table-head {
-        display: table-header-group;
+        display: flex;
+        justify-content: space-between;
         
         & > div {
-            display: table-cell;
+            flex: 1;
             padding: 10px 20px;
            
         }
@@ -15,9 +14,13 @@
 }
 
 .table-row {
-    display: table-row;
+    display: flex;
     text-decoration: none;
+    justify-content: space-between;
     color:white;
+    div {
+        flex: 1;
+    }
     &:nth-child(2n) {
         background-color: $bg-tertiary;
     }
@@ -32,8 +35,47 @@
         }
     }
     & > div {
-        display: table-cell;
         padding: 20px;
         
     }
+}
+
+.pagination {
+    width: 400px;
+    display: inline-block;
+    li {
+
+        display: inline-block;
+        padding: 5px 10px;
+        
+        cursor: pointer;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome, Edge, Opera and Firefox */
+    }
+    a:focus {
+        outline: none;
+    }
+    a {
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .active {
+        a {
+            background-color: $bg-tertiary;
+        }
+        
+    }
+}
+
+.page-count {
+    margin: 10px 0;
+}
+select {
+    margin-left: 10px;
+    width: 50px;
+    display: inline-block;
 }
