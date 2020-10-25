@@ -89,29 +89,18 @@ const userController = (app, sql) => {
         const { pid, license, value } = body;
 
         sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
-            console.log(err);
             if(err) return res.sendStatus(400);
-
             const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
                 const split = x.split(',')
                 if (split[0] === `\`${license}\``) return [split[0], parseInt(value)];
                 return [split[0], parseInt(split[1])]
             })
-            
-            const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`
-
-            res.send({
-                new: newString,
-                old: result[0].civ_licenses
+            const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`;
+            sql.query(`UPDATE players SET civ_licenses = ? WHERE pid = ?`, [newString, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
             })
         })
-
-
-        //sql.query(`UPDATE players SET bankacc = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-        //    console.log(err);
-        //    if(err) return res.sendStatus(400);
-        //    res.sendStatus(200);
-        //})
     })
 }
 
