@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { getUsers } from "../services/UserService";
+import { getUsers, searchUsers } from "../services/UserService";
 
 import { formatMoney } from "../services/HelperService";
 
 import ReactPaginate from 'react-paginate';
+
+import { debounce } from "lodash";
 
 const Users = () => {
 
@@ -17,16 +19,38 @@ const Users = () => {
     const [pageLength, setPageLength] = React.useState(10);
     const [page, setPage] = React.useState(1);
 
+    const [query, setQuery] = React.useState("");
+    
     useEffect(() => {
+        if(query !== "") return
         const fetchUsers = async () => {
             const users = await getUsers(page, pageLength);
 
             setUsers(users)
         }
-       
         fetchUsers()
-    }, [setUsers, page, pageLength])
+    }, [page, pageLength, query]) // Any time the page, pageLength or query changes, this will run.
+
+    useEffect(() => {
+        if(!query) return
+        const search = async (query) => {
+            console.log("Search: " + query)
+
+            const result = await searchUsers(query, page, pageLength);
+            if(result === []) return setUsers({
+                count: 0,
+                result: []
+            })
+            setPage(1)
+            setUsers(result)
+        }
+        search(query)
+    }, [query]) //Will Run the code inside any time 'query' changes
     
+    const debouncedSearch = debounce((searchTerm) => {
+        setQuery(searchTerm);
+    }, 1000); //Only search after 1s of no typing in search box
+
     return (
         <>
             <h1>Users</h1>
@@ -39,6 +63,10 @@ const Users = () => {
                     <option value="20">20</option>
                     <option value="30">30</option>
                 </select>
+            </div>
+
+            <div className="search-input">
+                <input type="text" placeholder="Search by Name" onChange={(e) => debouncedSearch(e.target.value)}/>
             </div>
 
             <div className="table">
