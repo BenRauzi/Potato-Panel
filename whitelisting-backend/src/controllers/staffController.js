@@ -32,9 +32,16 @@ const staffController = (app, sql) => {
         if(uname === undefined) return res.sendStatus(404);
         const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
+        sql.query(`SELECT COUNT(*) FROM panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username`, [uname, uname, uname, uname, startingPoint, count], (err, countR) => {
             if(err) res.sendStatus(400);
-            res.send(result);
+            sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
+                if(err) res.sendStatus(400);
+                const response = {
+                    count: countR[0]["COUNT(*)"],
+                    result: result
+                };
+                res.send(response);
+            })
         })
     })
 };

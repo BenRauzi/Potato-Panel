@@ -47,9 +47,16 @@ const medicController = (app, sql) => {
         if(uname === undefined) return res.sendStatus(404);
         const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
+        sql.query(`SELECT COUNT(*) FROM players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname, startingPoint, count], (err, countR) => {
             if(err) res.sendStatus(400);
-            res.send(result);
+            sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
+                if(err) res.sendStatus(400);
+                const response = {
+                    count: countR[0]["COUNT(*)"],
+                    result: result
+                };
+                res.send(response);
+            })
         })
     })
 };
