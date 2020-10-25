@@ -7,9 +7,16 @@ const staffController = (app, sql) => {
 
         const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count] , (err, result) => {
+        sql.query(`SELECT COUNT(*) FROM panel_users WHERE adminLevel >= ?`, [minRank], (err, countR) => {
             if(err) res.sendStatus(400);
-            res.send(result);
+            sql.query(`SELECT username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
+                if(err) res.sendStatus(400);
+                const response = {
+                    count: countR[0]["COUNT(*)"],
+                    result: result
+                };
+                res.send(response);
+            })
         })
     })
 
@@ -42,6 +49,17 @@ const staffController = (app, sql) => {
                 };
                 res.send(response);
             })
+        })
+    })
+
+    // Change Users Admin Whitelist Level (In-Game)
+    app.post('/admin/whitelist', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
         })
     })
 };

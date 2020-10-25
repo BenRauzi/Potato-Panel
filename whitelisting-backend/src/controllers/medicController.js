@@ -7,9 +7,16 @@ const medicController = (app, sql) => {
 
         const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE medicLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count] , (err, result) => {
+        sql.query(`SELECT COUNT(*) FROM players WHERE medicLevel >= ?`, [minRank], (err, countR) => {
             if(err) res.sendStatus(400);
-            res.send(result);
+            sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE medicLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
+                if(err) res.sendStatus(400);
+                const response = {
+                    count: countR[0]["COUNT(*)"],
+                    result: result
+                };
+                res.send(response);
+            })
         })
     })
 
@@ -57,6 +64,17 @@ const medicController = (app, sql) => {
                 };
                 res.send(response);
             })
+        })
+    })
+
+    // Change Users Medic Whitelist Level
+    app.post('/medic/whitelist', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
         })
     })
 };

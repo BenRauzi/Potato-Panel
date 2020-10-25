@@ -49,6 +49,39 @@ const userController = (app, sql) => {
             })
         })
     })
+
+    // Set Users Cash Amount
+    app.post('/user/setCash', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        })
+    })
+
+    // Set Users Bank Amount
+    app.post('/police/whitelist', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        })
+    })
+
+    // Compensate User (Bank Account)
+    app.post('/police/whitelist', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        })
+    })
 }
 
 export default userController;
