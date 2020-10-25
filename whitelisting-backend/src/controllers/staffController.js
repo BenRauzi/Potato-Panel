@@ -19,7 +19,7 @@ const staffController = (app, sql) => {
         const uname = req.query.uname; // Players Username
         if(uname === undefined) return res.sendStatus(404);
 
-        sql.query(`SELECT uid, pid, adminLevel, copLevel, emsLevel from panel_users WHERE username = ?`, [uname] , (err, result) => {
+        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username`, [uname, uname, uname, uname], (err, result) => {
             console.log(err)
             if(err) res.sendStatus(400)
             res.send(result)
