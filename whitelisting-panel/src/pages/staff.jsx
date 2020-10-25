@@ -1,16 +1,11 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-
-import { getUsers, searchUsers } from "../services/UserService";
-
-import { formatMoney } from "../services/HelperService";
-
+import React, {useEffect} from 'react';
+import { Link } from "react-router-dom"
 import ReactPaginate from 'react-paginate';
-
 import { debounce } from "lodash";
 
-const Users = () => {
+import { getStaff, searchStaff } from "../services/StaffService";
 
+const Staff = () => {
     const [users, setUsers] = React.useState({
         count: 0,
         result: []
@@ -24,7 +19,7 @@ const Users = () => {
     useEffect(() => {
         if(query !== "") return
         const fetchUsers = async () => {
-            const users = await getUsers(page, pageLength);
+            const users = await getStaff(page, pageLength);
 
             setUsers(users)
         }
@@ -35,7 +30,7 @@ const Users = () => {
         if(!query) return
         const search = async (query) => {
             setPage(1)
-            const result = await searchUsers(query, page, pageLength);
+            const result = await searchStaff(query, page, pageLength);
             if(result === []) return setUsers({
                 count: 0,
                 result: []
@@ -52,8 +47,8 @@ const Users = () => {
 
     return (
         <>
-            <h1>Users</h1>
-            Search for Users
+            <h1>Staff</h1>
+            Search for Staff
 
             <div className="page-count">
                 Page Length: 
@@ -72,23 +67,20 @@ const Users = () => {
                 <div className="table-head">
                     <div>UID</div>
                     <div>Name</div>
-                    <div>XP Level</div>
                     <div>Cop Level</div>
                     <div>Medic Level</div>
-                    <div>Cash</div>
-                    <div>Bank Account</div>
+                    <div>Admin Level</div>
                 </div>
                 {
+                    console.log(users),
                     users.result.length > 0 ?
-                    users.result.map(({uid, name, pid, exp_level, coplevel, mediclevel, cash, bankacc, }, idx) => (
+                    users.result.map(({uid, username, pid, copLevel, medicLevel, adminLevel}, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
-                            <div>{name}</div>
-                            <div>{exp_level}</div>
-                            <div>{coplevel}</div>
-                            <div>{mediclevel}</div>
-                            <div>{formatMoney(cash)}</div>
-                            <div>{formatMoney(bankacc)}</div>
+                            <div>{username}</div>
+                            <div>{adminLevel}</div>
+                            <div>{copLevel}</div>
+                            <div>{medicLevel}</div>
                         </Link>
                     )) :
                     <div className="table-row">
@@ -114,4 +106,4 @@ const Users = () => {
     )
 }
 
-export default Users;
+export default Staff;
