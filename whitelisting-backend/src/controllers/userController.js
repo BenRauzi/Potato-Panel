@@ -92,15 +92,18 @@ const userController = (app, sql) => {
             console.log(err);
             if(err) return res.sendStatus(400);
 
-            const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => x.split(','))
-
-            const test2 = civLicences.map(x => {
-                if(x[0] === `\`${license}\``) return [x[0], value];
-                return x;
-            });
+            const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
+                const split = x.split(',')
+                if (split[0] === `\`${license}\``) return [split[0], parseInt(value)];
+                return [split[0], parseInt(split[1])]
+            })
             
-            console.log(test2)
-            res.send(result[0].civ_licenses);
+            const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`
+
+            res.send({
+                new: newString,
+                old: result[0].civ_licenses
+            })
         })
 
 
