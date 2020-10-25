@@ -67,11 +67,22 @@ const policeController = (app, sql) => {
         })
     })
 
-    // Change Users Police Whitelist Level
-    app.post('/police/whitelist', (req, res) => {
+    // Set Users Police Whitelist Level
+    app.post('/police/setLevel', (req, res) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        })
+    })
+
+    // Set Users Police Department
+    app.post('/police/setDepartment', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET copdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);

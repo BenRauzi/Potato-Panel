@@ -67,11 +67,22 @@ const medicController = (app, sql) => {
         })
     })
 
-    // Change Users Medic Whitelist Level
-    app.post('/medic/whitelist', (req, res) => {
+    // Set Users Medic Whitelist Level
+    app.post('/medic/setLevel', (req, res) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            console.log(err);
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        })
+    })
+
+    // Set Users Medic Department
+    app.post('/medic/setDepartment', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
