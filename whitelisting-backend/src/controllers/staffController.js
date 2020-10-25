@@ -7,7 +7,7 @@ const staffController = (app, sql) => {
 
         const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count] , (err, result) => {
+        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count] , (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
         })
