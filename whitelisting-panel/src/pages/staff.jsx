@@ -6,7 +6,7 @@ import { debounce } from "lodash";
 import { getStaff, searchStaff } from "../services/StaffService";
 
 const Staff = () => {
-    const [users, setUsers] = React.useState({
+    const [staff, setStaff] = React.useState({
         count: 0,
         result: []
     })
@@ -18,12 +18,12 @@ const Staff = () => {
     
     useEffect(() => {
         if(query !== "") return
-        const fetchUsers = async () => {
-            const users = await getStaff(page, pageLength);
+        const fetchStaff = async () => {
+            const staff = await getStaff(page, pageLength);
 
-            setUsers(users)
+            setStaff(staff)
         }
-        fetchUsers()
+        fetchStaff()
     }, [page, pageLength, query]) // Any time the page, pageLength or query changes, this will run.
 
     useEffect(() => {
@@ -31,12 +31,12 @@ const Staff = () => {
         const search = async (query) => {
             setPage(1)
             const result = await searchStaff(query, page, pageLength);
-            if(result === []) return setUsers({
+            if(result === []) return setStaff({
                 count: 0,
                 result: []
             })
             
-            setUsers(result)
+            setStaff(result)
         }
         search(query)
     }, [query, page, pageLength]) //Will Run the code inside any time 'query' changes
@@ -72,15 +72,14 @@ const Staff = () => {
                     <div>Admin Level</div>
                 </div>
                 {
-                    console.log(users),
-                    users.result.length > 0 ?
-                    users.result.map(({uid, username, pid, copLevel, medicLevel, adminLevel}, idx) => (
+                    staff.result.length > 0 ?
+                    staff.result.map(({uid, username, pid, copLevel, emsLevel, adminLevel}, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{username}</div>
-                            <div>{adminLevel}</div>
                             <div>{copLevel}</div>
-                            <div>{medicLevel}</div>
+                            <div>{emsLevel}</div>
+                            <div>{adminLevel}</div>
                         </Link>
                     )) :
                     <div className="table-row">
@@ -93,7 +92,7 @@ const Staff = () => {
                     nextLabel={'Next'}
                     breakLabel={'...'}
                     breakClassName={'break-me'}
-                    pageCount={Math.ceil(users.count / pageLength)}
+                    pageCount={Math.ceil(staff.count / pageLength)}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={5}
                     onPageChange={(e) => {setPage(e.selected + 1)}}

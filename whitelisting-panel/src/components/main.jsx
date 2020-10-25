@@ -6,6 +6,9 @@ import {Switch, Route, Redirect} from 'react-router-dom';
 import UserContext from "../services/UserContext";
 import Users from "../pages/users";
 import Staff from "../pages/staff";
+import Ems from "../pages/ems";
+import Development from "../pages/development-team";
+import Police from "../pages/police";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -71,6 +74,9 @@ const Main = () => {
                 <ProtectedRoute exact path='/dashboard' component={NotFoundPage}/>
                 <ProtectedRoute exact path='/users' component={Users}/>
                 <ProtectedRoute exact path='/staff' component={Staff}/>
+                <ProtectedRoute exact path='/police' component={Police}/>
+                <ProtectedRoute exact path='/ems' component={Ems}/>
+                <ProtectedRoute exact path='/development-team' component={Development}/>
                 <GuardedRoute exact path='/dashboard2' roles={{adminLevel: 0, copLevel: 2}} component={NotFoundPage}/>
                 <Route exact path='/login' component={Login}/>
                 <Route path="*" component={NotFoundPage} />

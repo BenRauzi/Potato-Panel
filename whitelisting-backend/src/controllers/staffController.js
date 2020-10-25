@@ -9,7 +9,7 @@ const staffController = (app, sql) => {
 
         sql.query(`SELECT COUNT(*) FROM panel_users WHERE adminLevel >= ?`, [minRank], (err, countR) => {
             if(err) res.sendStatus(400);
-            sql.query(`SELECT username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
+            sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE adminLevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
                 if(err) res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
