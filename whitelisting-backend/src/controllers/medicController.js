@@ -42,9 +42,12 @@ const medicController = (app, sql) => {
     // Search Medic User (By Username)
     app.get('/medic/search', (req, res) => {
         const uname = req.query.uname; // Players Username
+        const pageN = req.query.p || 1; // Page Number
+        const count = parseInt(req.query.c) || 10; // Total Entires Gathered
         if(uname === undefined) return res.sendStatus(404);
+        const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname], (err, result) => {
+        sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (mediclevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
         })

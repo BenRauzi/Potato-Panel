@@ -27,9 +27,12 @@ const staffController = (app, sql) => {
     // Search Staff User (By Username)
     app.get('/staff/search', (req, res) => {
         const uname = req.query.uname; // Players Username
+        const pageN = req.query.p || 1; // Page Number
+        const count = parseInt(req.query.c) || 10; // Total Entires Gathered
         if(uname === undefined) return res.sendStatus(404);
+        const startingPoint = (pageN - 1) * count;
 
-        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username`, [uname, uname, uname, uname], (err, result) => {
+        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE username like concat('%', ?, '%') order by username like concat(@?, '%') desc, ifnull(nullif(instr(username, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(username, @?), 0), 99999),username LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
         })
