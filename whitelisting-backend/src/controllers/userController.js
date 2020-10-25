@@ -24,30 +24,6 @@ const userController = (app, sql) => {
             res.send(result)
         })
     })
-
-    // Fetch Cop User
-    app.get('/police/user', (req, res) => {
-        const pid = req.query.pid; // Players ID
-        if(pid === undefined) return res.sendStatus(404);
-
-        sql.query(`SELECT uid, name, coplevel, copdept, cop_licenses, cop_gear, cop_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-            console.log(err)
-            if(err) res.sendStatus(400)
-            res.send(result)
-        })
-    })
-
-    // Fetch Medic User
-    app.get('/medic/user', (req, res) => {
-        const pid = req.query.pid; // Players ID
-        if(pid === undefined) return res.sendStatus(404);
-
-        sql.query(`SELECT uid, name, mediclevel, medicdept, med_licenses, med_gear, med_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-            console.log(err)
-            if(err) res.sendStatus(400)
-            res.send(result)
-        })
-    })
 }
 
 export default userController;

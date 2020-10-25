@@ -7,6 +7,8 @@ import authController from "./controllers/authController";
 import userController from "./controllers/userController";
 
 import sql from "./services/sqlService";
+import policeController from "./controllers/policeController";
+import medicController from "./controllers/medicController";
 
 const app = express();
 
@@ -37,3 +39,5 @@ app.get('/api' , (req,res)=>{
 // init controllers
 authController(app, sql);
 userController(app, sql);
+policeController(app, sql);
+medicController(app, sql);
