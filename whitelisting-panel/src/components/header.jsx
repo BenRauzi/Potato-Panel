@@ -10,13 +10,10 @@ const Header = () => {
                 ArmA-Studios
             </div>
             <div className="header-right">
-                {user ? 
                 <div className="user-info">
-                    <span className="user-name"><b>{user.username}</b></span>
-                    <span className="role">Administrator</span>
-                </div> : 
-                    <div></div>
-                }
+                    <span className="user-name"><b>{user ? user.username : "Arma Studios"}</b></span>
+                    <span className="role">{user ? "Administrator" : "Not signed in"}</span>
+                </div>
                 <img alt="avatar" className="avatar" src="assets/icon.png"/>
             </div>
         </header>

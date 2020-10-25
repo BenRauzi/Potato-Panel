@@ -4,8 +4,7 @@ import NotFoundPage from '../pages/404';
 
 import {Switch, Route, Redirect} from 'react-router-dom';
 import UserContext from "../services/UserContext";
-import Header from './header';
-import MainNav from "./nav";
+
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
     const {user} = useContext(UserContext);
@@ -37,7 +36,7 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
 const Main = () => {
     const [attemptedSignOn, setAttemptedSignOn] = React.useState(false);
 
-    const { setUser} = useContext(UserContext);
+    const { setUser } = useContext(UserContext);
     
     useEffect(() => {
         const checkLogin = async () => {
@@ -66,17 +65,12 @@ const Main = () => {
     if(attemptedSignOn === false) return <div></div>
     return (
         <>
-            <Header/>
-            <MainNav/>
-            <div className="content">
-                <Switch> {/* The Switch decides which component to show based on the current URL.*/}
-                    <ProtectedRoute exact path='/dashboard' component={NotFoundPage}/>
-                    <GuardedRoute exact path='/dashboard2' roles={{adminLevel: 0, copLevel: 2}} component={NotFoundPage}/>
-                    <Route exact path='/login' component={Login}/>
-                    <Route path="*" component={NotFoundPage} />
-                </Switch>
-            </div>
-            
+            <Switch> {/* The Switch decides which component to show based on the current URL.*/}
+                <ProtectedRoute exact path='/dashboard' component={NotFoundPage}/>
+                <GuardedRoute exact path='/dashboard2' roles={{adminLevel: 0, copLevel: 2}} component={NotFoundPage}/>
+                <Route exact path='/login' component={Login}/>
+                <Route path="*" component={NotFoundPage} />
+            </Switch>            
         </>
     )
 }
