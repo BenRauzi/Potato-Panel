@@ -29,7 +29,6 @@ const Login = () => {
                 <input type="password" placeholder="Password" name="password" onChange={e => setPassword(e.target.value)} required/>
 
                 <button disabled={!validateForm()} type="submit">Login</button>
-                {/* <label><input type="checkbox" checked="checked" name="remember"/>Remember me</label>  */}
             </form>
 
             {username}

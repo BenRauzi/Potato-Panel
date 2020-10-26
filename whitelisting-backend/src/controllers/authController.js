@@ -9,7 +9,17 @@ const authController = (app, sql) => {
         const body = req.body;
 
         const { username, password } = body
-        sql.query("SELECT * from panel_users WHERE username = ?", [
+        sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password,
+                    players.name,
+                    panel_users.copLevel,
+                    panel_users.adminLevel,
+                    panel_users.emsLevel,
+                    players.coplevel AS copWhitelisting,
+                    players.mediclevel AS emsWhitelisting,
+                    players.adminlevel AS adminWhitelisting
+                    from panel_users
+                    INNER JOIN players ON players.pid = panel_users.pid
+                    WHERE panel_users.username = ?`, [
             username
         ], (error, result) => {
             if(error) console.log(error)
@@ -17,11 +27,15 @@ const authController = (app, sql) => {
             
             compare(password, result[0].password, (err, isValid) => {
                 if(isValid === true) {
-                    const token = jwt.sign({user:username, pid: result[0].pid}, process.env.JWT_SECRET)
+                    const token = jwt.sign({
+                        user:username, 
+                        pid: result[0].pid,
+                        
+                    }, process.env.JWT_SECRET)
                     // save token in cookie
                     res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true})
 
-                    res.send(result[0])
+                    res.send({...result[0], password: undefined})
                 } else {
                     res.sendStatus(401)
                 }
