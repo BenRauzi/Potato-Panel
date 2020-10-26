@@ -4,6 +4,7 @@ import ReactPaginate from 'react-paginate';
 import { debounce } from "lodash";
 
 import { getEms, searchEms } from "../services/emsService";
+import { getEmsRank, getEmsDept } from '../services/HelperService';
 
 import Title from "../components/title";
 
@@ -70,7 +71,7 @@ const Ems = () => {
                 <div className="table-head">
                     <div>UID</div>
                     <div>Name</div>
-                    <div>Medic Level</div>
+                    <div>Medic Rank</div>
                     <div>Department</div>
                 </div>
                 {
@@ -79,8 +80,8 @@ const Ems = () => {
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{name}</div>
-                            <div>{mediclevel}</div>
-                            <div>{medicdept}</div>
+                            <div>{getEmsRank(mediclevel)}</div>
+                            <div>{getEmsDept(medicdept) || "No Department"}</div>
                         </Link>
                     )) :
                     <div className="table-row">

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { getUsers, searchUsers } from "../services/UserService";
 
-import { formatMoney } from "../services/HelperService";
+import { formatMoney, getCopRank, getEmsRank } from "../services/HelperService";
 
 import ReactPaginate from 'react-paginate';
 
@@ -76,8 +76,8 @@ const Users = () => {
                     <div>UID</div>
                     <div>Name</div>
                     <div>XP Level</div>
-                    <div>Cop Level</div>
-                    <div>Medic Level</div>
+                    <div>Cop Rank</div>
+                    <div>Medic Rank</div>
                     <div>Cash</div>
                     <div>Bank Account</div>
                 </div>
@@ -88,8 +88,8 @@ const Users = () => {
                             <div>{uid}</div>
                             <div>{name}</div>
                             <div>{exp_level}</div>
-                            <div>{coplevel}</div>
-                            <div>{mediclevel}</div>
+                            <div>{getCopRank(coplevel) || "None"}</div>
+                            <div>{getEmsRank(mediclevel) || "None"}</div>
                             <div>{formatMoney(cash)}</div>
                             <div>{formatMoney(bankacc)}</div>
                         </Link>

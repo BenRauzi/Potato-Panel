@@ -7,6 +7,7 @@ import { getPolice, searchPolice } from "../services/PoliceService";
 
 import Title from "../components/title";
 
+import { getCopRank, getCopDept } from '../services/HelperService';
 const Police = () => {
     const [police, setPolice] = React.useState({
         count: 0,
@@ -70,7 +71,7 @@ const Police = () => {
                 <div className="table-head">
                     <div>UID</div>
                     <div>Name</div>
-                    <div>Cop Level</div>
+                    <div>Cop Rank</div>
                     <div>Department</div>
                 </div>
                 {
@@ -79,8 +80,8 @@ const Police = () => {
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{name}</div>
-                            <div>{coplevel}</div>
-                            <div>{copdept}</div>
+                            <div>{getCopRank(coplevel)}</div>
+                            <div>{getCopDept(copdept) || "No Department"}</div>
                         </Link>
                     )) :
                     <div className="table-row">

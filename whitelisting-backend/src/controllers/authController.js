@@ -71,8 +71,17 @@ const authController = (app, sql) => {
                 res.sendStatus(403)
             }
             else if(data.pid){ 
-                console.log(`SELECT * from panel_users WHERE pid = ${data.pid}`)
-                sql.query('SELECT * from panel_users WHERE pid = ?', [
+                sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username,
+                players.name,
+                panel_users.copLevel,
+                panel_users.adminLevel,
+                panel_users.emsLevel,
+                players.coplevel AS copWhitelisting,
+                players.mediclevel AS emsWhitelisting,
+                players.adminlevel AS adminWhitelisting
+                from panel_users
+                INNER JOIN players ON players.pid = panel_users.pid
+                WHERE panel_users.pid = ?`, [
                     data.pid
                 ], (err, result) => {
                     if(err){
