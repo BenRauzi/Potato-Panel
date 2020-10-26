@@ -4,6 +4,7 @@ import ReactPaginate from 'react-paginate';
 import { debounce } from "lodash";
 
 import { getStaff, searchStaff } from "../services/StaffService";
+import Title from "../components/title";
 
 const Staff = () => {
     const [staff, setStaff] = React.useState({
@@ -47,6 +48,7 @@ const Staff = () => {
 
     return (
         <>
+            <Title title="Staff Roster"/>
             <h1>Staff</h1>
             Search for Staff
 

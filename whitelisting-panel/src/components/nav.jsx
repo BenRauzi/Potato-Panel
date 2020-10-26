@@ -16,7 +16,7 @@ const MainNav = () => {
             <ul>
                 <li>
                    
-                    <Link to="/dashboard">
+                    <Link to="/">
 
                         <div className="nav-icon">
                             <FontAwesomeIcon  alt="Dashboard" icon={faWindowRestore}/>
@@ -66,7 +66,7 @@ const MainNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/dev">
+                    <Link to="/development-team">
                         <div className="nav-icon">
                             <FontAwesomeIcon className="nav-icon" alt="Dev Roster" icon={faAccessibleIcon}/>
                         </div>
@@ -85,7 +85,7 @@ const MainNav = () => {
                       
                 </li>
                 <li>
-                    <Link to="">
+                    <Link to="server-settings">
                         <div className="nav-icon">
                             <FontAwesomeIcon className="nav-icon" alt="Server Settings" icon={faSlidersH}/>
                         </div>

@@ -5,6 +5,8 @@ import { debounce } from "lodash";
 
 import { getPolice, searchPolice } from "../services/PoliceService";
 
+import Title from "../components/title";
+
 const Police = () => {
     const [police, setPolice] = React.useState({
         count: 0,
@@ -47,6 +49,7 @@ const Police = () => {
 
     return (
         <>
+            <Title title="Police Roster"/>
             <h1>Police</h1>
             Search for Police
 

@@ -1,4 +1,5 @@
 import React, {useContext} from 'react';
+import { Redirect } from 'react-router-dom';
 
 import { login, logout } from '../services/AuthService';
 import UserContext from '../services/UserContext';
@@ -9,6 +10,8 @@ const Login = () => {
 
     const { user, setUser } = useContext(UserContext);
 
+    if(user) return <Redirect to="/"/>
+
     let validateForm = () => {
         return username.length > 0 && password.length > 0;
     }
@@ -16,7 +19,7 @@ const Login = () => {
     const handleLogin = (event) => {
         event.preventDefault();
 
-        login(username, password, setUser)
+        login(username, password, setUser);
     }
 
     return (

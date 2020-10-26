@@ -9,6 +9,9 @@ import Staff from "../pages/staff";
 import Ems from "../pages/ems";
 import Development from "../pages/development-team";
 import Police from "../pages/police";
+import Dashboard from "../pages/dashboard";
+import ServerSettingsPage from "../pages/server-settings";
+import SettingsPage from "../pages/settings";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -77,8 +80,10 @@ const Main = () => {
                 <ProtectedRoute exact path='/police' component={Police}/>
                 <ProtectedRoute exact path='/ems' component={Ems}/>
                 <ProtectedRoute exact path='/development-team' component={Development}/>
-                <GuardedRoute exact path='/dashboard2' roles={{adminLevel: 0, copLevel: 2}} component={NotFoundPage}/>
+                <ProtectedRoute exact path='/settings' component={SettingsPage}/>
+                <GuardedRoute exact path='/server-settings' roles={{adminLevel: 8}} component={ServerSettingsPage}/>
                 <Route exact path='/login' component={Login}/>
+                <ProtectedRoute exact path="/" component={Dashboard} />
                 <Route path="*" component={NotFoundPage} />
             </Switch>            
         </>

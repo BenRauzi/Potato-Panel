@@ -1,10 +1,13 @@
 import React from "react";
 import LoginForm from '../components/login'
+import Title from "../components/title";
+
 const Login = () => {
     
     return (
         <>
-           <LoginForm/>
+            <Title title="Login"/>
+            <LoginForm/>
         </>
     )
 }

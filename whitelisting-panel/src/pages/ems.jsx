@@ -5,6 +5,8 @@ import { debounce } from "lodash";
 
 import { getEms, searchEms } from "../services/emsService";
 
+import Title from "../components/title";
+
 const Ems = () => {
     const [ems, setEms] = React.useState({
         count: 0,
@@ -47,6 +49,7 @@ const Ems = () => {
 
     return (
         <>
+            <Title title="EMS Roster"/>
             <h1>EMS</h1>
             Search for Medics
 

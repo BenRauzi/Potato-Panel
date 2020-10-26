@@ -1,12 +1,13 @@
 import React from 'react';
 import Title from "../components/title";
 
-const Development = () => {
+const Dashboard = () => {
     return (
         <>
-            <Title title="Development Team"/>
+            <Title title="Dashboard"/>
+            Dashboard
         </>
     )
 }
 
-export default Development;
+export default Dashboard;

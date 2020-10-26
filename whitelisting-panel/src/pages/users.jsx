@@ -9,6 +9,8 @@ import ReactPaginate from 'react-paginate';
 
 import { debounce } from "lodash";
 
+import Title from "../components/title";
+
 const Users = () => {
 
     const [users, setUsers] = React.useState({
@@ -52,6 +54,7 @@ const Users = () => {
 
     return (
         <>
+            <Title title="Users"/>
             <h1>Users</h1>
             Search for Users
 
