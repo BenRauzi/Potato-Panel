@@ -55,13 +55,19 @@ export const getEmsDept = (level) => {
 
 export const getPerms = (level, adminLevel) => {
     const { Whitelist } = window
-    
+
     if (adminLevel >= 4) return "Full Permissions";
     if (adminLevel >= 2) return "Whitelist";
     
     for (var [rank, rankLevel] of Object.entries(Whitelist)) {
         if(rankLevel === level) return rank
     }
+}
+
+export const getStaffPerms = (level) => {
+    if (level >= 6) return "Full Permissions";
+    if (level === 5) return "Whitelist";
+    return "No Permissions";
 }
 
 export default {

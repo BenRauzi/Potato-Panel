@@ -5,7 +5,7 @@ import { debounce } from "lodash";
 
 import { getStaff, searchStaff } from "../services/StaffService";
 import Title from "../components/title";
-import { getStaffRank, getPerms } from '../services/HelperService';
+import { getStaffRank, getPerms, getStaffPerms } from '../services/HelperService';
 
 const Staff = () => {
     const [staff, setStaff] = React.useState({
@@ -70,9 +70,11 @@ const Staff = () => {
                 <div className="table-head">
                     <div>UID</div>
                     <div>Name</div>
+                    <div>Staff Rank</div>
                     <div>Cop Whitelisting</div>
                     <div>EMS Whitelisting</div>
-                    <div>Staff Rank</div>
+                    <div>Staff Whitelisting</div>
+                   
                 </div>
                 {
                     staff.result.length > 0 ?
@@ -80,9 +82,10 @@ const Staff = () => {
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{username}</div>
+                            <div>{getStaffRank(adminLevel)}</div>
                             <div>{getPerms(copLevel, adminLevel) }</div>
                             <div>{getPerms(emsLevel, adminLevel)}</div>
-                            <div>{getStaffRank(adminLevel)}</div>
+                            <div>{getStaffPerms(adminLevel)}</div>
                         </Link>
                     )) :
                     <div className="table-row">
