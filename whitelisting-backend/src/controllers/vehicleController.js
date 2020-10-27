@@ -9,9 +9,9 @@ const vehicleController = (app, sql) => {
         const startingPoint = (pageN - 1) * count;
 
         sql.query(`SELECT COUNT(*) FROM vehicles ${side || type ? " WHERE " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""}`, [...(side ? [side] : []), ...(type ? [type] : [])], (err, countR) => {
-            if(err) res.sendStatus(400);
+            if(err) return res.sendStatus(400);
             sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, vehicles.classname, vehicles.active, vehicles.impound FROM vehicles INNER JOIN players ON players.pid = vehicles.pid ${side || type ? " WHERE " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""} LIMIT ?, ?`, [...(side ? [side] : []), ...(type ? [type] : []) ,startingPoint, count], (err, result) => {
-                if(err) res.sendStatus(400);
+                if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
                     result: result
@@ -42,9 +42,9 @@ const vehicleController = (app, sql) => {
         const startingPoint = (pageN - 1) * count;
     
         sql.query(`SELECT COUNT(*) FROM vehicles INNER JOIN players ON players.pid = vehicles.pid WHERE players.name like concat('%', ?, '%') ${side || type ? " AND " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""} order by players.name like concat(@?, '%') desc, ifnull(nullif(instr(players.name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(players.name, @?), 0), 99999),players.name`, [uname, ...(side ? [side] : []), ...(type ? [type] : []), uname, uname, uname, startingPoint, count], (err, countR) => { 
-            if(err) res.sendStatus(400);
+            if(err) return res.sendStatus(400);
             sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, vehicles.classname, vehicles.active, vehicles.impound FROM vehicles INNER JOIN players ON players.pid = vehicles.pid WHERE players.name like concat('%', ?, '%') ${side || type ? " AND " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""} order by players.name like concat(@?, '%') desc, ifnull(nullif(instr(players.name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(players.name, @?), 0), 99999),players.name LIMIT ?, ?`, [uname, ...(side ? [side] : []), ...(type ? [type] : []), uname, uname, uname, startingPoint, count], (err, result) => {
-                if(err) res.sendStatus(400);
+                if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
                     result: result
