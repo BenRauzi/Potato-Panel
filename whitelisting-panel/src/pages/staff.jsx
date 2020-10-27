@@ -59,19 +59,19 @@ const Staff = () => {
             <h1>Staff</h1>
             Search for Staff
 
-            <div className="min-rank">
-                Minimum Rank: 
-                <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
-                    {
-                        Object.entries(staffRanks).map((values, idx) => (
-                            <option key={idx} value={values[1]}>{values[0]}</option>
-                        ))
-                    }
-                </select>
-            </div>
+            
 
             <div className="filters">
-               <div></div>
+                <div className="min-rank">
+                    Minimum Rank: 
+                    <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
+                        {
+                            Object.entries(staffRanks).map((values, idx) => (
+                                <option key={idx} value={values[1]}>{values[0]}</option>
+                            ))
+                        }
+                    </select>
+                </div>
 
                 <div className="search-box">
                     <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
