@@ -11,6 +11,7 @@ import policeController from "./controllers/policeController";
 import medicController from "./controllers/medicController";
 import staffController from "./controllers/staffController";
 import devController from "./controllers/devController";
+import vehicleController from "./controllers/vehicleController";
 
 const app = express();
 
@@ -45,3 +46,4 @@ policeController(app, sql);
 medicController(app, sql);
 staffController(app, sql);
 devController(app, sql);
+vehicleController(app, sql);

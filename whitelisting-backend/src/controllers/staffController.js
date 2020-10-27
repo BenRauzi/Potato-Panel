@@ -57,7 +57,6 @@ const staffController = (app, sql) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
         })

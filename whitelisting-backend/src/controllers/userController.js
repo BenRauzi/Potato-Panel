@@ -55,7 +55,6 @@ const userController = (app, sql) => {
         const body = req.body;
         const { pid, amount } = body;
         sql.query(`UPDATE players SET cash = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-            console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
         })
@@ -66,7 +65,6 @@ const userController = (app, sql) => {
         const body = req.body;
         const { pid, amount } = body;
         sql.query(`UPDATE players SET bankacc = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-            console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
         })
@@ -77,7 +75,6 @@ const userController = (app, sql) => {
         const body = req.body;
         const { pid, amount } = body;
         sql.query(`UPDATE players SET bankacc = bankacc + ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-            console.log(err);
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
         })
