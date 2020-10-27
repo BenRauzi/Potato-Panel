@@ -77,15 +77,16 @@
 .page-count {
     margin: 10px 0;
 }
+
 select {
     margin-left: 10px;
-    width: 50px;
     display: inline-block;
 }
 
 .filters {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin: 0 10px;
 }
 
@@ -119,5 +120,11 @@ select {
             outline: none;
         }
         
+    }
+}
+
+.min-rank {
+    select {
+        border: none
     }
 }
