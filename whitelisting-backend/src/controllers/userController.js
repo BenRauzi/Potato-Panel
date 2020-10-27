@@ -97,9 +97,9 @@ const userController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Set Users Cash Amount
     app.post('/user/setCash', (req, res) => {
@@ -177,8 +177,8 @@ const userController = (app, sql) => {
             profileUrl: profileurl,
             avatarUrl: avatarfull
             
-        })
-    })
-}
+        });
+    });
+};
 
 export default userController;

@@ -54,9 +54,9 @@ const staffController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Change Users Admin Whitelist Level (In-Game)
     app.post('/admin/setLevel', (req, res) => {

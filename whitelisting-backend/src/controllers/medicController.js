@@ -18,9 +18,9 @@ const medicController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Fetch Medic Department Users
     app.get('/medic/department', (req, res) => {
@@ -34,8 +34,8 @@ const medicController = (app, sql) => {
         sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (medicLevel >= ? AND medicdept = ?) LIMIT ?, ?`, [minRank, department, startingPoint, count] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.send(result);
-        })
-    })
+        });
+    });
 
     // Fetch Medic User
     app.get('/medic/user', (req, res) => {
@@ -69,9 +69,9 @@ const medicController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Set Users Medic Whitelist Level
     app.post('/medic/setLevel', (req, res) => {
