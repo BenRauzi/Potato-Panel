@@ -38,7 +38,7 @@ const UserPage = ({match}) => {
                     Aliases: {user.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}
                 </div>
                 <a href={steamDetails.profileUrl} className="steam-profile">
-                        <img src={steamDetails.avatarUrl}></img>
+                        <img alt="User Profile" src={steamDetails.avatarUrl}></img>
                         <div className="steam-details">
                             <span>{steamDetails.profileName}</span>
                             <span className="userid">{userId}</span>
