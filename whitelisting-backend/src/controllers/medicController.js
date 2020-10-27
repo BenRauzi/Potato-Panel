@@ -78,8 +78,7 @@ const medicController = (app, sql) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             const body = req.body;
             const { pid, level } = body;
-            if ((data.adminLevel < 2  && data.emsLevel === 0)) return res.sendStatus(401); // Moderator+ OR Medic Whitelisting Access
-            if (data.adminLevel < 3 && level >= data.emsWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own medic level, unless you are Admin+
+            if(data.adminLevel < 2 && (data.emsLevel === 0 && level >= data.emsWhitelisting)) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
             
             sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
