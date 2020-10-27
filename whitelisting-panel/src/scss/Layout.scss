@@ -81,6 +81,13 @@
 select {
     margin-left: 10px;
     display: inline-block;
+    background-color: $bg-secondary;
+    color: white;
+    border: none;
+    outline: none;
+    border-radius: 30px;
+    padding: 5px 5px 5px;
+    
 }
 
 .spaced {
