@@ -9,6 +9,8 @@ import { getStaffRank, getPerms, getStaffPerms } from '../services/HelperService
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { staffRanks } from "../config/config";
+
 const Staff = () => {
     const [staff, setStaff] = React.useState({
         count: 0,
@@ -50,8 +52,6 @@ const Staff = () => {
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
     }, 500); //Only search after 1s of no typing in search box
-
-    const { staffRanks } = window;
 
     return (
         <>

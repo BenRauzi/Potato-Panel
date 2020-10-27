@@ -1,4 +1,4 @@
-var copRanks = {
+export const copRanks = {
     "Trainee": 1,
     "Deputy": 2,
     "Senior Deputy": 3,
@@ -10,7 +10,7 @@ var copRanks = {
     "Sheriff": 9
 };
 
-var copDepartments = {
+export const copDepartments = {
     "No Department": 0,
     "DOC": 1,
     "Patrol": 2,
@@ -23,7 +23,7 @@ var copDepartments = {
     "FBI": 9
 };
 
-var emsRanks = {
+export const emsRanks = {
     "Volunteer": 1,
     "Trainee": 2,
     "Junior EMT": 3,
@@ -36,7 +36,7 @@ var emsRanks = {
     "OOMC": 10
 };
 
-var emsDepartments = {
+export const emsDepartments = {
     "No Department": 0,
     "Fire & Rescue": 1,
     "Training Academy": 2,
@@ -46,7 +46,7 @@ var emsDepartments = {
     "OOMC": 6
 };
 
-var staffRanks = {
+export const staffRanks = {
     "Not Staff": 0,
     "Trial Staff": 1,
     "Moderator": 2,
@@ -57,7 +57,7 @@ var staffRanks = {
     "Director": 7
 };
 
-var developerRanks = {
+export const developerRanks = {
     "Trial Developer": 1,
     "Junior Developer": 2,
     "Developer": 3,
@@ -65,7 +65,7 @@ var developerRanks = {
     "Lead Developer": 5,
 }
 
-var Whitelist = {
+export const Whitelist = {
     "No Permissions": 0,
     "Whitelist": 1,
     "Full Perms": 2

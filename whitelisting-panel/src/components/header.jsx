@@ -4,7 +4,6 @@ import { getRole } from "../services/HelperService";
 
 const Header = () => {
     const { user } = useContext(UserContext);
-
     return (
         <header>
             <div className="header-left">
@@ -15,7 +14,7 @@ const Header = () => {
                     <span className="user-name"><b>{user ? user.username : "Arma Studios"}</b></span>
                     <span className="role">{user ? getRole(user) : "Not signed in"}</span>
                 </div>
-                <img alt="avatar" className="avatar" src="assets/icon.png"/>
+                <img alt="avatar" className="avatar" src={require("../assets/icon.png")}/>
             </div>
         </header>
     )

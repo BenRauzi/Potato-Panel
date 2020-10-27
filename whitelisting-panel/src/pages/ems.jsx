@@ -10,6 +10,8 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import Title from "../components/title";
 
+import { emsRanks } from "../config/config";
+
 const Ems = () => {
     const [ems, setEms] = React.useState({
         count: 0,
@@ -22,8 +24,6 @@ const Ems = () => {
     const [query, setQuery] = React.useState("");
     
     const [minRank, setMinRank] = React.useState(0);
-
-    const { emsRanks } = window;
 
     useEffect(() => {
         if(query !== "") return
