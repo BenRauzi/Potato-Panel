@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import TitleComponent from '../components/title';
 import { getUserById, getUserSteam } from '../services/UserService';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faEdit } from '@fortawesome/free-solid-svg-icons'
@@ -32,6 +33,7 @@ const UserPage = ({match}) => {
     if(!user) return <></>
     return (
         <>  
+            <TitleComponent title={user.name}/>
             <div className="page-header">
                 <div>
                     <h1>{user.name}</h1>
