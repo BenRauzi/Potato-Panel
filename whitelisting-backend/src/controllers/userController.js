@@ -127,6 +127,19 @@ const userController = (app, sql) => {
         });
     });
 
+    // Set Users Bank & Cash Amount
+    app.post('/user/setFinance', (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
+            const body = req.body;
+            const { pid, camount, bamount } = body;
+            sql.query(`UPDATE players SET cash - ?, bankacc = ? WHERE pid = ?`, [camount, bamount, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
+            });
+        });
+    });
+
     // Compensate User (Bank Account)
     app.post('/user/compensate', (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
