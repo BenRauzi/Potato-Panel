@@ -10,7 +10,7 @@ const vehicleController = (app, sql) => {
 
         sql.query(`SELECT COUNT(*) FROM vehicles ${side || type ? " WHERE " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""}`, [...(side ? [side] : []), ...(type ? [type] : [])], (err, countR) => {
             if(err) return res.sendStatus(400);
-            sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, vehicles.classname, vehicles.active, vehicles.impound FROM vehicles INNER JOIN players ON players.pid = vehicles.pid ${side || type ? " WHERE " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""} LIMIT ?, ?`, [...(side ? [side] : []), ...(type ? [type] : []) ,startingPoint, count], (err, result) => {
+            sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, players.pid, vehicles.classname, vehicles.active, vehicles.impound FROM vehicles INNER JOIN players ON players.pid = vehicles.pid ${side || type ? " WHERE " : ""} ${side ? 'vehicles.side = ?' : ""} ${side && type ? " AND " : ""} ${type ? 'vehicles.type = ?' : ""} LIMIT ?, ?`, [...(side ? [side] : []), ...(type ? [type] : []) ,startingPoint, count], (err, result) => {
                 if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
@@ -25,7 +25,7 @@ const vehicleController = (app, sql) => {
     app.get('/vehicle', (req, res) => {
         const vid = req.query.vid; // Vehicle ID
         if(vid === undefined) return res.sendStatus(404);
-        sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, vehicles.pid, vehicles.classname, vehicles.active, vehicles.fuel, vehicles.insert_time, vehicles.impound, vehicles.insured FROM vehicles INNER JOIN players ON players.pid = vehicles.pid WHERE vehicles.id = ?`, [vid] , (err, result) => {
+        sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, players.pid vehicles.pid, vehicles.classname, vehicles.active, vehicles.fuel, vehicles.insert_time, vehicles.impound, vehicles.insured FROM vehicles INNER JOIN players ON players.pid = vehicles.pid WHERE vehicles.id = ?`, [vid] , (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
         });

@@ -61,7 +61,7 @@ const Police = () => {
             Search for Police
 
             <div className="filters">
-               <div className="min-rank">
+               <div className="filter">
                    Minimum Rank: 
                     <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
                         {

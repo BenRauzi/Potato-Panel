@@ -3,16 +3,15 @@ import { Link } from "react-router-dom"
 import ReactPaginate from 'react-paginate';
 import { debounce } from "lodash";
 
-import { getStaff, searchStaff } from "../services/StaffService";
 import Title from "../components/title";
-import { getStaffRank, getPerms, getStaffPerms } from '../services/HelperService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { staffRanks } from "../config/config";
+import { GameSides, VehicleTypes } from "../config/config";
+import { getVehicles, searchVehicles } from '../services/VehicleService';
 
-const Staff = () => {
-    const [staff, setStaff] = React.useState({
+const Vehicles = () => {
+    const [vehicles, setVehicles] = React.useState({
         count: 0,
         result: []
     })
@@ -22,32 +21,33 @@ const Staff = () => {
 
     const [query, setQuery] = React.useState("");
     
-    const [minRank, setMinRank] = React.useState(0);
+    const [side, setSide] = React.useState(0);
+    const [type, setType] = React.useState(0);
     
     useEffect(() => {
         if(query !== "") return
-        const fetchStaff = async () => {
-            const staff = await getStaff(page, pageLength, minRank);
+        const fetchVehicles = async () => {
+            const vehicles = await getVehicles(page, pageLength, GameSides[side], VehicleTypes[type]);
 
-            setStaff(staff)
+            setVehicles(vehicles)
         }
-        fetchStaff()
-    }, [page, pageLength, query, minRank]) // Any time the page, pageLength or query changes, this will run.
+        fetchVehicles()
+    }, [page, pageLength, query, side, type]) // Any time the page, pageLength or query changes, this will run.
 
     useEffect(() => {
         if(!query) return
         const search = async (query) => {
             setPage(1)
-            const result = await searchStaff(query, page, pageLength, minRank);
-            if(result === []) return setStaff({
+            const result = await searchVehicles(query, page, pageLength, GameSides[side], VehicleTypes[type]);
+            if(result === []) return setVehicles({
                 count: 0,
                 result: []
             })
             
-            setStaff(result)
+            setVehicles(result)
         }
         search(query)
-    }, [query, page, pageLength, minRank]) //Will Run the code inside any time 'query' changes
+    }, [query, page, pageLength, side, type]) //Will Run the code inside any time 'query' changes
     
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
@@ -56,22 +56,35 @@ const Staff = () => {
     return (
         <>
             <Title title="Staff Roster"/>
-            <h1>Staff</h1>
-            Search for Staff
-
-            
+            <h1>Vehicles</h1>
+            Search for Vehicles
 
             <div className="filters">
-                <div className="filter">
-                    Minimum Rank: 
-                    <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
-                        {
-                            Object.entries(staffRanks).map((values, idx) => (
-                                <option key={idx} value={values[1]}>{values[0]}</option>
-                            ))
-                        }
-                    </select>
+                <div>
+                    <div className="filter">
+                        Side: 
+                        <select value={side} onChange={(e) => setSide(parseInt(e.target.value))}>
+                            {
+                                Object.entries(GameSides).map((value, idx) => (
+                                    <option key={idx} value={value[0]}>{value[1]}</option>
+                                ))
+                            }
+                        </select>
+                    </div>
+                    <div className="filter">
+                        Type: 
+                        <select value={type} onChange={(e) => setType(parseInt(e.target.value))}>
+                            {
+                                Object.entries(VehicleTypes).map((value, idx) => (
+                                    
+                                    <option key={idx} value={value[0]}>{value[1]}</option>
+                                ))
+                            }
+                        </select>
+                    </div>
                 </div>
+               
+                 
 
                 <div className="search-box">
                     <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
@@ -84,23 +97,22 @@ const Staff = () => {
             <div className="table">
                 <div className="table-head">
                     <div>UID</div>
-                    <div>Name</div>
-                    <div>Staff Rank</div>
-                    <div>Cop Whitelisting</div>
-                    <div>EMS Whitelisting</div>
-                    <div>Staff Whitelisting</div>
-                   
+                    <div>Owner</div>
+                    <div>Classname</div>
+                    <div>Side</div>
+                    <div>Type</div>
+                    <div>Active</div>
                 </div>
                 {
-                    staff.result.length > 0 ?
-                    staff.result.map(({uid, username, pid, copLevel, emsLevel, adminLevel}, idx) => (
+                    vehicles.result.length > 0 ?
+                    vehicles.result.map(({id, name, pid, classname, side, type, active}, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
-                            <div>{uid}</div>
-                            <div>{username}</div>
-                            <div>{getStaffRank(adminLevel)}</div>
-                            <div>{getPerms(copLevel, adminLevel) }</div>
-                            <div>{getPerms(emsLevel, adminLevel)}</div>
-                            <div>{getStaffPerms(adminLevel)}</div>
+                            <div>{id}</div>
+                            <div>{name}</div>
+                            <div>{classname}</div>
+                            <div>{side}</div>
+                            <div>{type}</div>
+                            <div>{active ? "True" : "False"}</div>
                         </Link>
                     )) :
                     <div className="table-row">
@@ -122,7 +134,7 @@ const Staff = () => {
                         nextLabel={'Next'}
                         breakLabel={'...'}
                         breakClassName={'break-me'}
-                        pageCount={Math.ceil(staff.count / pageLength)}
+                        pageCount={Math.ceil(vehicles.count / pageLength)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
                         onPageChange={(e) => {setPage(e.selected + 1)}}
@@ -138,4 +150,4 @@ const Staff = () => {
     )
 }
 
-export default Staff;
+export default Vehicles;

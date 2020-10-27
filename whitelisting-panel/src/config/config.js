@@ -81,3 +81,6 @@ export const Whitelist = {
     "Whitelist": 1,
     "Full Perms": 2
 }
+
+export const GameSides = ["Any", "Cop", "Civ", "Med"]
+export const VehicleTypes = ["Any", "Air", "Car", "Ship"]

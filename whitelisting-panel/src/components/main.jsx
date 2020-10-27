@@ -13,6 +13,7 @@ import Dashboard from "../pages/dashboard";
 import ServerSettingsPage from "../pages/server-settings";
 import SettingsPage from "../pages/settings";
 import UserPage from "../pages/user";
+import Vehicles from "../pages/vehicles";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -81,6 +82,7 @@ const Main = () => {
                 <ProtectedRoute exact path='/police' component={Police}/>
                 <ProtectedRoute exact path='/ems' component={Ems}/>
                 <ProtectedRoute exact path='/development-team' component={Development}/>
+                <ProtectedRoute exact path='/vehicles' component={Vehicles}/>
                 <ProtectedRoute exact path='/settings' component={SettingsPage}/>
                 <GuardedRoute exact path='/server-settings' roles={{adminLevel: 8}} component={ServerSettingsPage}/>
                 <Route exact path='/login' component={Login}/>

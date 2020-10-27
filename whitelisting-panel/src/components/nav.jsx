@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWindowRestore, faUsers, faIdBadge, faUserNurse, faUserTie, faUserCog, faSlidersH, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faWindowRestore, faCar, faUsers, faIdBadge, faUserNurse, faUserTie, faUserCog, faSlidersH, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 
 import { faAccessibleIcon } from "@fortawesome/free-brands-svg-icons"
 
@@ -72,6 +72,15 @@ const MainNav = () => {
                         </div>
                         
                         <span>Dev Roster</span>
+                    </Link>                        
+                </li>
+                <li>
+                    <Link to="/vehicles">
+                        <div className="nav-icon">
+                            <FontAwesomeIcon className="nav-icon" alt="Vehicles" icon={faCar}/>
+                        </div>
+                        
+                        <span>Vehicles</span>
                     </Link>                        
                 </li>
                 <li>
