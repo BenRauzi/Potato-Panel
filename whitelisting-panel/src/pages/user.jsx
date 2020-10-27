@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import TitleComponent from '../components/title';
 import { getUserById, getUserSteam } from '../services/UserService';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faSave, faUniversity } from '@fortawesome/free-solid-svg-icons'
+
+import { formatMoney } from '../services/HelperService';
 
 const UserPage = ({match}) => {
     const userId = match.params.id;
@@ -30,6 +32,18 @@ const UserPage = ({match}) => {
         getSteam()
     }, [userId, setUser, setSteamDetails])  
 
+    const [editState, setEditState] = React.useState({
+        bank: false
+    })
+
+    const setCash = (amount) => {
+        setUser({...user, cash: parseInt(amount)})
+    }
+
+    const setBank = (amount) => {
+        setUser({...user, bankacc: parseInt(amount)})
+    }
+
     if(!user) return <></>
     return (
         <>  
@@ -53,7 +67,36 @@ const UserPage = ({match}) => {
 
 
             <div className="page-row">
-              
+              <div className="user-tile">
+                    <FontAwesomeIcon className="tile-icon" icon={faUniversity}/>
+                    
+                    {
+                        editState.bank === false ?  
+                        <div className="tile-info">
+                            <span><b>BANK ACCOUNT</b></span>
+                            <span>{formatMoney(user.bankacc)}</span>
+                            <span><b>CASH AMOUNT</b></span>
+                            <span>{formatMoney(user.cash)}</span>
+                        </div> :
+                        <div className="tile-edit">
+                          <span><b>BANK ACCOUNT</b></span>
+                          <span><input type="text" value={user.bankacc} onChange={e => setBank(e.target.value)}></input></span>
+                          <span><b>CASH AMOUNT</b></span>
+                          <span><input type="text" value={user.cash} onChange={e => setCash(e.target.value)}></input></span>
+                        </div>
+                    }
+                    
+                    
+                   <input type="checkbox" className="tile-check-box" value={editState.bank} onChange={async () => { 
+                       const res = await saveCash(user.cash, user.bankacc, user.pid);
+                       
+                       console.log(res)
+                       setEditState({...editState, bank: !editState.bank})
+                       
+                    }}></input>
+                    <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
+                    <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+              </div>
             </div>
         </>
 
