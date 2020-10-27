@@ -6,6 +6,8 @@ import { debounce } from "lodash";
 import { getDevs, searchDevs } from "../services/devService";
 import Title from "../components/title";
 import { getCopRank, getDevRank, getEmsRank } from '../services/HelperService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const Development = () => {
     const [devs, setDevs] = React.useState({
@@ -46,7 +48,7 @@ const Development = () => {
     
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
-    }, 1000); //Only search after 1s of no typing in search box
+    }, 500); //Only search after 1s of no typing in search box
 
     const { developerRanks } = window;
 
@@ -55,15 +57,6 @@ const Development = () => {
             <Title title="Development Roster"/>
             <h1>Development Team</h1>
             Search for Developers
-
-            <div className="page-count">
-                Page Length: 
-                <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                </select>
-            </div>
 
             <div className="min-rank">
                 Minimum Rank: 
@@ -76,8 +69,15 @@ const Development = () => {
                 </select>
             </div>
 
-            <div className="search-input">
-                <input type="text" placeholder="Search by Name" onChange={(e) => debouncedSearch(e.target.value)}/>
+            <div className="filters">
+               <div></div>
+                    
+                <div className="search-box">
+                    <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
+                    <button>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </button>
+                </div>
             </div>
 
             <div className="table">
@@ -104,20 +104,30 @@ const Development = () => {
                         <div>No results found</div>
                     </div>
                 }
-
-                <ReactPaginate
-                    previousLabel={'Previous'}
-                    nextLabel={'Next'}
-                    breakLabel={'...'}
-                    breakClassName={'break-me'}
-                    pageCount={Math.ceil(devs.count / pageLength)}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={(e) => {setPage(e.selected + 1)}}
-                    containerClassName={'pagination'}
-                    subContainerClassName={'pages pagination'}
-                    activeClassName={'active'}
-                />
+                <div className="filters">
+                    <div className="page-count">
+                        Show: 
+                        <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                    <ReactPaginate
+                        previousLabel={'Previous'}
+                        nextLabel={'Next'}
+                        breakLabel={'...'}
+                        breakClassName={'break-me'}
+                        pageCount={Math.ceil(devs.count / pageLength)}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={(e) => {setPage(e.selected + 1)}}
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active'}
+                    />
+                </div>
+               
             </div>
         </>
     )

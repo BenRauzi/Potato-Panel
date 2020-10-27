@@ -41,7 +41,6 @@
 }
 
 .pagination {
-    width: 400px;
     display: inline-block;
     li {
 
@@ -72,10 +71,53 @@
 }
 
 .page-count {
+    display: inline-block;
+}
+
+.page-count {
     margin: 10px 0;
 }
 select {
     margin-left: 10px;
     width: 50px;
     display: inline-block;
+}
+
+.filters {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 10px;
+}
+
+.search-box {
+    height: 30px;
+    width: 200px;
+    border-radius: 30px;
+    background-color: $bg-tertiary;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 13px 13px 10px;
+
+    input {
+        padding: 0;
+        border:none;
+        background: none;
+        outline:none;
+        width: 160px;
+        font-size: 16px;
+        line-height: 40px;
+        color: $text-primary;
+    }
+    button {
+        border-radius: 40px;
+        color: white;
+        background: none;
+        border: none;
+        font-size: 16px;
+        &:focus {
+            outline: none;
+        }
+        
+    }
 }

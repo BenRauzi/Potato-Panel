@@ -6,6 +6,8 @@ import { debounce } from "lodash";
 import { getStaff, searchStaff } from "../services/StaffService";
 import Title from "../components/title";
 import { getStaffRank, getPerms, getStaffPerms } from '../services/HelperService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const Staff = () => {
     const [staff, setStaff] = React.useState({
@@ -47,7 +49,7 @@ const Staff = () => {
     
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
-    }, 1000); //Only search after 1s of no typing in search box
+    }, 500); //Only search after 1s of no typing in search box
 
     const { staffRanks } = window;
 
@@ -56,15 +58,6 @@ const Staff = () => {
             <Title title="Staff Roster"/>
             <h1>Staff</h1>
             Search for Staff
-
-            <div className="page-count">
-                Page Length: 
-                <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                </select>
-            </div>
 
             <div className="min-rank">
                 Minimum Rank: 
@@ -77,8 +70,15 @@ const Staff = () => {
                 </select>
             </div>
 
-            <div className="search-input">
-                <input type="text" placeholder="Search by Name" onChange={(e) => debouncedSearch(e.target.value)}/>
+            <div className="filters">
+               <div></div>
+
+                <div className="search-box">
+                    <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
+                    <button>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </button>
+                </div>
             </div>
 
             <div className="table">
@@ -108,19 +108,31 @@ const Staff = () => {
                     </div>
                 }
 
-                <ReactPaginate
-                    previousLabel={'Previous'}
-                    nextLabel={'Next'}
-                    breakLabel={'...'}
-                    breakClassName={'break-me'}
-                    pageCount={Math.ceil(staff.count / pageLength)}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={(e) => {setPage(e.selected + 1)}}
-                    containerClassName={'pagination'}
-                    subContainerClassName={'pages pagination'}
-                    activeClassName={'active'}
-                />
+                <div className="filters">
+                    <div className="page-count">
+                        Show: 
+                        <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                    <ReactPaginate
+                        previousLabel={'Previous'}
+                        nextLabel={'Next'}
+                        breakLabel={'...'}
+                        breakClassName={'break-me'}
+                        pageCount={Math.ceil(staff.count / pageLength)}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={(e) => {setPage(e.selected + 1)}}
+                        containerClassName={'pagination'}
+                        subContainerClassName={'pages pagination'}
+                        activeClassName={'active'}
+                    />
+                </div>
+               
+               
             </div>
         </>
     )
