@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { getUserById, getUserSteam } from '../services/UserService';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
 const UserPage = ({match}) => {
     const userId = match.params.id;
