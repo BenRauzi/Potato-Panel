@@ -18,9 +18,9 @@ const devController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Search Dev User (By Username)
     app.get('/dev/search', (req, res) => {
@@ -39,9 +39,9 @@ const devController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Set Users Developer Whitelist Level
     app.post('/dev/setLevel', (req, res) => {
@@ -50,8 +50,8 @@ const devController = (app, sql) => {
         sql.query(`UPDATE players SET developerlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
-        })
-    })
+        });
+    });
 };
 
 export default devController;

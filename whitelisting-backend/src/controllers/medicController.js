@@ -18,9 +18,9 @@ const medicController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Fetch Medic Department Users
     app.get('/medic/department', (req, res) => {
@@ -34,8 +34,8 @@ const medicController = (app, sql) => {
         sql.query(`SELECT uid, name, pid, mediclevel, medicdept from players WHERE (medicLevel >= ? AND medicdept = ?) LIMIT ?, ?`, [minRank, department, startingPoint, count] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.send(result);
-        })
-    })
+        });
+    });
 
     // Fetch Medic User
     app.get('/medic/user', (req, res) => {
@@ -69,16 +69,17 @@ const medicController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Set Users Medic Whitelist Level
     app.post('/medic/setLevel', (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             const body = req.body;
             const { pid, level } = body;
-            if(data.adminLevel < 2 && (data.emsLevel === 0 && level >= data.emsWhitelisting)) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
+            if ((data.adminLevel < 2  && data.emsLevel === 0)) return res.sendStatus(401); // Moderator+ OR Medic Whitelisting Access
+            if (data.adminLevel < 3 && level >= data.emsWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own medic level, unless you are Admin+
             
             sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
@@ -100,8 +101,6 @@ const medicController = (app, sql) => {
             });
         });
     });
-
-    // Set Users Medic License --> WIP
 };
 
 export default medicController;

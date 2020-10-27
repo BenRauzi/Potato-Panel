@@ -78,7 +78,8 @@ const policeController = (app, sql) => {
         const body = req.body;
         const { pid, level } = body;
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 2 && (data.copLevel === 0 && level >= data.copWhitelisting)) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
+            if ((data.adminLevel < 2  && data.copLevel === 0)) return res.sendStatus(401); // Moderator+ OR Cop Whitelisting Access
+            if (data.adminLevel < 3 && level >= data.copWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own cop level, unless you are Admin+
 
             sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
@@ -97,35 +98,6 @@ const policeController = (app, sql) => {
             sql.query(`UPDATE players SET copdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
-            });
-        });
-    });
-
-    // Set Users Police License 
-
-
-
-    // NOT SETUP JUST YET --> WIP
-
-
-    app.post('/police/setLicense', (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 2 && data.copLevel === 0) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
-            const body = req.body;
-            const { pid, license, value } = body;
-
-            sql.query(`SELECT cop_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
-                const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
-                    const split = x.split(',')
-                    if (split[0] === `\`${license}\``) return [split[0], parseInt(value)];
-                    return [split[0], parseInt(split[1])]
-                })
-                const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`;
-                sql.query(`UPDATE players SET cop_licenses = ? WHERE pid = ?`, [newString, pid] , (err, result) => {
-                    if(err) return res.sendStatus(400);
-                    res.sendStatus(200);
-                });
             });
         });
     });
