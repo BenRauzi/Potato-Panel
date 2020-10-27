@@ -105,7 +105,7 @@ const Development = () => {
                     </div>
                 }
                 <div className="filters">
-                    <div className="page-count">
+                    <div className="page-count spaced">
                         Show: 
                         <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
                             <option value="10">10</option>

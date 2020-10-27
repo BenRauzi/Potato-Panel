@@ -103,7 +103,7 @@ const Police = () => {
                     </div>
                 }
 
-                <div className="filters">
+                <div className="filters spaced">
                     <div className="page-count">
                         Page Length: 
                         <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>

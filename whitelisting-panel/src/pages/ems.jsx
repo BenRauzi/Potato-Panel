@@ -104,7 +104,7 @@ const Ems = () => {
                     </div>
                 }
                 
-                <div className="filters">
+                <div className="filters spaced">
                     <div className="page-count">
                         Show: 
                         <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>

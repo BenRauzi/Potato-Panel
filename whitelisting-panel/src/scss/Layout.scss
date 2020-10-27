@@ -83,11 +83,13 @@ select {
     display: inline-block;
 }
 
+.spaced {
+    margin: 0 10px;
+}
 .filters {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 10px;
 }
 
 .search-box {
