@@ -101,8 +101,6 @@ const medicController = (app, sql) => {
             });
         });
     });
-
-    // Set Users Medic License --> WIP
 };
 
 export default medicController;
