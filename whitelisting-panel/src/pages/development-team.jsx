@@ -5,7 +5,7 @@ import { debounce } from "lodash";
 
 import { getDevs, searchDevs } from "../services/devService";
 import Title from "../components/title";
-import { getDevRank } from '../services/HelperService';
+import { getCopRank, getDevRank, getEmsRank } from '../services/HelperService';
 
 const Development = () => {
     const [devs, setDevs] = React.useState({
@@ -71,15 +71,19 @@ const Development = () => {
                     <div>UID</div>
                     <div>Name</div>
                     <div>Development Rank</div>
+                    <div>Cop Rank</div>
+                    <div>EMS Rank</div>
                    
                 </div>
                 {
                     devs.result.length > 0 ?
-                    devs.result.map(({uid, name, pid, developerlevel}, idx) => (
+                    devs.result.map(({uid, name, pid, developerlevel, coplevel, mediclevel}, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{name}</div>
                             <div>{getDevRank(developerlevel)}</div>
+                            <div>{getCopRank(coplevel)}</div>
+                            <div>{getEmsRank(mediclevel)}</div>
                         </Link>
                     )) :
                     <div className="table-row">

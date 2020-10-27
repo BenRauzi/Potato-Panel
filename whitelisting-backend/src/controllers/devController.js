@@ -9,7 +9,7 @@ const devController = (app, sql) => {
 
         sql.query(`SELECT COUNT(*) FROM players WHERE developerlevel >= ?`, [minRank], (err, countR) => {
             if(err) return res.sendStatus(400);
-            sql.query(`SELECT uid, name, pid, developerlevel from players WHERE developerlevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
+            sql.query(`SELECT uid, name, pid, coplevel, mediclevel, developerlevel from players WHERE developerlevel >= ? LIMIT ?, ?`, [minRank, startingPoint, count], (err, result) => {
                 if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
@@ -30,7 +30,7 @@ const devController = (app, sql) => {
 
         sql.query(`SELECT COUNT(*) FROM players WHERE (developerlevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname, startingPoint, count], (err, countR) => {
             if(err) return res.sendStatus(400);
-            sql.query(`SELECT uid, name, pid, developerlevel from players WHERE (developerlevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
+            sql.query(`SELECT uid, name, pid, coplevel, mediclevel, developerlevel from players WHERE (developerlevel > 0 AND name like concat('%', ?, '%')) order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
                 if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
