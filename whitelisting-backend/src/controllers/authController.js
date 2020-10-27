@@ -102,20 +102,24 @@ const authController = (app, sql) => {
                         
                         const { pid, username, copLevel, adminLevel, emsLevel, 
                             copWhitelisting, emsWhitelisting 
-                        } = result[0]
-                            
-                        const token = jwt.sign({
-                            user:username, 
-                            pid: pid,
-                            copLevel: copLevel,
-                            copWhitelisting: copWhitelisting,
-                            emsLevel: emsLevel,
-                            emsWhitelisting: emsWhitelisting,
-                            adminLevel: adminLevel
-                            
-                        }, process.env.JWT_SECRET)
-                        // save token in cookie
-                        res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true})
+                        } = result[0] 
+
+                        if(copLevel != data.copLevel || adminLevel != data.adminLevel || emsLevel != data.emsLevel
+                            || copWhitelisting != data.copWhitelisting || emsWhitelisting != data.emsWhitelisting
+                            ) {
+                                const token = jwt.sign({
+                                    user:username, 
+                                    pid: pid,
+                                    copLevel: copLevel,
+                                    copWhitelisting: copWhitelisting,
+                                    emsLevel: emsLevel,
+                                    emsWhitelisting: emsWhitelisting,
+                                    adminLevel: adminLevel
+                                    
+                                }, process.env.JWT_SECRET)
+                                // save token in cookie
+                                res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true})
+                            }
                         
                         res.send(result[0])
                     }
