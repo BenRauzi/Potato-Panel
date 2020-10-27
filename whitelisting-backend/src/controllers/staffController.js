@@ -31,7 +31,7 @@ const staffController = (app, sql) => {
             if(pid === undefined) return res.sendStatus(404);
 
             sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE pid = ?`, [pid] , (err, result) => {
-                if(err) res.sendStatus(400);
+                if(err) return res.sendStatus(400);
                 res.send(result);
             });
         });

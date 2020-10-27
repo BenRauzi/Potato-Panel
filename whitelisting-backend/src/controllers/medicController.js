@@ -46,7 +46,7 @@ const medicController = (app, sql) => {
             if(pid === undefined) return res.sendStatus(404);
 
             sql.query(`SELECT uid, name, mediclevel, medicdept, med_licenses, med_gear, med_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-                if(err) res.sendStatus(400);
+                if(err) return res.sendStatus(400);
                 res.send(result);
             });
         });
