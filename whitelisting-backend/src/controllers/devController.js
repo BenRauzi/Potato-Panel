@@ -3,7 +3,7 @@ const devController = (app, sql) => {
     app.get('/dev/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number
         const count = parseInt(req.query.c) || 10; // Total Entires Gathered
-        const minRank = parseInt(req.query.rank) || 1; // Minimum Rank
+        const minRank = parseInt(req.query.mR) || 1; // Minimum Rank
 
         const startingPoint = (pageN - 1) * count;
 

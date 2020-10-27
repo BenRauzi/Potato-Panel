@@ -18,21 +18,23 @@ const Staff = () => {
 
     const [query, setQuery] = React.useState("");
     
+    const [minRank, setMinRank] = React.useState(0);
+    
     useEffect(() => {
         if(query !== "") return
         const fetchStaff = async () => {
-            const staff = await getStaff(page, pageLength);
+            const staff = await getStaff(page, pageLength, minRank);
 
             setStaff(staff)
         }
         fetchStaff()
-    }, [page, pageLength, query]) // Any time the page, pageLength or query changes, this will run.
+    }, [page, pageLength, query, minRank]) // Any time the page, pageLength or query changes, this will run.
 
     useEffect(() => {
         if(!query) return
         const search = async (query) => {
             setPage(1)
-            const result = await searchStaff(query, page, pageLength);
+            const result = await searchStaff(query, page, pageLength, minRank);
             if(result === []) return setStaff({
                 count: 0,
                 result: []
@@ -41,11 +43,13 @@ const Staff = () => {
             setStaff(result)
         }
         search(query)
-    }, [query, page, pageLength]) //Will Run the code inside any time 'query' changes
+    }, [query, page, pageLength, minRank]) //Will Run the code inside any time 'query' changes
     
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
     }, 1000); //Only search after 1s of no typing in search box
+
+    const { staffRanks } = window;
 
     return (
         <>
@@ -59,6 +63,17 @@ const Staff = () => {
                     <option value="10">10</option>
                     <option value="20">20</option>
                     <option value="30">30</option>
+                </select>
+            </div>
+
+            <div className="min-rank">
+                Minimum Rank: 
+                <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
+                    {
+                        Object.entries(staffRanks).map((values, idx) => (
+                            <option key={idx} value={values[1]}>{values[0]}</option>
+                        ))
+                    }
                 </select>
             </div>
 

@@ -18,21 +18,24 @@ const Police = () => {
 
     const [query, setQuery] = React.useState("");
     
+    const [minRank, setMinRank] = React.useState(0);
+
+    const { copRanks } = window;
     useEffect(() => {
         if(query !== "") return
         const fetchPolice = async () => {
-            const police = await getPolice(page, pageLength);
+            const police = await getPolice(page, pageLength, minRank);
 
             setPolice(police)
         }
         fetchPolice()
-    }, [page, pageLength, query]) // Any time the page, pageLength or query changes, this will run.
+    }, [page, pageLength, query, minRank]) // Any time the page, pageLength or query changes, this will run.
 
     useEffect(() => {
         if(!query) return
         const search = async (query) => {
             setPage(1)
-            const result = await searchPolice(query, page, pageLength);
+            const result = await searchPolice(query, page, pageLength, minRank);
             if(result === []) return setPolice({
                 count: 0,
                 result: []
@@ -41,7 +44,7 @@ const Police = () => {
             setPolice(result)
         }
         search(query)
-    }, [query, page, pageLength]) //Will Run the code inside any time 'query' changes
+    }, [query, page, pageLength, minRank]) //Will Run the code inside any time 'query' changes
     
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
@@ -59,6 +62,17 @@ const Police = () => {
                     <option value="10">10</option>
                     <option value="20">20</option>
                     <option value="30">30</option>
+                </select>
+            </div>
+
+            <div className="min-rank">
+                Minimum Rank: 
+                <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
+                    {
+                        Object.entries(copRanks).map((values, idx) => (
+                            <option key={idx} value={values[1]}>{values[0]}</option>
+                        ))
+                    }
                 </select>
             </div>
 

@@ -1,5 +1,5 @@
-export const getDevs = async (page, count) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/users?c=${count}}&p=${page}`,  {
+export const getDevs = async (page, count, minRank) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/users?c=${count}}&p=${page}&mR=${minRank}`,  {
         method: "GET",
         credentials: "include"
     })
@@ -9,8 +9,8 @@ export const getDevs = async (page, count) => {
     return res
 };
 
-export const searchDevs = async (term, page, pageLength) => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/search?uname=${term}&p=${page}&c=${pageLength}`,  {
+export const searchDevs = async (term, page, pageLength, minRank) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/search?uname=${term}&p=${page}&c=${pageLength}&mR=${minRank}`,  {
         method: "GET",
         credentials: "include"
     })
