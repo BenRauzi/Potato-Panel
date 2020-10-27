@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import TitleComponent from '../components/title';
-import { getUserById, getUserSteam } from '../services/UserService';
+import { getUserById, getUserSteam, saveMoney } from '../services/UserService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faSave, faUniversity } from '@fortawesome/free-solid-svg-icons'
 
@@ -88,9 +88,11 @@ const UserPage = ({match}) => {
                     
                     
                    <input type="checkbox" className="tile-check-box" value={editState.bank} onChange={async () => { 
-                       const res = await saveCash(user.cash, user.bankacc, user.pid);
+                       if (!editState.bank) return setEditState({...editState, bank: !editState.bank})
                        
-                       console.log(res)
+                       const res = await saveMoney(user.cash, user.bankacc, user.pid);
+
+                       
                        setEditState({...editState, bank: !editState.bank})
                        
                     }}></input>
