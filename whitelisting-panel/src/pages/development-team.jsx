@@ -5,7 +5,7 @@ import { debounce } from "lodash";
 
 import { getDevs, searchDevs } from "../services/devService";
 import Title from "../components/title";
-import { getCopRank, getDevRank, getEmsRank } from '../services/HelperService';
+import { getCopRank, getDevDept, getDevRank, getEmsRank } from '../services/HelperService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { developerRanks } from "../config/config";
@@ -83,17 +83,19 @@ const Development = () => {
                     <div>UID</div>
                     <div>Name</div>
                     <div>Development Rank</div>
+                    <div>Primary Department</div>
                     <div>Cop Rank</div>
                     <div>EMS Rank</div>
                    
                 </div>
                 {
                     devs.result.length > 0 ?
-                    devs.result.map(({uid, name, pid, developerlevel, coplevel, mediclevel}, idx) => (
+                    devs.result.map(({uid, name, pid, developerlevel, coplevel, mediclevel, developerdept}, idx) => (
                         <Link to={`/user/${pid}`} key={idx} className="table-row">
                             <div>{uid}</div>
                             <div>{name}</div>
                             <div>{getDevRank(developerlevel)}</div>
+                            <div>{getDevDept(developerdept)}</div>
                             <div>{getCopRank(coplevel)}</div>
                             <div>{getEmsRank(mediclevel)}</div>
                         </Link>

@@ -63,10 +63,11 @@ export const developerRanks = {
     "Developer": 3,
     "Senior Developer": 4,
     "Lead Developer": 5,
-    "Slave": 6
+    "Director": 6
 }
 
 export const developerDepartments = {
+    "None": 0,
     "Texturing": 1,
     "Graphic Design": 2,
     "Map Development": 3,
