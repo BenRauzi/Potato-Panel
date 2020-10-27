@@ -160,7 +160,7 @@ const userController = (app, sql) => {
         })
     })
 
-    app.get('/steam', async (req, res) => {
+    app.get('/user/steam', async (req, res) => {
         const pid = req.query.pid;
         const response = await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${pid}`, {
             method: "GET"

@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
-import { getUserById } from '../services/UserService';
+import { getUserById, getUserSteam } from '../services/UserService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom';
 
 const UserPage = ({match}) => {
     const userId = match.params.id;
 
     const [user, setUser] = React.useState()
+    const [steamDetails, setSteamDetails] = React.useState({
+        "profileName": "None",
+        "profileUrl": "#",
+        "avatarUrl": ""
+    });
     useEffect(() => {
         const getUser = async () => {
             const user = await getUserById(userId);
@@ -16,10 +20,14 @@ const UserPage = ({match}) => {
             
             setUser(user)
         }
+        const getSteam = async () => {
+            const user = await getUserSteam(userId);
+            
+            setSteamDetails(user)
+        }
         getUser()
-    }, [userId, setUser])  
-
-    
+        getSteam()
+    }, [userId, setUser, setSteamDetails])  
 
     if(!user) return <></>
     return (
@@ -27,29 +35,23 @@ const UserPage = ({match}) => {
             <div className="page-header">
                 <div>
                     <h1>{user.name}</h1>
-                    <p>Aliases: {user.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}</p>
+                    Aliases: {user.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}
                 </div>
-                <div className="steam-profile">
-                    {userId}<br/>
-                    {/* <a href={`https://steamcommunity.com/profiles/${userId}`}>Steam Profile</a> */}
-                </div>
+                <a href={steamDetails.profileUrl} className="steam-profile">
+                        <img src={steamDetails.avatarUrl}></img>
+                        <div className="steam-details">
+                            <span>{steamDetails.profileName}</span>
+                            <span className="userid">{userId}</span>
+                    </div>
+                   
+                </a>
+                    
             </div>
 
            
 
             <div className="page-row">
-                <div className="container">
-                    <div className="container-head">
-                        <div>User Info</div>
-                        <div><FontAwesomeIcon icon={faEdit}/></div>
-                    </div>
-                </div>
-                <div className="container">
-                    <div className="container-head">
-                        <div>User Info</div>
-                        <div><FontAwesomeIcon icon={faEdit}/></div>
-                    </div>
-                </div>
+              
             </div>
         </>
 

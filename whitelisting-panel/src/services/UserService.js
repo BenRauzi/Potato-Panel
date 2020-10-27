@@ -31,8 +31,19 @@ export const getUserById = async (id) => {
     return res
 }
 
+export const getUserSteam = async (id) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/user/steam/?pid=${id}`,  {
+        method: "GET",
+        credentials: "include"
+    })
+
+    const res = await response.json();
+
+    return res
+}
 export default {
     getUsers,
     searchUsers,
-    getUserById
+    getUserById,
+    getUserSteam
 };
