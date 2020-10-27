@@ -5,6 +5,7 @@ export const formatMoney = (string) => {
 
 export const getRole = (user) => {
     if(user.adminLevel > 0) return getStaffRank(user.adminLevel)
+    if(user.developerlevel > 0) return getDevRank(user.developerlevel)
     if(user.copWhitelisting > user.emsWhitelisting) return getCopRank(user.copWhitelisting)
     if(user.emsWhitelisting > 0) return getEmsRank(user.emsWhitelisting)
 
@@ -33,6 +34,14 @@ export const getEmsRank = (level) => {
     const { emsRanks } = window
 
     for (var [rank, rankLevel] of Object.entries(emsRanks)) {
+        if(rankLevel === level) return rank
+    }
+}
+
+export const getDevRank = (level) => {
+    const { developerRanks } = window
+
+    for (var [rank, rankLevel] of Object.entries(developerRanks)) {
         if(rankLevel === level) return rank
     }
 }
@@ -79,4 +88,5 @@ export default {
    getEmsDept,
    getCopDept,
    getPerms,
+   getDevRank,
 }

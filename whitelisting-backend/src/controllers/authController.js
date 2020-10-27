@@ -16,7 +16,8 @@ const authController = (app, sql) => {
                     panel_users.emsLevel,
                     players.coplevel AS copWhitelisting,
                     players.mediclevel AS emsWhitelisting,
-                    players.adminlevel AS adminWhitelisting
+                    players.adminlevel AS adminWhitelisting,
+                    players.developerlevel
                     from panel_users
                     INNER JOIN players ON players.pid = panel_users.pid
                     WHERE panel_users.username = ?`, [
@@ -78,7 +79,8 @@ const authController = (app, sql) => {
                 panel_users.emsLevel,
                 players.coplevel AS copWhitelisting,
                 players.mediclevel AS emsWhitelisting,
-                players.adminlevel AS adminWhitelisting
+                players.adminlevel AS adminWhitelisting,
+                players.developerlevel
                 from panel_users
                 INNER JOIN players ON players.pid = panel_users.pid
                 WHERE panel_users.pid = ?`, [

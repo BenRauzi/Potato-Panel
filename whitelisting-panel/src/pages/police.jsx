@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react';
-import { Link } from "react-router-dom"
 import ReactPaginate from 'react-paginate';
-import { debounce } from "lodash";
-
-import { getPolice, searchPolice } from "../services/PoliceService";
-
 import Title from "../components/title";
 
+import { debounce } from "lodash";
+import { Link } from "react-router-dom"
+import { getPolice, searchPolice } from "../services/PoliceService";
 import { getCopRank, getCopDept } from '../services/HelperService';
+
 const Police = () => {
     const [police, setPolice] = React.useState({
         count: 0,
