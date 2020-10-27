@@ -12,7 +12,6 @@ export const getRole = (user) => {
     if(user.copWhitelisting > user.emsWhitelisting) return getCopRank(user.copWhitelisting)
     if(user.emsWhitelisting > 0) return getEmsRank(user.emsWhitelisting)
 
-    
     return "No Role"
 }
 

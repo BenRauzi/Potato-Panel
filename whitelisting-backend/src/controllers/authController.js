@@ -78,6 +78,7 @@ const authController = (app, sql) => {
                 res.sendStatus(403)
             }
             else if(data.pid){ 
+
                 sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username,
                 players.name,
                 panel_users.copLevel,
@@ -93,8 +94,29 @@ const authController = (app, sql) => {
                     data.pid
                 ], (err, result) => {
                     if(err){
+                        
+
                         res.sendStatus(403)
                     } else {
+                        res.clearCookie("authcookie");
+                        
+                        const { pid, username, copLevel, adminLevel, emsLevel, 
+                            copWhitelisting, emsWhitelisting 
+                        } = result[0]
+                            
+                        const token = jwt.sign({
+                            user:username, 
+                            pid: pid,
+                            copLevel: copLevel,
+                            copWhitelisting: copWhitelisting,
+                            emsLevel: emsLevel,
+                            emsWhitelisting: emsWhitelisting,
+                            adminLevel: adminLevel
+                            
+                        }, process.env.JWT_SECRET)
+                        // save token in cookie
+                        res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true})
+                        
                         res.send(result[0])
                     }
                 })

@@ -37,7 +37,7 @@ const UserPage = ({match}) => {
                     <h1>{user.name}</h1>
                     Aliases: {user.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}
                 </div>
-                <a target="_blank" href={steamDetails.profileUrl} className="steam-profile">
+                <a target="_blank" rel="noopener noreferrer" href={steamDetails.profileUrl} className="steam-profile">
                         <img alt="User Profile" src={steamDetails.avatarUrl}></img>
                         <div className="steam-details">
                             <span>{steamDetails.profileName}</span>
@@ -48,7 +48,7 @@ const UserPage = ({match}) => {
                     
             </div>
 
-           
+
 
             <div className="page-row">
               
