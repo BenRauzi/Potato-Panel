@@ -133,7 +133,7 @@ const userController = (app, sql) => {
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, cash, bank } = body;
-            sql.query(`UPDATE players SET cash - ?, bankacc = ? WHERE pid = ?`, [cash, bank, pid] , (err, result) => {
+            sql.query(`UPDATE players SET cash = ?, bankacc = ? WHERE pid = ?`, [cash, bank, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
             });
