@@ -8,7 +8,7 @@ import Title from "../components/title";
 import { getCopRank, getDevRank, getEmsRank } from '../services/HelperService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-
+import { developerRanks } from "../config/config";
 const Development = () => {
     const [devs, setDevs] = React.useState({
         count: 0,
@@ -49,8 +49,6 @@ const Development = () => {
     const debouncedSearch = debounce((searchTerm) => {
         setQuery(searchTerm);
     }, 500); //Only search after 1s of no typing in search box
-
-    const { developerRanks } = window;
 
     return (
         <>
@@ -105,7 +103,7 @@ const Development = () => {
                     </div>
                 }
                 <div className="filters">
-                    <div className="page-count">
+                    <div className="page-count spaced">
                         Show: 
                         <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>
                             <option value="10">10</option>

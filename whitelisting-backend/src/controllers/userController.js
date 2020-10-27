@@ -1,3 +1,7 @@
+import jwt from "jsonwebtoken";
+import { checkToken } from "../services/authService";
+import fetch from "node-fetch";
+
 const userController = (app, sql) => {
     // Fetch Generic Users 
     app.get('/users', (req, res) => {
@@ -19,14 +23,67 @@ const userController = (app, sql) => {
         })
     })
 
+    const restrictCop = (level) => {
+
+    }
     // Fetch User
     app.get('/user', (req, res) => {
         const pid = req.query.pid; // Players ID
+
         if(pid === undefined) return res.sendStatus(404);
-        sql.query(`SELECT uid, name, aliases, exp_level, cash, bankacc, adminlevel, coplevel, copdept, mediclevel, medicdept, donorlevel, civ_licenses, cop_licenses, med_licenses, civ_gear, cop_gear, med_gear, civ_stats, cop_stats, med_stats, arrested, blacklist, civ_alive, civ_position, insert_time, last_seen, jail_time from players WHERE pid = ?`, [pid] , (err, result) => {
-            if(err) res.sendStatus(400);
-            res.send(result);
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=> {
+            const newData = data || {}
+            const adminLevel = newData.adminLevel || 0;
+            const copLevel = newData.copLevel || 0;
+            const emsLevel = newData.emsLevel || 0;
+            
+            let queryString = `SELECT name, players.aliases, players.exp_level,
+            players.coplevel AS copWhitelisting, players.copdept, players.mediclevel AS medicWhitelisting, 
+            players.medicdept, 
+            players.donorlevel,
+            players.arrested, 
+            players.playtime, players.jail_time, players.developerlevel,
+            players.last_seen, players.insert_time`;
+
+            const adminTerms = ['players.cash', 'players.bankacc', 'players.civ_licenses', 'players.civ_gear', 'players.exp_perks', 'players.blacklist', 'panel_users.adminlevel']
+            const copTerms = ['players.cop_licenses', 'players.cop_gear', 'panel_users.copLevel']
+            const emsTerms = ['players.med_licenses', 'players.med_gear', 'panel_users.emsLevel']
+
+            if (adminLevel > 1) {
+                adminTerms.forEach(x => {
+                    queryString = queryString + `, ${x}`
+                })
+            }
+
+            if (copLevel >= 1 || adminLevel > 1) {
+                copTerms.forEach(x => {
+                    queryString = queryString + `, ${x}`
+                })
+            }
+
+            if (emsLevel >= 1 || adminLevel > 1) {
+                emsTerms.forEach(x => {
+                    queryString = queryString + `, ${x}`
+                })
+            }
+
+            queryString = queryString + `
+            FROM players
+            LEFT OUTER JOIN panel_users ON panel_users.pid = players.pid
+            WHERE players.pid = ?`
+
+            sql.query(queryString, [pid] , (err, userResult) => {
+            if(err) return res.sendStatus(400);
+            sql.query("SELECT id, side, classname, active FROM vehicles WHERE pid = ?", [pid], (err, vehicleResult) => {
+                return res.send({
+                    ...userResult[0],
+                    vehicles: vehicleResult
+                })
+            })
         })
+        })
+        
+        
     })
 
     // Search User (By Username)
@@ -97,6 +154,22 @@ const userController = (app, sql) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
             })
+        })
+    })
+
+    app.get('/user/steam', async (req, res) => {
+        const pid = req.query.pid;
+        const response = await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${pid}`, {
+            method: "GET"
+        })
+
+        const steamDetails = await response.json()
+        const { personaname, profileurl, avatarfull } = steamDetails.response.players[0]
+        res.send({
+            profileName: personaname,
+            profileUrl: profileurl,
+            avatarUrl: avatarfull
+            
         })
     })
 }

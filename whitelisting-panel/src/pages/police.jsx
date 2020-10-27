@@ -10,6 +10,7 @@ import { getCopRank, getCopDept } from '../services/HelperService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+import { copRanks } from "../config/config";
 
 const Police = () => {
     const [police, setPolice] = React.useState({
@@ -24,7 +25,6 @@ const Police = () => {
     
     const [minRank, setMinRank] = React.useState(0);
 
-    const { copRanks } = window;
     useEffect(() => {
         if(query !== "") return
         const fetchPolice = async () => {
@@ -103,7 +103,7 @@ const Police = () => {
                     </div>
                 }
 
-                <div className="filters">
+                <div className="filters spaced">
                     <div className="page-count">
                         Page Length: 
                         <select value={pageLength} onChange={(e) => setPageLength(parseInt(e.target.value))}>

@@ -90,11 +90,13 @@ select {
     
 }
 
+.spaced {
+    margin: 0 10px;
+}
 .filters {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 10px;
 }
 
 .search-box {
@@ -133,5 +135,60 @@ select {
 .min-rank {
     select {
         border: none
+    }
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+}
+.page-row {
+    margin-top: 10px;
+    display: flex;
+}
+.container {
+    display: flex;
+    flex-basis: 33%;
+}   
+
+.container-head {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    background-color: $bg-secondary;
+}
+
+h1 {
+    margin: 0;
+}
+
+.steam-profile {
+    color: white;
+    text-decoration: none;
+    margin-right: 50px;
+    width: 300px;
+    background: $bg-tertiary;
+    border-radius: 5px;
+    height: 50px;
+    display: flex;
+    
+    padding: 10px;
+    img {
+        margin-left: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+    }
+    
+}
+
+.steam-details {
+    margin-left: 10px;
+    span {
+        margin-top: 2px;
+        display: block;
+    }
+    .userid {
+        font-size: 14px;
     }
 }
