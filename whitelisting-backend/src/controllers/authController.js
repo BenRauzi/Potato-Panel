@@ -27,10 +27,16 @@ const authController = (app, sql) => {
             if(result.length == 0) return res.sendStatus(401)
             
             compare(password, result[0].password, (err, isValid) => {
+                const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel} = result[0]
                 if(isValid === true) {
                     const token = jwt.sign({
                         user:username, 
-                        pid: result[0].pid,
+                        pid: pid,
+                        copLevel: copLevel,
+                        copWhitelisting: copWhitelisting,
+                        emsLevel: emsLevel,
+                        emsWhitelisting: emsWhitelisting,
+                        adminLevel: adminLevel
                         
                     }, process.env.JWT_SECRET)
                     // save token in cookie

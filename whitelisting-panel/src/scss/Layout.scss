@@ -137,3 +137,41 @@ select {
         border: none
     }
 }
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+}
+.page-row {
+    display: flex;
+}
+.container {
+    display: flex;
+    flex-basis: 33%;
+}   
+
+.container-head {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    background-color: $bg-secondary;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.steam-profile {
+    margin-right: 50px;
+    width: 300px;
+    background: $bg-secondary;
+    border-radius: 5px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    font-size: 20px;
+    flex-direction: column;
+    padding: 5px;
+}

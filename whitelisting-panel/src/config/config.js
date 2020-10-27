@@ -65,6 +65,15 @@ export const developerRanks = {
     "Lead Developer": 5,
 }
 
+export const developerDepartments = {
+    "Texturing": 1,
+    "Graphic Design": 2,
+    "Map Development": 3,
+    "Web Development": 4,
+    "Scripting": 5,
+    "Slave": 6
+}
+
 export const Whitelist = {
     "No Permissions": 0,
     "Whitelist": 1,
