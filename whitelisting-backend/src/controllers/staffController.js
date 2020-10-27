@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 const staffController = (app, sql) => {
     // Fetch Staff Users 
     app.get('/staff/users', (req, res) => {
@@ -16,20 +18,24 @@ const staffController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Fetch Staff User
     app.get('/staff/user', (req, res) => {
-        const pid = req.query.pid; // Players ID
-        if(pid === undefined) return res.sendStatus(404);
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 1) return res.sendStatus(401); // Trial Staff+
+            
+            const pid = req.query.pid; // Players ID
+            if(pid === undefined) return res.sendStatus(404);
 
-        sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE pid = ?`, [pid] , (err, result) => {
-            if(err) res.sendStatus(400);
-            res.send(result);
-        })
-    })
+            sql.query(`SELECT uid, pid, username, adminLevel, copLevel, emsLevel from panel_users WHERE pid = ?`, [pid] , (err, result) => {
+                if(err) res.sendStatus(400);
+                res.send(result);
+            });
+        });
+    });
 
     // Search Staff User (By Username)
     app.get('/staff/search', (req, res) => {
@@ -56,11 +62,15 @@ const staffController = (app, sql) => {
     app.post('/admin/setLevel', (req, res) => {
         const body = req.body;
         const { pid, level } = body;
-        sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            res.sendStatus(200);
-        })
-    })
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 4) return res.sendStatus(401); // Trial Staff+
+
+            sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
+            });
+        });
+    });
 };
 
 export default staffController;

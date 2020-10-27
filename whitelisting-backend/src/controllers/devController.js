@@ -1,5 +1,7 @@
+import jwt from "jsonwebtoken";
+
 const devController = (app, sql) => {
-    // Fetch Medic Users 
+    // Fetch Dev Users 
     app.get('/dev/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number
         const count = parseInt(req.query.c) || 10; // Total Entires Gathered
@@ -20,7 +22,7 @@ const devController = (app, sql) => {
         })
     })
 
-    // Search Dev  User (By Username)
+    // Search Dev User (By Username)
     app.get('/dev/search', (req, res) => {
         const uname = req.query.uname; // Players Username
         const pageN = req.query.p || 1; // Page Number

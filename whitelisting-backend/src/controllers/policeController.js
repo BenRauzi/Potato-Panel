@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 const policeController = (app, sql) => {
     // Fetch Police Users 
     app.get('/police/users', (req, res) => {
@@ -16,9 +18,9 @@ const policeController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Fetch Police Department Users
     app.get('/police/department', (req, res) => {
@@ -32,19 +34,23 @@ const policeController = (app, sql) => {
         sql.query(`SELECT uid, name, pid, coplevel, copdept from players WHERE (copLevel >= ? AND copdept = ?) LIMIT ?, ?`, [minRank, department, startingPoint, count] , (err, result) => {
             if(err) res.sendStatus(400);
             res.send(result);
-        })
-    })
+        });
+    });
 
     // Fetch Police User
     app.get('/police/user', (req, res) => {
-        const pid = req.query.pid; // Players ID
-        if(pid === undefined) return res.sendStatus(404);
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 1 && data.copLevel === 0) return res.sendStatus(401); // Trial Staff+ AND Cop Whitelisting Access
 
-        sql.query(`SELECT uid, name, coplevel, copdept, cop_licenses, cop_gear, cop_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-            if(err) res.sendStatus(400);
-            res.send(result);
-        })
-    })
+            const pid = req.query.pid; // Players ID
+            if(pid === undefined) return res.sendStatus(404);
+
+            sql.query(`SELECT uid, name, coplevel, copdept, cop_licenses, cop_gear, cop_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
+                if(err) res.sendStatus(400);
+                res.send(result);
+            });
+        });
+    });
 
     // Search Police User (By Username)
     app.get('/police/search', (req, res) => {
@@ -63,49 +69,66 @@ const policeController = (app, sql) => {
                     result: result
                 };
                 res.send(response);
-            })
-        })
-    })
+            });
+        });
+    });
 
     // Set Users Police Whitelist Level
     app.post('/police/setLevel', (req, res) => {
         const body = req.body;
         const { pid, level } = body;
-        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            res.sendStatus(200);
-        })
-    })
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 2 && (data.copLevel === 0 && level >= data.copWhitelisting)) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
+
+            sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
+            });
+        });
+    });
 
     // Set Users Police Department
     app.post('/police/setDepartment', (req, res) => {
-        const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET copdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            res.sendStatus(200);
-        })
-    })
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 2 && data.copLevel === 0) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
 
-    // Set Users Police License
-    app.post('/police/setLicense', (req, res) => {
-        const body = req.body;
-        const { pid, license, value } = body;
-
-        sql.query(`SELECT cop_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
-                const split = x.split(',')
-                if (split[0] === `\`${license}\``) return [split[0], parseInt(value)];
-                return [split[0], parseInt(split[1])]
-            })
-            const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`;
-            sql.query(`UPDATE players SET cop_licenses = ? WHERE pid = ?`, [newString, pid] , (err, result) => {
+            const body = req.body;
+            const { pid, level } = body;
+            sql.query(`UPDATE players SET copdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
-            })
-        })
-    })
+            });
+        });
+    });
+
+    // Set Users Police License 
+
+
+
+    // NOT SETUP JUST YET --> WIP
+
+
+    app.post('/police/setLicense', (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 2 && data.copLevel === 0) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
+            const body = req.body;
+            const { pid, license, value } = body;
+
+            sql.query(`SELECT cop_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
+                    const split = x.split(',')
+                    if (split[0] === `\`${license}\``) return [split[0], parseInt(value)];
+                    return [split[0], parseInt(split[1])]
+                })
+                const newString = `"${JSON.stringify(civLicences).replace(/"/g, '')}"`;
+                sql.query(`UPDATE players SET cop_licenses = ? WHERE pid = ?`, [newString, pid] , (err, result) => {
+                    if(err) return res.sendStatus(400);
+                    res.sendStatus(200);
+                });
+            });
+        });
+    });
 };
 
 export default policeController;

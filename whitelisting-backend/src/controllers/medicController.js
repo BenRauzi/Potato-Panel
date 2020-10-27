@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 const medicController = (app, sql) => {
     // Fetch Medic Users 
     app.get('/medic/users', (req, res) => {
@@ -37,14 +39,18 @@ const medicController = (app, sql) => {
 
     // Fetch Medic User
     app.get('/medic/user', (req, res) => {
-        const pid = req.query.pid; // Players ID
-        if(pid === undefined) return res.sendStatus(404);
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 1 && data.emsLevel === 0) return res.sendStatus(401); // Trial Staff+ AND Medic Whitelisting Access
 
-        sql.query(`SELECT uid, name, mediclevel, medicdept, med_licenses, med_gear, med_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
-            if(err) res.sendStatus(400);
-            res.send(result);
-        })
-    })
+            const pid = req.query.pid; // Players ID
+            if(pid === undefined) return res.sendStatus(404);
+
+            sql.query(`SELECT uid, name, mediclevel, medicdept, med_licenses, med_gear, med_stats, last_seen from players WHERE pid = ?`, [pid] , (err, result) => {
+                if(err) res.sendStatus(400);
+                res.send(result);
+            });
+        });
+    });
 
     // Search Medic User (By Username)
     app.get('/medic/search', (req, res) => {
@@ -69,23 +75,33 @@ const medicController = (app, sql) => {
 
     // Set Users Medic Whitelist Level
     app.post('/medic/setLevel', (req, res) => {
-        const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            res.sendStatus(200);
-        })
-    })
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            const body = req.body;
+            const { pid, level } = body;
+            if(data.adminLevel < 2 && (data.emsLevel === 0 && level >= data.emsWhitelisting)) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
+            
+            sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
+            });
+        });
+    });
 
     // Set Users Medic Department
     app.post('/medic/setDepartment', (req, res) => {
-        const body = req.body;
-        const { pid, level } = body;
-        sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            res.sendStatus(200);
-        })
-    })
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(data.adminLevel < 2 && data.emsLevel === 0) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
+
+            const body = req.body;
+            const { pid, level } = body;
+            sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                res.sendStatus(200);
+            });
+        });
+    });
+
+    // Set Users Medic License --> WIP
 };
 
 export default medicController;
