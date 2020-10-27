@@ -98,7 +98,7 @@ const authController = (app, sql) => {
 
                         res.sendStatus(403)
                     } else {
-                        res.clearCookie("authcookie");
+                       
                         
                         const { pid, username, copLevel, adminLevel, emsLevel, 
                             copWhitelisting, emsWhitelisting 
@@ -107,6 +107,8 @@ const authController = (app, sql) => {
                         if(copLevel != data.copLevel || adminLevel != data.adminLevel || emsLevel != data.emsLevel
                             || copWhitelisting != data.copWhitelisting || emsWhitelisting != data.emsWhitelisting
                             ) {
+                                res.clearCookie("authcookie");
+                                
                                 const token = jwt.sign({
                                     user:username, 
                                     pid: pid,
