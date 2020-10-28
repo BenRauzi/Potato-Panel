@@ -79,6 +79,7 @@ const staffController = (app, sql) => {
         const body = req.body;
         const { username, pid, level } = body;
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if (data.pid === pid) return res.sendStatus(403); // Can't edit your own staff rank
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
 
             // Prevent being able to change someones staff rank to the same as yours, or higher UNLESS you are a director :)
