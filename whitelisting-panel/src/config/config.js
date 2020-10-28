@@ -25,6 +25,7 @@ export const copDepartments = {
 };
 
 export const emsRanks = {
+    "Civilian": 0,
     "Volunteer": 1,
     "Trainee": 2,
     "Junior EMT": 3,
@@ -59,6 +60,7 @@ export const staffRanks = {
 };
 
 export const developerRanks = {
+    "No Rank": 0,
     "Trial Developer": 1,
     "Junior Developer": 2,
     "Developer": 3,

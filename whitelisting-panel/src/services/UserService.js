@@ -126,12 +126,13 @@ export const saveEms = async (level, emsdept, pid) => {
     return [res, res2]
 }
 
-export const saveDev = async (level, devdept, pid) => {
-    const levelResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/setLevel/`,  {
+export const saveStaff = async (staffLevel, devLevel, name, pid) => {
+    const staffResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/admin/setLevelP/`,  {
         method: "POST",
         body: JSON.stringify({
             pid: pid,
-            level: level,
+            level: staffLevel,
+            username: name,
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -139,13 +140,13 @@ export const saveDev = async (level, devdept, pid) => {
         credentials: "include"
     })
 
-    const res = await levelResponse.status;
+    const response = await staffResponse.json();
 
-    const deptResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/setDepartment/`,  {
+    const devResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/setLevel/`,  {
         method: "POST",
         body: JSON.stringify({
             pid: pid,
-            level: devdept,
+            level: devLevel,
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -153,9 +154,11 @@ export const saveDev = async (level, devdept, pid) => {
         credentials: "include"
     })
 
-    const res2 = await deptResponse.status;
+    await devResponse.status;
 
-    return [res, res2]
+    if(response.pass)alert(`New Account - Password: ${response.pass}`)
+    if(response.pass) return response.pass;
+    return false
 }
 export default {
     getUsers,
@@ -165,5 +168,5 @@ export default {
     saveMoney,
     saveCop,
     saveEms,
-    saveDev,
+    saveStaff,
 };

@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react';
 import TitleComponent from '../components/title';
-import { getUserById, getUserSteam, saveCop, saveDev, saveEms, saveMoney } from '../services/UserService';
+import { getUserById, getUserSteam, saveCop, saveEms, saveMoney, saveStaff } from '../services/UserService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faIdBadge, faSave, faUniversity, faUserNurse } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faIdBadge, faSave, faUniversity, faUserNurse, faUserTie } from '@fortawesome/free-solid-svg-icons'
 
-import { formatMoney, getCopDept, getCopRank, getDevDept, getDevRank, getEmsDept, getEmsRank } from '../services/HelperService';
-import { copDepartments, copRanks, developerDepartments, developerRanks, emsDepartments, emsRanks } from '../config/config';
+import { formatMoney, getCopDept, getCopRank, getDevRank, getEmsDept, getEmsRank, getStaffRank } from '../services/HelperService';
+import { copDepartments, copRanks, developerRanks, emsDepartments, emsRanks, staffRanks } from '../config/config';
+import UserContext from '../services/UserContext';
 
 const UserPage = ({match}) => {
     const userId = match.params.id;
 
-    const [user, setUser] = React.useState()
+    const { user } = React.useContext(UserContext);
+
+    const [currentUser, setUser] = React.useState()
     const [steamDetails, setSteamDetails] = React.useState({
         "profileName": "None",
         "profileUrl": "#",
@@ -18,16 +21,14 @@ const UserPage = ({match}) => {
     });
     useEffect(() => {
         const getUser = async () => {
-            const user = await getUserById(userId);
-
-            console.log(user)
+            const currentUser = await getUserById(userId);
             
-            setUser(user)
+            setUser(currentUser)
         }
         const getSteam = async () => {
-            const user = await getUserSteam(userId);
+            const currentUser = await getUserSteam(userId);
             
-            setSteamDetails(user)
+            setSteamDetails(currentUser)
         }
         getUser()
         getSteam()
@@ -43,46 +44,46 @@ const UserPage = ({match}) => {
 
     const setCash = (amount) => {
         if(amount > 100000000 || amount < 0) return
-        setUser({...user, cash: parseInt(amount)})
+        setUser({...currentUser, cash: parseInt(amount)})
     }
 
     const setBank = (amount) => {
         if(amount > 100000000 || amount < 0) return
-        setUser({...user, bankacc: parseInt(amount)})
+        setUser({...currentUser, bankacc: parseInt(amount)})
     }
 
     const setCopRank = (rank) => {
-        setUser({...user, copWhitelisting: parseInt(rank)})
+        setUser({...currentUser, copWhitelisting: parseInt(rank)})
     }
 
     const setCopDept = (dept) => {
-        setUser({...user, copdept: parseInt(dept)})
+        setUser({...currentUser, copdept: parseInt(dept)})
     }
 
     const setEmsRank = (rank) => {
-        setUser({...user, medicWhitelisting: parseInt(rank)})
+        setUser({...currentUser, medicWhitelisting: parseInt(rank)})
     }
 
     const setEmsDept = (dept) => {
-        setUser({...user, medicdept: parseInt(dept)})
+        setUser({...currentUser, medicdept: parseInt(dept)})
     }
 
     const setDevRank = (rank) => {
-        setUser({...user, developerlevel: parseInt(rank)})
+        setUser({...currentUser, developerlevel: parseInt(rank)})
     }
 
-    const setDevDept = (dept) => {
-        setUser({...user, developerdept: parseInt(dept)})
+    const setStaffRank = (level) => {
+        setUser({...currentUser, adminlevel: parseInt(level)})
     }
 
-    if(!user) return <></>
+    if(!currentUser) return <></>
     return (
         <>  
-            <TitleComponent title={user.name}/>
+            <TitleComponent title={currentUser.name}/>
             <div className="page-header">
                 <div>
-                    <h1>{user.name}</h1>
-                    Aliases: {user.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}
+                    <h1>{currentUser.name}</h1>
+                    Aliases: {currentUser.aliases.replace(/([^a-z0-9_ ,]+)/gi, '')}
                 </div>
                 <a target="_blank" rel="noopener noreferrer" href={steamDetails.profileUrl} className="steam-profile">
                         <img alt="User Profile" src={steamDetails.avatarUrl}></img>
@@ -105,15 +106,15 @@ const UserPage = ({match}) => {
                         editState.bank === false ?  
                         <div className="tile-info">
                             <span><b>BANK ACCOUNT</b></span>
-                            <span>{formatMoney(user.bankacc)}</span>
+                            <span>{formatMoney(currentUser.bankacc)}</span>
                             <span><b>CASH AMOUNT</b></span>
-                            <span>{formatMoney(user.cash)}</span>
+                            <span>{formatMoney(currentUser.cash)}</span>
                         </div> :
                         <div className="tile-edit">
                           <span><b>BANK ACCOUNT</b></span>
-                          <span><input type="number" value={user.bankacc} onChange={e => setBank(e.target.value)}></input></span>
+                          <span><input type="number" value={currentUser.bankacc} onChange={e => setBank(e.target.value)}></input></span>
                           <span><b>CASH AMOUNT</b></span>
-                          <span><input type="number" value={user.cash} onChange={e => setCash(e.target.value)}></input></span>
+                          <span><input type="number" value={currentUser.cash} onChange={e => setCash(e.target.value)}></input></span>
                         </div>
                     }     
                     
@@ -121,7 +122,7 @@ const UserPage = ({match}) => {
                        if (!editState.bank) return setEditState({...editState, bank: !editState.bank})
 
                        
-                        await saveMoney(user.cash, user.bankacc, userId);
+                        await saveMoney(currentUser.cash, currentUser.bankacc, userId);
 
                         setEditState({...editState, bank: !editState.bank})
                        
@@ -137,14 +138,14 @@ const UserPage = ({match}) => {
                         editState.cop === false ?  
                         <div className="tile-info">
                             <span><b>POLICE RANK</b></span>
-                            <span>{getCopRank(user.copWhitelisting)}</span>
+                            <span>{getCopRank(currentUser.copWhitelisting)}</span>
                             <span><b>POLICE DEPARTMENT</b></span>
-                            <span>{getCopDept(user.copdept)}</span>
+                            <span>{getCopDept(currentUser.copdept)}</span>
                         </div> :
                         <div className="tile-edit">
                         <span><b>POLICE RANK</b></span>
                         <span>
-                            <select value={user.copWhitelisting} onChange={(e) => setCopRank(parseInt(e.target.value))}>
+                            <select value={currentUser.copWhitelisting} onChange={(e) => setCopRank(parseInt(e.target.value))}>
                                 {
                                     Object.entries(copRanks).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
@@ -153,7 +154,7 @@ const UserPage = ({match}) => {
                             </select></span>
                         <span><b>POLICE DEPARTMENT</b></span>
                         <span> 
-                            <select value={user.copdept} onChange={(e) => setCopDept(parseInt(e.target.value))}>
+                            <select value={currentUser.copdept} onChange={(e) => setCopDept(parseInt(e.target.value))}>
                                 {
                                     Object.entries(copDepartments).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
@@ -168,7 +169,7 @@ const UserPage = ({match}) => {
                        if (!editState.cop) return setEditState({...editState, cop: !editState.cop})
 
                        
-                       await saveCop(user.copWhitelisting, user.copdept, userId);
+                       await saveCop(currentUser.copWhitelisting, currentUser.copdept, userId);
 
                        setEditState({...editState, cop: !editState.cop})
                        
@@ -183,14 +184,14 @@ const UserPage = ({match}) => {
                         editState.ems === false ?  
                         <div className="tile-info">
                             <span><b>MEDIC RANK</b></span>
-                            <span>{getEmsRank(user.medicWhitelisting)}</span>
+                            <span>{getEmsRank(currentUser.medicWhitelisting)}</span>
                             <span><b>MEDIC DEPARTMENT</b></span>
-                            <span>{getEmsDept(user.medicdept)}</span>
+                            <span>{getEmsDept(currentUser.medicdept)}</span>
                         </div> :
                         <div className="tile-edit">
                         <span><b>MEDIC RANK</b></span>
                         <span>
-                            <select value={user.medicWhitelisting} onChange={(e) => setEmsRank(parseInt(e.target.value))}>
+                            <select value={currentUser.medicWhitelisting} onChange={(e) => setEmsRank(parseInt(e.target.value))}>
                                 {
                                     Object.entries(emsRanks).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
@@ -199,7 +200,7 @@ const UserPage = ({match}) => {
                             </select></span>
                         <span><b>MEDIC DEPARTMENT</b></span>
                         <span> 
-                            <select value={user.medicdept} onChange={(e) => setEmsDept(parseInt(e.target.value))}>
+                            <select value={currentUser.medicdept} onChange={(e) => setEmsDept(parseInt(e.target.value))}>
                                 {
                                     Object.entries(emsDepartments).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
@@ -210,10 +211,11 @@ const UserPage = ({match}) => {
                         </div>
                     }     
                     
+                    
                    <input type="checkbox" className="tile-check-box" value={editState.ems} onChange={async () => { 
                        if (!editState.ems) return setEditState({...editState, ems: !editState.ems})
 
-                       await saveEms(user.medicWhitelisting, user.medicdept, userId);
+                       await saveEms(currentUser.medicWhitelisting, currentUser.medicdept, userId);
 
                        setEditState({...editState, ems: !editState.ems})
                        
@@ -223,31 +225,36 @@ const UserPage = ({match}) => {
               </div>
 
               <div className="user-tile">
-                    <FontAwesomeIcon className="tile-icon" icon={faUserNurse}/>
-                    {console.log(user)}
+                    <FontAwesomeIcon className="tile-icon" icon={faUserTie}/>
                     {
-                        editState.ems === false ?  
+                        editState.dev === false ?  
                         <div className="tile-info">
+                            <span><b>STAFF RANK</b></span>
+                            <span>{getStaffRank(currentUser.adminlevel || 0)}</span>
                             <span><b>DEVELOPER RANK</b></span>
-                            <span>{getDevRank(user.developerlevel)}</span>
-                            <span><b>DEVELOPER DEPARTMENT</b></span>
-                            <span>{getDevDept(user.developerdept)}</span>
+                            <span>{getDevRank(currentUser.developerlevel)}</span>
                         </div> :
                         <div className="tile-edit">
-                        <span><b>DEVELOPER RANK</b></span>
+                        <span><b>STAFF RANK</b></span>
                         <span>
-                            <select value={user.developerlevel} onChange={(e) => setDevRank(parseInt(e.target.value))}>
+                            <select value={currentUser.adminlevel || 0} onChange={(e) => setStaffRank(parseInt(e.target.value))}>
                                 {
-                                    Object.entries(developerRanks).map((values, idx) => (
+                                    Object.entries(staffRanks).filter(values => {
+                                        if((values[1] < user.adminLevel && user.adminLevel > 4) || user.adminLevel > 6) return true
+                                        return false
+                                    }).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
                                     ))
                                 }
                             </select></span>
-                        <span><b>DEVELOPER DEPARTMENT</b></span>
+                        <span><b>DEVELOPER RANK</b></span>
                         <span> 
-                            <select value={user.developerdept} onChange={(e) => setDevDept(parseInt(e.target.value))}>
+                            <select value={currentUser.developerlevel} onChange={(e) => setDevRank(parseInt(e.target.value))}>
                                 {
-                                    Object.entries(developerDepartments).map((values, idx) => (
+                                    Object.entries(developerRanks ).filter((values) => {
+                                        if(values[1] <= user.developerlevel || user.adminLevel > 4) return true
+                                        return false
+                                    }).map((values, idx) => (
                                         <option key={idx} value={values[1]}>{values[0]}</option>
                                     ))
                                 }
@@ -255,17 +262,24 @@ const UserPage = ({match}) => {
                         </span>
                         </div>
                     }     
-                    
-                   <input type="checkbox" className="tile-check-box" value={editState.dev} onChange={async () => { 
-                       if (!editState.dev) return setEditState({...editState, dev: !editState.dev})
-
-                       await saveDev(user.developerlevel, user.developerdept, userId);
-
-                       setEditState({...editState, dev: !editState.dev})
-                       
-                    }}></input>
-                    <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
-                    <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                    {
+                        user.adminLevel > 4 && (userId !== user.pid || user.adminLevel > 4) && (currentUser.adminlevel || 0) <= user.adminLevel ?
+                        <>
+                            <input type="checkbox" className="tile-check-box" value={editState.dev} onChange={async () => { 
+                                if (!editState.dev) return setEditState({...editState, dev: !editState.dev})
+        
+                                await saveStaff(currentUser.adminlevel, currentUser.developerlevel, currentUser.name, userId);
+        
+                                setEditState({...editState, dev: !editState.dev})
+                                
+                            }}></input>
+                            <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
+                            <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                        </>
+                        :
+                         <></>
+                    }
+                   
               </div>
 
             
