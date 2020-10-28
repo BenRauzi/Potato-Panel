@@ -140,7 +140,7 @@ export const saveStaff = async (staffLevel, devLevel, name, pid) => {
         credentials: "include"
     })
 
-    const response = await staffResponse.json();
+    
 
     const devResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/setLevel/`,  {
         method: "POST",
@@ -155,6 +155,10 @@ export const saveStaff = async (staffLevel, devLevel, name, pid) => {
     })
 
     await devResponse.status;
+
+    const code = staffResponse.status
+    if(code !== 200) return false
+    const response = await staffResponse.json();
 
     if(response.pass)alert(`New Account - Password: ${response.pass}`)
     if(response.pass) return response.pass;
