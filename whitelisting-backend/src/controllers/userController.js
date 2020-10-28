@@ -207,9 +207,6 @@ const userController = (app, sql, sqlAsync) => {
 
     app.get('/user/test', async (req, res) => {
         const result = await sqlAsync.awaitQuery(`SELECT * FROM vehicles WHERE pid = ?`, [`76561198099644981`]);
-
-        console.log(result)
-
         res.send(result)
     })
 };
