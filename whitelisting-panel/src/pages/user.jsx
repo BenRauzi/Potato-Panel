@@ -10,6 +10,10 @@ import UserContext from '../services/UserContext';
 import Licenses from '../components/licenses';
 import VehiclesList from '../components/vehicles';
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
+
 const UserPage = ({match}) => {
     const userId = match.params.id;
 
@@ -103,7 +107,6 @@ const UserPage = ({match}) => {
             <div className="page-row">
               <div className="user-tile">
                     <FontAwesomeIcon className="tile-icon" icon={faUniversity}/>
-                    
                     {
                         editState.bank === false ?  
                         <div className="tile-info">
@@ -120,17 +123,23 @@ const UserPage = ({match}) => {
                         </div>
                     }     
                     
-                   <input type="checkbox" className="tile-check-box" value={editState.bank} onChange={async () => { 
-                       if (!editState.bank) return setEditState({...editState, bank: !editState.bank})
+                   {
+                       user.adminLevel > 3 ? 
+                       <>
+                            <input type="checkbox" className="tile-check-box" value={editState.bank} onChange={async () => { 
+                            if (!editState.bank) return setEditState({...editState, bank: !editState.bank})
 
-                       
-                        await saveMoney(currentUser.cash, currentUser.bankacc, userId);
+                            
+                                await saveMoney(currentUser.cash, currentUser.bankacc, userId);
 
-                        setEditState({...editState, bank: !editState.bank})
-                       
-                    }}></input>
-                    <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
-                    <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                                setEditState({...editState, bank: !editState.bank})
+                            
+                            }}></input>
+                            <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
+                            <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                       </> : <></>
+                   }
+                  
               </div>
 
               <div className="user-tile">
@@ -167,17 +176,23 @@ const UserPage = ({match}) => {
                         </div>
                     }     
                     
-                   <input type="checkbox" className="tile-check-box" value={editState.cop} onChange={async () => { 
-                       if (!editState.cop) return setEditState({...editState, cop: !editState.cop})
+                    {
+                        user.copLevel > 0 || user.adminLevel > 1 ?
+                        <>
+                            <input type="checkbox" className="tile-check-box" value={editState.cop} onChange={async () => { 
+                            if (!editState.cop) return setEditState({...editState, cop: !editState.cop})
 
-                       
-                       await saveCop(currentUser.copWhitelisting, currentUser.copdept, userId);
+                            
+                            await saveCop(currentUser.copWhitelisting, currentUser.copdept, userId);
 
-                       setEditState({...editState, cop: !editState.cop})
-                       
-                    }}></input>
-                    <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
-                    <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                            setEditState({...editState, cop: !editState.cop})
+                            
+                            }}></input>
+                            <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
+                            <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                        </> : <></>
+                    }
+                   
               </div>
 
               <div className="user-tile">
@@ -213,17 +228,23 @@ const UserPage = ({match}) => {
                         </div>
                     }     
                     
-                    
-                   <input type="checkbox" className="tile-check-box" value={editState.ems} onChange={async () => { 
-                       if (!editState.ems) return setEditState({...editState, ems: !editState.ems})
-
-                       await saveEms(currentUser.medicWhitelisting, currentUser.medicdept, userId);
-
-                       setEditState({...editState, ems: !editState.ems})
-                       
-                    }}></input>
-                    <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
-                    <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                    {
+                        user.emsLevel > 0 || user.staffLevel > 1 ?
+                        <>
+                         <input type="checkbox" className="tile-check-box" value={editState.ems} onChange={async () => { 
+                            if (!editState.ems) return setEditState({...editState, ems: !editState.ems})
+     
+                            await saveEms(currentUser.medicWhitelisting, currentUser.medicdept, userId);
+     
+                            setEditState({...editState, ems: !editState.ems})
+                            
+                         }}></input>
+                         <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
+                         <FontAwesomeIcon className="icon-edit" icon={faSave}/>
+                        </>
+                         : <></>
+                    }
+                   
               </div>
 
               <div className="user-tile">
@@ -289,11 +310,40 @@ const UserPage = ({match}) => {
 
             <div className="page-row">
                 <div className="user-info-tab">
-                    <Licenses/>
+                    <Tabs>
+                        <TabList>
+                            <Tab>Licenses</Tab>
+                            <Tab>Support Cases</Tab>
+                        </TabList>
+
+                        <TabPanel>
+                            <Licenses pid={userId}/>
+                        </TabPanel>
+                        <TabPanel>
+                            <h2>Support Cases</h2>
+                        </TabPanel>
+                    </Tabs>
                 </div>
                 <div className="user-info-tab">
+                    <Tabs>
+                        <TabList>
+                            
+                            <Tab>Civilian Vehicles</Tab>
+                            <Tab>Police Vehicles</Tab>
+                            <Tab>Medic Vehicles</Tab>
+                        </TabList>
+
+                        <TabPanel>
+                            <VehiclesList pid={userId} side="civ"/>
+                        </TabPanel>
+                        <TabPanel>
+                            <VehiclesList pid={userId} side="cop"/>
+                        </TabPanel>
+                        <TabPanel>
+                            <VehiclesList pid={userId} side="med"/>
+                        </TabPanel>
+                    </Tabs>
                     
-                    <VehiclesList/>
                 </div>
             </div>
         </>

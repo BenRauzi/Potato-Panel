@@ -1,4 +1,4 @@
-import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments} from "../config/config";
+import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList} from "../config/config";
 
 
 export const formatMoney = (string) => {
@@ -79,6 +79,13 @@ export const getPerms = (level, adminLevel) => {
     }
 }
 
+export const getLicenseName = (code) => {
+
+    for (var [anme, classname] of Object.entries(LicenseList)) {
+        if(classname === code) return anme
+    }
+}
+
 export const getStaffPerms = (level) => {
     if (level >= 6) return "Full Permissions";
     if (level === 5) return "Whitelist";
@@ -95,5 +102,6 @@ export default {
    getCopDept,
    getPerms,
    getDevRank,
-   getDevDept
+   getDevDept,
+   getLicenseName,
 }

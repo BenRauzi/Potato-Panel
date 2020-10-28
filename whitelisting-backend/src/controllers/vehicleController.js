@@ -86,6 +86,17 @@ const vehicleController = (app, sql) => {
             res.sendStatus(200);
         })
     })
+    
+    // Get All Vehicles Belonging to Player
+    app.get('/vehicles/user', (req, res) => {
+        const pid = req.query.pid; // Player ID
+        const side = req.query.side; // Player ID
+        if(pid === undefined) return res.sendStatus(404);
+        sql.query(`SELECT id, side, type, classname, active, vehicles.insured FROM vehicles WHERE pid = ? AND side = ?`, [pid, side.toLowerCase()] , (err, result) => {
+            if(err) res.sendStatus(400);
+            res.send(result);
+        });
+    });
 };
 
 export default vehicleController;

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const devController = (app, sql) => {
+const devController = (app, sql, sqlAsync) => {
     // Fetch Dev Users 
     app.get('/dev/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number

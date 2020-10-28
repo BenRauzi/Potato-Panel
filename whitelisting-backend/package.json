@@ -22,6 +22,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "mysql-async-simple": "^1.0.3",
+    "mysql-await": "^2.1.6",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {

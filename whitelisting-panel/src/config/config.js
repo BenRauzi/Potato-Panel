@@ -85,5 +85,19 @@ export const Whitelist = {
     "Full Perms": 2
 }
 
+export const LicenseList = {
+    "Driving License": "license_civ_driver",
+    "Boat License": "license_civ_boat",
+    "Truck License": "license_civ_trucking",
+    "Gun License": "license_civ_gun",
+    "Diving License": "license_civ_dive",
+    "Home Owners License": "license_civ_home",
+    "Marshal License": "license_civ_marshal",
+    //Licenses are from Active
+    // "Mucker License": "license_civ_mucker",
+    // "Whitewater License": "license_civ_whitewater",
+    "DOJ License": "license_civ_doj",
+}
+
 export const GameSides = ["Any", "Cop", "Civ", "Med"]
 export const VehicleTypes = ["Any", "Air", "Car", "Ship"]

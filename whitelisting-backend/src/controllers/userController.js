@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { checkToken } from "../services/authService";
 import fetch from "node-fetch";
 
-const userController = (app, sql) => {
+const userController = (app, sql, sqlAsync) => {
     // Fetch Generic Users 
     app.get('/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number
@@ -159,7 +159,6 @@ const userController = (app, sql) => {
             if(data.adminLevel < 2) return res.sendStatus(401); // Moderator+
             const body = req.body;
             const { pid, license, value } = body;
-
             sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
@@ -174,6 +173,19 @@ const userController = (app, sql) => {
                 });
             });
         });
+    });
+
+    app.get('/user/licenses', checkToken, (req, res) => {
+            const pid = req.query.pid;
+
+            sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
+                    const split = x.split(',')
+                    return [split[0].replace(/`/g, ''), parseInt(split[1])]
+                })
+                res.send(civLicences)
+            });
     });
 
     // Gets User Steam Profile Details
@@ -192,6 +204,14 @@ const userController = (app, sql) => {
             
         });
     });
+
+    app.get('/user/test', async (req, res) => {
+        const result = await sqlAsync.awaitQuery(`SELECT * FROM vehicles WHERE pid = ?`, [`76561198099644981`]);
+
+        console.log(result)
+
+        res.send(result)
+    })
 };
 
 export default userController;

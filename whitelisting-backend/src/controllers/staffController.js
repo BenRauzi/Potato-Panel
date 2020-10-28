@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { checkToken } from "../services/authService";
 import { hash } from "bcrypt";
 
-const staffController = (app, sql) => {
+const staffController = (app, sql, sqlAsync) => {
     // Fetch Staff Users 
     app.get('/staff/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number

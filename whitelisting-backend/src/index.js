@@ -6,7 +6,7 @@ import cors from 'cors';
 import authController from "./controllers/authController";
 import userController from "./controllers/userController";
 
-import sql from "./services/sqlService";
+import sql, { connectionAsync as sqlAsync} from "./services/sqlService";
 import policeController from "./controllers/policeController";
 import medicController from "./controllers/medicController";
 import staffController from "./controllers/staffController";
@@ -40,10 +40,10 @@ app.get('/api' , (req,res)=>{
 })
 
 // init controllers
-authController(app, sql);
-userController(app, sql);
-policeController(app, sql);
-medicController(app, sql);
-staffController(app, sql);
-devController(app, sql);
-vehicleController(app, sql);
+authController(app, sql, sqlAsync);
+userController(app, sql, sqlAsync);
+policeController(app, sql, sqlAsync);
+medicController(app, sql, sqlAsync);
+staffController(app, sql, sqlAsync);
+devController(app, sql, sqlAsync);
+vehicleController(app, sql, sqlAsync);

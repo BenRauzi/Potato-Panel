@@ -11,7 +11,10 @@
             padding: 10px 20px;
            
         }
-    }   
+    }
+    .padded-table-head {
+        padding: 0 0 6px;
+    }
 }
 
 .table-row {
@@ -290,4 +293,31 @@ input::-webkit-inner-spin-button {
 
 .user-info-tab {
     flex-basis: 50%;
+    margin: 0 0.5%;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.dropdown {
+    width: 150px;
+    padding: 5px 5px 5px;
+}
+
+.add-btn {
+    font-size: 15px;
+    appearance: none;
+    border: none;
+    color: white;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    margin-left: 10px;
+    &:focus {
+        outline: none;
+    }
+}
+
+.nowrap {white-space: nowrap;}
+
+.delete-btn {
+    cursor: pointer;
 }

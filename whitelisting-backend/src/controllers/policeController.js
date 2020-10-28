@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const policeController = (app, sql) => {
+const policeController = (app, sql, sqlAsync) => {
     // Fetch Police Users 
     app.get('/police/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number

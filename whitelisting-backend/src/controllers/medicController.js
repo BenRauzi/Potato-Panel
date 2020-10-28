@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const medicController = (app, sql) => {
+const medicController = (app, sql, sqlAsync) => {
     // Fetch Medic Users 
     app.get('/medic/users', (req, res) => {
         const pageN = req.query.p || 1; // Page Number

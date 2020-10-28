@@ -21,6 +21,23 @@ export const searchVehicles = async (term, page, pageLength, side, type) => {
     return res
 }
 
+export const removeVehicle = async (uid) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/vehicle/remove`,  {
+        method: "POST",
+        body: JSON.stringify({
+            vehicleID: uid
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: "include"
+    })
+
+    const res = await response.json();
+
+    return res
+}
+
 export default {
     getVehicles,
     searchVehicles
