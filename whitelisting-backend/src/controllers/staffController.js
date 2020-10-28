@@ -106,7 +106,7 @@ const staffController = (app, sql, sqlAsync) => {
 
                         sql.query(`UPDATE panel_users SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                             if(err) return res.sendStatus(400);
-                            res.sendStatus(200);
+                            res.send({});
                         });
                     });
                 };
