@@ -4,7 +4,7 @@ nav {
     bottom: 0;
     width: 90px;
     background-color: $bg-tertiary;
-
+    z-index: 99;
     overflow: hidden;
     transition: width ease 600ms;
     ul {

@@ -1,4 +1,5 @@
 export const copRanks = {
+    "Civilian": 0,
     "Trainee": 1,
     "Deputy": 2,
     "Senior Deputy": 3,
