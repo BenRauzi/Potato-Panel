@@ -38,7 +38,7 @@ const userController = (app, sql) => {
             players.medicdept, 
             players.donorlevel,
             players.arrested, 
-            players.playtime, players.jail_time, players.developerlevel,
+            players.playtime, players.jail_time, players.developerlevel, players.developerdept,
             players.last_seen, players.insert_time`;
 
             const adminTerms = ['players.cash', 'players.bankacc', 'players.civ_licenses', 'players.civ_gear', 'players.exp_perks', 'players.blacklist', 'panel_users.adminlevel'];
@@ -102,7 +102,7 @@ const userController = (app, sql) => {
     });
 
     // Set Users Cash Amount
-    app.post('/user/setCash', (req, res) => {
+    app.post('/user/setCash', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -115,7 +115,7 @@ const userController = (app, sql) => {
     });
 
     // Set Users Bank Amount
-    app.post('/user/setBank', (req, res) => {
+    app.post('/user/setBank', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -128,7 +128,7 @@ const userController = (app, sql) => {
     });
 
     // Set Users Bank & Cash Amount
-    app.post('/user/setFinance', (req, res) => {
+    app.post('/user/setFinance', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -141,7 +141,7 @@ const userController = (app, sql) => {
     });
 
     // Compensate User (Bank Account)
-    app.post('/user/compensate', (req, res) => {
+    app.post('/user/compensate', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -154,7 +154,7 @@ const userController = (app, sql) => {
     });
 
     // Set Users Civilian License
-    app.post('/user/setLicense', (req, res) => {
+    app.post('/user/setLicense', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 2) return res.sendStatus(401); // Moderator+
             const body = req.body;
