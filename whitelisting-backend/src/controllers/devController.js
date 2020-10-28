@@ -52,6 +52,16 @@ const devController = (app, sql) => {
             res.sendStatus(200);
         });
     });
+
+    // Set Users Developer Department Level
+    app.post('/dev/setDepartment', (req, res) => {
+        const body = req.body;
+        const { pid, level } = body;
+        sql.query(`UPDATE players SET developerdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            if(err) return res.sendStatus(400);
+            res.sendStatus(200);
+        });
+    });
 };
 
 export default devController;
