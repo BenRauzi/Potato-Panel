@@ -81,6 +81,7 @@ const UserPage = ({match}) => {
     const setStaffRank = (level) => {
         setUser({...currentUser, adminlevel: parseInt(level)})
     }
+    
     if(!currentUser) return <></>
     return (
         <>  
