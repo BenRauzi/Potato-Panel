@@ -106,7 +106,7 @@ const UserPage = ({match}) => {
 
             <div className="page-row">
                 {
-                    currentUser.bankacc ? 
+                    currentUser.bankacc !== undefined ? 
                     
                     <div className="user-tile">
                     <FontAwesomeIcon className="tile-icon" icon={faUniversity}/>
@@ -251,7 +251,6 @@ const UserPage = ({match}) => {
                     }
                    
               </div>
-
               <div className="user-tile">
                     <FontAwesomeIcon className="tile-icon" icon={faUserTie}/>
                     {
