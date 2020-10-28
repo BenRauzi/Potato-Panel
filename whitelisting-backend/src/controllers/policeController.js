@@ -76,106 +76,70 @@ const policeController = (app, sql, sqlAsync) => {
     });
 
 
-    const hasPermission = (adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, newPoliceLevel) => {
+    const hasPermission = async (adminsPID, usersPID, newPoliceLevel) => {
         console.log("Started");
 
-        if(adminsPoliceLevel >= 6 && newPoliceLevel < adminsPoliceLevel) {
-            // Whitelist user
-            console.log("User whitelisted");
-            return true;
-        } else {
-            if (adminsStaffLevel < 2) return false // Sorry you cannot whitelist
-            if (adminsStaffLevel === 2 && newPoliceLevel > 5) return false // Moderators can't whitelist users higher than level 5
-            if (adminsStaffLevel === 3 && newPoliceLevel > 7) return false // Administrators can't whitelist users higher than level 7
-            
-            // Whitelist
-            return true;
+        // Gather Admin Users Data
+        try {
+            const adminUserResult = await sqlAsync.awaitQuery("SELECT panel_users.adminLevel, players.coplevel FROM panel_users INNER JOIN players ON panel_users.pid = players.pid WHERE players.pid = ?", [adminsPID]);
+            const userResult = await sqlAsync.awaitQuery("SELECT coplevel FROM players WHERE players.pid = ?", [usersPID]);
+            const adminsStaffLevel = adminUserResult[0].adminLevel;
+            const adminsPoliceLevel = adminUserResult[0].coplevel;
+            const usersPoliceLevel = userResult[0].coplevel;
+
+            if(adminsPoliceLevel >= 6 && newPoliceLevel < adminsPoliceLevel) {
+                // Whitelist user
+                return true;
+            } else {
+                if (adminsStaffLevel < 2) return false // Sorry you cannot whitelist
+                if (adminsStaffLevel === 2 && newPoliceLevel > 5) return false // Moderators can't whitelist users higher than level 5
+                if (adminsStaffLevel === 3 && newPoliceLevel > 7) return false // Administrators can't whitelist users higher than level 7
+                
+                // Whitelist
+                return true;
+            };
+        } catch (error) {
+            return false;
         };
     };
 
 
     // Set Users Police Whitelist Level
-    app.post('/police/setLevel', checkToken, (req, res) => {
+    app.post('/police/setLevel', checkToken, async (req, res) => {
         const body = req.body;
         const { username, pid, level } = body;
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
 
-        // Gather Admin Users Data
-        sql.query("SELECT panel_users.adminLevel, players.coplevel FROM panel_users INNER JOIN players ON panel_users.pid = players.pid WHERE players.pid = ?", [data.pid] , (err, result) => {
-            if(err) return res.sendStatus(400);
-            const adminsStaffLevel = result[0].adminLevel;
-            const adminsPoliceLevel = result[0].coplevel;
+            const permission = await hasPermission(data.pid, pid, level);
+            if(!permission) return res.sendStatus(401);
 
-            // Gather Users Data
-            sql.query("SELECT coplevel FROM players WHERE players.pid = ?", [pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
-                const usersPoliceLevel = result[0].coplevel;
-
-                console.log("Admins Staff Level: " + adminsStaffLevel);
-                console.log("Admins Police Level: " + adminsPoliceLevel);
-                console.log("Users Police Level: " + usersPoliceLevel);
-
-                console.log(hasPermission(adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, level));
-            });
-        });
-
-            return res.sendStatus(301);
+            if(data.adminLevel < 3 && data.pid === pid) return res.sendStatus(403); // Can't edit your own police rank unless you are Admin+
 
 
+            try {
 
+                // Check if user already has an account on the panel
+                const checkUserHasPanelAccount = await sqlAsync.awaitQuery("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid]);
 
-            //if ((data.adminLevel < 2  && data.copLevel === 0)) return res.sendStatus(401); // Moderator+ OR Cop Whitelisting Access
-            //if (data.adminLevel < 3 && level >= data.copWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own cop level, unless you are Admin+
-
-            if (data.adminLevel < 3 && data.pid === pid) return res.sendStatus(403); // Can't edit your own police rank unless you are a staff Admin+
-
-            // Moderator (2): -> Sgt (5)
-            // Administrator (3): -> Cpt (7)
-            // Senior Admin (4): -> Higher
-            // Lieutenant+ (6)
-
-            if(data.adminLevel < 2 && data.copWhitelisting < 6) return res.sendStatus(401); // Can't whitelist anyone if you aren't a staff Moderator+ or police Lieutenant+
-            
-            if (data.adminLevel === 2 && level > 5) return res.sendStatus(401);
-            if (data.adminLevel === 3 && level > 7) return res.sendStatus(401);
-            if (data.adminLevel < 2 && data.copWhitelisting <= level) return res.sendStatus(401);
-
-            //sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-            //    if(err) return res.sendStatus(400);
-            //    res.sendStatus(200);
-            //});
-
-            sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
-                if(result[0]["COUNT(*)"] === 0) {
-                    const pass = (Math.floor(Math.random() * 999999) + 100000).toString();
-                    const hashedPassword = hash(pass, 10,(err, hashed) => {
-                        sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, 0, ?, 0)", [pid, username, hashed, level], (err, result) => {
-                            if(err) return res.sendStatus(400);
-                            res.send({pass : pass});
+                if(checkUserHasPanelAccount[0]["COUNT(*)"] === 0) {
+                    // Check if user is getting whitelisted to Lieutenant+, if so create a panel account for them
+                    if(level >= 6) {
+                        const generatedPassword = (Math.floor(Math.random() * 999999) + 100000).toString();
+                        const hashedPassword = hash(generatedPassword, 10, async (err, hashed) => {
+                            const createAccount = await sqlAsync.awaitQuery("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, 0, ?, 0)", [pid, username, hashed, level]);
+                            res.send({pass : generatedPassword});
                         });
-                    });
+                    };
                 } else {
-                    // USER ALREADY HAS PANEL ACCOUNT --> CHANGE PANEL ACCOUNT STAFF RANK
-
-                    sql.query("SELECT coplevel FROM players WHERE pid = ?", [pid] , (err, result) => {
-                        if(err) return res.sendStatus(400);
-                        const usersCurLevel = result[0].coplevel;
-
-                        // First check if the user is allowed to change their rank (eg. admins can't edit directors staff rank)
-                        if ((data.copWhitelisting !== 9 && data.adminLevel < 2) && (data.copWhitelisting <= usersCurLevel)) return res.sendStatus(401);
-
-                        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-                            if(err) return res.sendStatus(400);
-                            res.sendStatus(200);
-                        });
-                    });
+                    const updatePanelUsersPoliceLevel = await sqlAsync.awaitQuery("UPDATE panel_users SET copLevel = ? WHERE pid = ?", [...(level === 0 ? [0] : level < 8 ? [1] : [2]), pid]);
                 };
-                // edit ingame admin level (SA+ get level 2)          ${level === 3 ? 1 : level > 3 ? 2 : 0
-                sql.query(`UPDATE panel_users SET copLevel = ? WHERE pid = ?`, [...(level === 0 ? [0] : level < 8 ? [1] : [2]), pid] , (err, result) => {
-                    if(err) return console.log(err);
-                    //res.sendStatus(200);
-                });
-            }); 
+                
+                const updateIngamePoliceLevel = await sqlAsync.awaitQuery("UPDATE players SET coplevel = ? WHERE pid = ?", [level, pid]);
+                res.send({});
+
+            } catch (error) {
+                return false;
+            };
         });
     });
 
