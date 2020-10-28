@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import { checkToken } from "../services/authService";
+import { hash } from "bcrypt";
 
 const policeController = (app, sql, sqlAsync) => {
     // Fetch Police Users 
@@ -73,18 +75,107 @@ const policeController = (app, sql, sqlAsync) => {
         });
     });
 
-    // Set Users Police Whitelist Level
-    app.post('/police/setLevel', (req, res) => {
-        const body = req.body;
-        const { pid, level } = body;
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if ((data.adminLevel < 2  && data.copLevel === 0)) return res.sendStatus(401); // Moderator+ OR Cop Whitelisting Access
-            if (data.adminLevel < 3 && level >= data.copWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own cop level, unless you are Admin+
 
-            sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+    const hasPermission = (adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, newPoliceLevel) => {
+        console.log("Started");
+
+        if(adminsPoliceLevel >= 6 && newPoliceLevel < adminsPoliceLevel) {
+            // Whitelist user
+            console.log("User whitelisted");
+            return true;
+        } else {
+            if (adminsStaffLevel < 2) return false // Sorry you cannot whitelist
+            if (adminsStaffLevel === 2 && newPoliceLevel > 5) return false // Moderators can't whitelist users higher than level 5
+            if (adminsStaffLevel === 3 && newPoliceLevel > 7) return false // Administrators can't whitelist users higher than level 7
+            
+            // Whitelist
+            return true;
+        };
+    };
+
+
+    // Set Users Police Whitelist Level
+    app.post('/police/setLevel', checkToken, (req, res) => {
+        const body = req.body;
+        const { username, pid, level } = body;
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+
+        // Gather Admin Users Data
+        sql.query("SELECT panel_users.adminLevel, players.coplevel FROM panel_users INNER JOIN players ON panel_users.pid = players.pid WHERE players.pid = ?", [data.pid] , (err, result) => {
+            if(err) return res.sendStatus(400);
+            const adminsStaffLevel = result[0].adminLevel;
+            const adminsPoliceLevel = result[0].coplevel;
+
+            // Gather Users Data
+            sql.query("SELECT coplevel FROM players WHERE players.pid = ?", [pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
-                res.sendStatus(200);
+                const usersPoliceLevel = result[0].coplevel;
+
+                console.log("Admins Staff Level: " + adminsStaffLevel);
+                console.log("Admins Police Level: " + adminsPoliceLevel);
+                console.log("Users Police Level: " + usersPoliceLevel);
+
+                console.log(hasPermission(adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, level));
             });
+        });
+
+            return res.sendStatus(301);
+
+
+
+
+            //if ((data.adminLevel < 2  && data.copLevel === 0)) return res.sendStatus(401); // Moderator+ OR Cop Whitelisting Access
+            //if (data.adminLevel < 3 && level >= data.copWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own cop level, unless you are Admin+
+
+            if (data.adminLevel < 3 && data.pid === pid) return res.sendStatus(403); // Can't edit your own police rank unless you are a staff Admin+
+
+            // Moderator (2): -> Sgt (5)
+            // Administrator (3): -> Cpt (7)
+            // Senior Admin (4): -> Higher
+            // Lieutenant+ (6)
+
+            if(data.adminLevel < 2 && data.copWhitelisting < 6) return res.sendStatus(401); // Can't whitelist anyone if you aren't a staff Moderator+ or police Lieutenant+
+            
+            if (data.adminLevel === 2 && level > 5) return res.sendStatus(401);
+            if (data.adminLevel === 3 && level > 7) return res.sendStatus(401);
+            if (data.adminLevel < 2 && data.copWhitelisting <= level) return res.sendStatus(401);
+
+            //sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+            //    if(err) return res.sendStatus(400);
+            //    res.sendStatus(200);
+            //});
+
+            sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
+                if(result[0]["COUNT(*)"] === 0) {
+                    const pass = (Math.floor(Math.random() * 999999) + 100000).toString();
+                    const hashedPassword = hash(pass, 10,(err, hashed) => {
+                        sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, 0, ?, 0)", [pid, username, hashed, level], (err, result) => {
+                            if(err) return res.sendStatus(400);
+                            res.send({pass : pass});
+                        });
+                    });
+                } else {
+                    // USER ALREADY HAS PANEL ACCOUNT --> CHANGE PANEL ACCOUNT STAFF RANK
+
+                    sql.query("SELECT coplevel FROM players WHERE pid = ?", [pid] , (err, result) => {
+                        if(err) return res.sendStatus(400);
+                        const usersCurLevel = result[0].coplevel;
+
+                        // First check if the user is allowed to change their rank (eg. admins can't edit directors staff rank)
+                        if ((data.copWhitelisting !== 9 && data.adminLevel < 2) && (data.copWhitelisting <= usersCurLevel)) return res.sendStatus(401);
+
+                        sql.query(`UPDATE players SET coplevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                            if(err) return res.sendStatus(400);
+                            res.sendStatus(200);
+                        });
+                    });
+                };
+                // edit ingame admin level (SA+ get level 2)          ${level === 3 ? 1 : level > 3 ? 2 : 0
+                sql.query(`UPDATE panel_users SET copLevel = ? WHERE pid = ?`, [...(level === 0 ? [0] : level < 8 ? [1] : [2]), pid] , (err, result) => {
+                    if(err) return console.log(err);
+                    //res.sendStatus(200);
+                });
+            }); 
         });
     });
 
