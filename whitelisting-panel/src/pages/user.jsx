@@ -263,7 +263,7 @@ const UserPage = ({match}) => {
                         </div>
                     }     
                     {
-                        user.adminLevel > 4 && (userId !== user.pid || user.adminLevel > 4) && (currentUser.adminlevel || 0) <= user.adminLevel ?
+                        user.adminLevel > 4 && userId !== user.pid && (currentUser.adminlevel || 0) <= user.adminLevel ?
                         <>
                             <input type="checkbox" className="tile-check-box" value={editState.dev} onChange={async () => { 
                                 if (!editState.dev) return setEditState({...editState, dev: !editState.dev})
