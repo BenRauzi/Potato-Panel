@@ -78,47 +78,43 @@ const staffController = (app, sql) => {
     app.post('/admin/setLevelP', checkToken, (req, res) => {
         const body = req.body;
         const { username, pid, level } = body;
-        console.log(username);
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 4) return res.sendStatus(401); // Trial Staff+
+            if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
 
-            // Check if user can change admin level, then make sure it's not higher than their own unless they are director
-            
+            // Prevent being able to change someones staff rank to the same as yours, or higher UNLESS you are a director :)
+            if (data.adminLevel !== 7 && (data.adminLevel <= level)) return res.sendStatus(401);
 
             sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
                 if(result[0]["COUNT(*)"] === 0) {
                     const pass = (Math.floor(Math.random() * 999999) + 100000).toString();
                     const hashedPassword = hash(pass, 10,(err, hashed) => {
-                        console.log(hashed);
                         sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, ?, 0, 0)", [pid, username, hashed, level], (err, result) => {
-                            console.log(err);
                             if(err) return res.sendStatus(400);
                             res.send({pass : pass});
                         });
                     });
                 } else {
-                    // edit ingame admin level (SA+ get level 2)          ${level === 3 ? 1 : level > 3 ? 2 : 0}
-                    sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [...(level === 3 ? [1] : level > 3 ? [2] : [0]), pid] , (err, result) => {
+                    // USER ALREADY HAS PANEL ACCOUNT --> CHANGE PANEL ACCOUNT STAFF RANK
+
+                    sql.query("SELECT adminLevel FROM panel_users WHERE pid = ?", [pid] , (err, result) => {
                         if(err) return res.sendStatus(400);
-                        res.send({});
+                        const usersCurLevel = result[0].adminLevel;
+
+                        // First check if the user is allowed to change their rank (eg. admins can't edit directors staff rank)
+                        if (data.adminLevel !== 7 && (data.adminLevel <= usersCurLevel)) return res.sendStatus(401);
+
+                        sql.query(`UPDATE panel_users SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                            if(err) return res.sendStatus(400);
+                            res.sendStatus(200);
+                        });
                     });
                 };
-
-
+                // edit ingame admin level (SA+ get level 2)          ${level === 3 ? 1 : level > 3 ? 2 : 0}
+                sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [...(level === 3 ? [1] : level > 3 ? [2] : [0]), pid] , (err, result) => {
+                    if(err) return console.log(err);
+                    //res.sendStatus(200);
+                });
             });     
-
-
-            //sql.query(`UPDATE panel_users SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-//
-            //    if(level > 1) {
-            //        sql.query(`UPDATE player SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-//
-            //        });
-            //    };
-//
-            //    if(err) return res.sendStatus(400);
-            //    res.sendStatus(200);
-            //});
         });
     });
 };
