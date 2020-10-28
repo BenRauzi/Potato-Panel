@@ -75,11 +75,55 @@ const policeController = (app, sql) => {
         });
     });
 
+
+    const hasPermission = (adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, newPoliceLevel) => {
+        console.log("Started");
+
+        if(adminsPoliceLevel >= 6 && newPoliceLevel < adminsPoliceLevel) {
+            // Whitelist user
+            console.log("User whitelisted");
+            return true;
+        } else {
+            if (adminsStaffLevel < 2) return false // Sorry you cannot whitelist
+            if (adminsStaffLevel === 2 && newPoliceLevel > 5) return false // Moderators can't whitelist users higher than level 5
+            if (adminsStaffLevel === 3 && newPoliceLevel > 7) return false // Administrators can't whitelist users higher than level 7
+            
+            // Whitelist
+            return true;
+        };
+    };
+
+
     // Set Users Police Whitelist Level
     app.post('/police/setLevel', checkToken, (req, res) => {
         const body = req.body;
         const { username, pid, level } = body;
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+
+        // Gather Admin Users Data
+        sql.query("SELECT panel_users.adminLevel, players.coplevel FROM panel_users INNER JOIN players ON panel_users.pid = players.pid WHERE players.pid = ?", [data.pid] , (err, result) => {
+            if(err) return res.sendStatus(400);
+            const adminsStaffLevel = result[0].adminLevel;
+            const adminsPoliceLevel = result[0].coplevel;
+
+            // Gather Users Data
+            sql.query("SELECT coplevel FROM players WHERE players.pid = ?", [pid] , (err, result) => {
+                if(err) return res.sendStatus(400);
+                const usersPoliceLevel = result[0].coplevel;
+
+                console.log("Admins Staff Level: " + adminsStaffLevel);
+                console.log("Admins Police Level: " + adminsPoliceLevel);
+                console.log("Users Police Level: " + usersPoliceLevel);
+
+                console.log(hasPermission(adminsStaffLevel, adminsPoliceLevel, usersPoliceLevel, level));
+            });
+        });
+
+            return res.sendStatus(301);
+
+
+
+
             //if ((data.adminLevel < 2  && data.copLevel === 0)) return res.sendStatus(401); // Moderator+ OR Cop Whitelisting Access
             //if (data.adminLevel < 3 && level >= data.copWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own cop level, unless you are Admin+
 
