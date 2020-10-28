@@ -81,7 +81,6 @@ const UserPage = ({match}) => {
     const setStaffRank = (level) => {
         setUser({...currentUser, adminlevel: parseInt(level)})
     }
-
     if(!currentUser) return <></>
     return (
         <>  
@@ -105,7 +104,10 @@ const UserPage = ({match}) => {
 
 
             <div className="page-row">
-              <div className="user-tile">
+                {
+                    currentUser.bankacc ? 
+                    
+                    <div className="user-tile">
                     <FontAwesomeIcon className="tile-icon" icon={faUniversity}/>
                     {
                         editState.bank === false ?  
@@ -116,16 +118,16 @@ const UserPage = ({match}) => {
                             <span>{formatMoney(currentUser.cash)}</span>
                         </div> :
                         <div className="tile-edit">
-                          <span><b>BANK ACCOUNT</b></span>
-                          <span><input type="number" value={currentUser.bankacc} onChange={e => setBank(e.target.value)}></input></span>
-                          <span><b>CASH AMOUNT</b></span>
-                          <span><input type="number" value={currentUser.cash} onChange={e => setCash(e.target.value)}></input></span>
+                        <span><b>BANK ACCOUNT</b></span>
+                        <span><input type="number" value={currentUser.bankacc} onChange={e => setBank(e.target.value)}></input></span>
+                        <span><b>CASH AMOUNT</b></span>
+                        <span><input type="number" value={currentUser.cash} onChange={e => setCash(e.target.value)}></input></span>
                         </div>
                     }     
                     
-                   {
-                       user.adminLevel > 3 ? 
-                       <>
+                {
+                    user.adminLevel > 3 ? 
+                    <>
                             <input type="checkbox" className="tile-check-box" value={editState.bank} onChange={async () => { 
                             if (!editState.bank) return setEditState({...editState, bank: !editState.bank})
 
@@ -137,10 +139,12 @@ const UserPage = ({match}) => {
                             }}></input>
                             <FontAwesomeIcon className="icon-no-edit" icon={faEdit}/>
                             <FontAwesomeIcon className="icon-edit" icon={faSave}/>
-                       </> : <></>
-                   }
-                  
-              </div>
+                    </> : <></>
+                }
+                
+                </div> :<></>
+                }
+                
 
               <div className="user-tile">
                     <FontAwesomeIcon className="tile-icon" icon={faIdBadge}/>
