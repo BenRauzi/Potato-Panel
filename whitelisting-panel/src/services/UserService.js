@@ -127,7 +127,7 @@ export const saveEms = async (level, emsdept, pid) => {
 }
 
 export const saveStaff = async (staffLevel, devLevel, name, pid) => {
-    const staffResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/staff/setLevelP/`,  {
+    const staffResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/admin/setLevelP/`,  {
         method: "POST",
         body: JSON.stringify({
             pid: pid,
@@ -140,7 +140,7 @@ export const saveStaff = async (staffLevel, devLevel, name, pid) => {
         credentials: "include"
     })
 
-    const res = await staffResponse.status;
+    const response = await staffResponse.json();
 
     const devResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/dev/setLevel/`,  {
         method: "POST",
@@ -154,11 +154,11 @@ export const saveStaff = async (staffLevel, devLevel, name, pid) => {
         credentials: "include"
     })
 
-    const res2 = await devResponse.status;
+    await devResponse.status;
 
-    console.log(res, res2)
-
-    return [res, res2]
+    if(response.pass)alert(`New Account - Password: ${response.pass}`)
+    if(response.pass) return response.pass;
+    return false
 }
 export default {
     getUsers,

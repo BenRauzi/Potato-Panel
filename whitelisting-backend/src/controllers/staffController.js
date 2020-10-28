@@ -100,7 +100,7 @@ const staffController = (app, sql) => {
                     // edit ingame admin level (SA+ get level 2)          ${level === 3 ? 1 : level > 3 ? 2 : 0}
                     sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [...(level === 3 ? [1] : level > 3 ? [2] : [0]), pid] , (err, result) => {
                         if(err) return res.sendStatus(400);
-                        res.sendStatus(200);
+                        res.send({});
                     });
                 };
 

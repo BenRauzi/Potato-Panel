@@ -66,7 +66,7 @@ const Staff = () => {
                     Minimum Rank: 
                     <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
                         {
-                            Object.entries(staffRanks).map((values, idx) => (
+                            Object.entries(staffRanks).slice(1).map((values, idx) => (
                                 <option key={idx} value={values[1]}>{values[0]}</option>
                             ))
                         }

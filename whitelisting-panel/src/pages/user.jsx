@@ -237,33 +237,33 @@ const UserPage = ({match}) => {
                         <div className="tile-edit">
                         <span><b>STAFF RANK</b></span>
                         <span>
-                            <select value={currentUser.adminlevel} onChange={(e) => setStaffRank(parseInt(e.target.value))}>
+                            <select value={currentUser.adminlevel || 0} onChange={(e) => setStaffRank(parseInt(e.target.value))}>
                                 {
-                                    Object.entries(staffRanks).map((values, idx) => {
-                                        if((values[1] < user.adminLevel && user.adminLevel > 4) || user.adminLevel > 6) return (
-                                            <option key={idx} value={values[1]}>{values[0]}</option>
-                                        )
-                                        return <></>
-                                    })
+                                    Object.entries(staffRanks).filter(values => {
+                                        if((values[1] < user.adminLevel && user.adminLevel > 4) || user.adminLevel > 6) return true
+                                        return false
+                                    }).map((values, idx) => (
+                                        <option key={idx} value={values[1]}>{values[0]}</option>
+                                    ))
                                 }
                             </select></span>
                         <span><b>DEVELOPER RANK</b></span>
                         <span> 
                             <select value={currentUser.developerlevel} onChange={(e) => setDevRank(parseInt(e.target.value))}>
                                 {
-                                    Object.entries(developerRanks ).map((values, idx) => {
-                                        if(values[1] <= user.developerlevel || user.adminLevel > 4) return (
-                                            <option key={idx} value={values[1]}>{values[0]}</option>
-                                        )
-                                       return <></>
-                                    })
+                                    Object.entries(developerRanks ).filter((values) => {
+                                        if(values[1] <= user.developerlevel || user.adminLevel > 4) return true
+                                        return false
+                                    }).map((values, idx) => (
+                                        <option key={idx} value={values[1]}>{values[0]}</option>
+                                    ))
                                 }
                             </select>
                         </span>
                         </div>
                     }     
                     {
-                        user.adminLevel > 3 && (userId !== user.pid || user.adminLevel > 3) && (currentUser.adminlevel || 0) <= user.adminLevel ?
+                        user.adminLevel > 4 && (userId !== user.pid || user.adminLevel > 4) && (currentUser.adminlevel || 0) <= user.adminLevel ?
                         <>
                             <input type="checkbox" className="tile-check-box" value={editState.dev} onChange={async () => { 
                                 if (!editState.dev) return setEditState({...editState, dev: !editState.dev})

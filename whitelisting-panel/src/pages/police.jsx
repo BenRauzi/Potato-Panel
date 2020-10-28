@@ -65,7 +65,7 @@ const Police = () => {
                    Minimum Rank: 
                     <select value={minRank} onChange={(e) => setMinRank(parseInt(e.target.value))}>
                         {
-                            Object.entries(copRanks).map((values, idx) => (
+                            Object.entries(copRanks).slice(1).map((values, idx) => (
                                 <option key={idx} value={values[1]}>{values[0]}</option>
                             ))
                         }
