@@ -1,5 +1,6 @@
 
 .table {
+    
     width: 100%;
     .table-head {
         display: flex;
@@ -172,7 +173,7 @@ h1 {
 .steam-profile {
     color: white;
     text-decoration: none;
-    margin-right: 50px;
+    margin-right: 10px;
     width: 300px;
     background: $bg-tertiary;
     border-radius: 5px;
@@ -285,4 +286,8 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.user-info-tab {
+    flex-basis: 50%;
 }

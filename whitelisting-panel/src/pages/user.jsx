@@ -7,6 +7,8 @@ import { faEdit, faIdBadge, faSave, faUniversity, faUserNurse, faUserTie } from 
 import { formatMoney, getCopDept, getCopRank, getDevRank, getEmsDept, getEmsRank, getStaffRank } from '../services/HelperService';
 import { copDepartments, copRanks, developerRanks, emsDepartments, emsRanks, staffRanks } from '../config/config';
 import UserContext from '../services/UserContext';
+import Licenses from '../components/licenses';
+import VehiclesList from '../components/vehicles';
 
 const UserPage = ({match}) => {
     const userId = match.params.id;
@@ -283,6 +285,16 @@ const UserPage = ({match}) => {
               </div>
 
             
+            </div>
+
+            <div className="page-row">
+                <div className="user-info-tab">
+                    <Licenses/>
+                </div>
+                <div className="user-info-tab">
+                    
+                    <VehiclesList/>
+                </div>
             </div>
         </>
 
