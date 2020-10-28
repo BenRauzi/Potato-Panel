@@ -56,7 +56,7 @@ export const saveMoney = async (cash, bank, pid) => {
         credentials: "include"
     })
 
-    const res = await response.status();
+    const res = await response.status;
 
     return res
 }
@@ -64,5 +64,6 @@ export default {
     getUsers,
     searchUsers,
     getUserById,
-    getUserSteam
+    getUserSteam,
+    saveMoney
 };
