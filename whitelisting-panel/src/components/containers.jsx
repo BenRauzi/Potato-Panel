@@ -42,7 +42,7 @@ export const Containers = ({pid}) => {
                     }
                 </> : 
                 <div className="table-row">
-                    <div>No results found</div>
+                    <div>No Containers Found</div>
                 </div>
             }
         </div>

@@ -37,7 +37,7 @@ const VehiclesList = ({pid, side}) => {
                 {
                     vehicles.length === 0 ?
                     <div className="table-row">
-                    <div>No vehicles found</div>
+                    <div>No Vehicles Found</div>
                     </div> :
                     <>
                         {

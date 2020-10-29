@@ -61,7 +61,7 @@ const Licenses = ({pid}) => {
           <div className="table">
             <div className="table-head">
                 <div>Name</div>
-                <div>Id</div>
+                <div>ID</div>
                 <div className="nowrap">
                     
                 <select className="dropdown" value={currentLicense} onChange={(e) => setCurrentLicense(e.target.value)}>
@@ -79,7 +79,7 @@ const Licenses = ({pid}) => {
             {
                 licenses.length === 0 ?
                 <div className="table-row">
-                    <div>No licenses found</div>
+                    <div>No Licenses Found</div>
                 </div> :
                 <>
                     {
