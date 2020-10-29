@@ -33,7 +33,7 @@ const userController = (app, sql, sqlAsync) => {
             const copLevel = newData.copLevel || 0;
             const emsLevel = newData.emsLevel || 0;
             
-            let queryString = `SELECT name, players.aliases, players.exp_level,
+            let queryString = `SELECT name, players.aliases, players.exp_level, players.exp_perkPoints, exp_perks,
             players.coplevel AS copWhitelisting, players.copdept, players.mediclevel AS medicWhitelisting, 
             players.medicdept, 
             players.donorlevel,
@@ -67,15 +67,10 @@ const userController = (app, sql, sqlAsync) => {
             FROM players
             LEFT OUTER JOIN panel_users ON panel_users.pid = players.pid
             WHERE players.pid = ?`;
-
+            
             sql.query(queryString, [pid] , (err, userResult) => {
                 if(err) return res.sendStatus(400);
-                sql.query("SELECT id, side, classname, active FROM vehicles WHERE pid = ?", [pid], (err, vehicleResult) => {
-                    return res.send({
-                        ...userResult[0],
-                        vehicles: vehicleResult
-                    });
-                });
+                res.send(userResult[0])
             });
         });
     });

@@ -18,10 +18,10 @@ const Houses = ({pid}) => {
         setHouses(houses.filter(x => x.id !== id))
         removeHouse(id)
     }
-    
+
     return (
         <div className="table">
-            <div className="table-head">
+            <div className="table-head padded-table-head">
                 <div>Position</div>
                 <div>Insert Time</div>
                 <div></div>

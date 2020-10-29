@@ -23,7 +23,7 @@ export const Containers = ({pid}) => {
 
     return (
         <div className="table">
-            <div className="table-head">
+            <div className="table-head padded-table-head">
                 <div>ID</div>
                 <div>Classname</div>
                 <div></div>

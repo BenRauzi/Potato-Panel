@@ -14,6 +14,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Houses from '../components/houses';
 import Containers from '../components/containers';
+import { MoreInfo } from '../components/moreInfo';
 
 
 const UserPage = ({match}) => {
@@ -31,7 +32,7 @@ const UserPage = ({match}) => {
         const getUser = async () => {
             const currentUser = await getUserById(userId);
             
-            setUser(currentUser)
+            setUser({...currentUser, pid: userId})
         }
         const getSteam = async () => {
             const currentUser = await getUserSteam(userId);
@@ -323,6 +324,7 @@ const UserPage = ({match}) => {
                             <Tab>Licenses</Tab>
                             <Tab>Houses</Tab>
                             <Tab>Containers</Tab>
+                            <Tab>More Info</Tab>
                             <Tab>Support Cases</Tab>
                         </TabList>
 
@@ -334,6 +336,9 @@ const UserPage = ({match}) => {
                         </TabPanel>
                         <TabPanel>
                             <Containers pid={userId}/>
+                        </TabPanel>
+                        <TabPanel>
+                            <MoreInfo currentUserInfo={{currentUser: currentUser, setUser: setUser}}/>
                         </TabPanel>
                         <TabPanel>
                             <h2>Support Cases</h2>

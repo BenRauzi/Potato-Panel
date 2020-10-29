@@ -207,7 +207,7 @@ h1 {
 .user-tile {
     position: relative;
     display: flex;
-    flex-basis: 25%;
+    flex-basis: 50%;
     background-color: $bg-tertiary;
     border-radius: 5px;
     padding: 10px;
@@ -278,6 +278,10 @@ h1 {
     }
 }
 
+.tile-large {
+    flex-basis: 100%;
+}
+
 .tile-icon {
     margin-top: 5px;
     color: white;
@@ -320,3 +324,4 @@ input::-webkit-inner-spin-button {
 .delete-btn {
     cursor: pointer;
 }
+
