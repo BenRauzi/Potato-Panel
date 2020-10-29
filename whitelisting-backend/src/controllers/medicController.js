@@ -126,10 +126,10 @@ const medicController = (app, sql, sqlAsync) => {
                         });
                     };
                 } else {
-                    const updatePanelUsersPoliceLevel = await sqlAsync.awaitQuery("UPDATE panel_users SET medicLevel = ? WHERE pid = ?", [...(level === 0 ? [0] : level < 9 ? [1] : [2]), pid]);
+                    const updatePanelUsersMedicLevel = await sqlAsync.awaitQuery("UPDATE panel_users SET medicLevel = ? WHERE pid = ?", [...(level === 0 ? [0] : level < 9 ? [1] : [2]), pid]);
                 };
                 
-                const updateIngamePoliceLevel = await sqlAsync.awaitQuery("UPDATE players SET mediclevel = ? WHERE pid = ?", [level, pid]);
+                const updateIngameMedicLevel = await sqlAsync.awaitQuery("UPDATE players SET mediclevel = ? WHERE pid = ?", [level, pid]);
                 res.send({});
 
             } catch (error) {
