@@ -77,8 +77,6 @@ const policeController = (app, sql, sqlAsync) => {
 
 
     const hasPermission = async (adminsPID, usersPID, newPoliceLevel) => {
-        console.log("Started");
-
         // Gather Admin Users Data
         try {
             const adminUserResult = await sqlAsync.awaitQuery("SELECT panel_users.adminLevel, players.coplevel FROM panel_users INNER JOIN players ON panel_users.pid = players.pid WHERE players.pid = ?", [adminsPID]);

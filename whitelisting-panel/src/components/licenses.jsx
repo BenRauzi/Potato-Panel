@@ -26,10 +26,7 @@ const Licenses = ({pid}) => {
     }, [setLicenses, pid])
 
     const deleteLicense = (license) => {
-        console.log(license)
-
         setLicense(pid, license, 0)
-        console.log(pid)
 
         setLicenses(licenses.filter(item => item !== license))
     }

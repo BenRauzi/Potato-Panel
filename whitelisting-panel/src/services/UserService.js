@@ -43,7 +43,6 @@ export const getUserSteam = async (id) => {
 }
 
 export const saveMoney = async (cash, bank, pid) => {
-    console.log(cash, bank, pid)
     const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/user/setFinance/`,  {
         method: "POST",
         body: JSON.stringify({

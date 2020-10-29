@@ -18,8 +18,6 @@ const VehiclesList = ({pid, side}) => {
     }, [setVehicles, pid, side])
 
     const deleteVehicle = (uid) => {
-        console.log(uid)
-
         removeVehicle(uid)
 
         setVehicles(vehicles.filter(x => x.id !== uid))

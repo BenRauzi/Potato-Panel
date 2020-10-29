@@ -23,8 +23,7 @@ const authController = (app, sql, sqlAsync) => {
                     WHERE panel_users.username = ?`, [
             username
         ], (error, result) => {
-            if(error) console.log(error);
-            if(result.length == 0) return res.sendStatus(401);
+             if(result.length == 0) return res.sendStatus(401);
             
             compare(password, result[0].password, (err, isValid) => {
                 const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel} = result[0];
