@@ -144,7 +144,7 @@ const policeController = (app, sql, sqlAsync) => {
     // Set Users Police Department
     app.post('/police/setDepartment', (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 2 && data.copLevel === 0) return res.sendStatus(401); // Moderator+ AND Cop Whitelisting Access
+            if(data.adminLevel < 2 && data.copWhitelisting < 6) return res.sendStatus(401); // Moderator+ AND Lieutenant+
 
             const body = req.body;
             const { pid, level } = body;
