@@ -41,7 +41,7 @@ const Houses = ({pid}) => {
                     }
                 </> : 
                 <div className="table-row">
-                    <div>No results found</div>
+                    <div>No Houses Found</div>
                 </div>
             }
         </div>
