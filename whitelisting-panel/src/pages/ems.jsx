@@ -56,8 +56,8 @@ const Ems = () => {
 
     return (
         <>
-            <Title title="EMS Roster"/>
-            <h1>EMS</h1>
+            <Title title="Medic Roster"/>
+            <h1>Medic</h1>
             Search for Medics
 
             

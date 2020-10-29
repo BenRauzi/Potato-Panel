@@ -80,7 +80,7 @@ const Main = () => {
                 <ProtectedRoute exact path='/users' component={Users}/>
                 <ProtectedRoute exact path='/staff' component={Staff}/>
                 <ProtectedRoute exact path='/police' component={Police}/>
-                <ProtectedRoute exact path='/ems' component={Ems}/>
+                <ProtectedRoute exact path='/medic' component={Ems}/>
                 <ProtectedRoute exact path='/development-team' component={Development}/>
                 <ProtectedRoute exact path='/vehicles' component={Vehicles}/>
                 <ProtectedRoute exact path='/settings' component={SettingsPage}/>

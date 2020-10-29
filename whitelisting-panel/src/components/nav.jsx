@@ -48,12 +48,12 @@ const MainNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="/ems">
+                    <Link to="/medic">
                         <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon"alt="EMS Roster" icon={faUserNurse}/>
+                            <FontAwesomeIcon className="nav-icon"alt="Medic Roster" icon={faUserNurse}/>
                         </div>
                         
-                        <span>EMS Roster</span>
+                        <span>Medic Roster</span>
                     </Link>
                 </li>
                 <li>
@@ -71,7 +71,7 @@ const MainNav = () => {
                             <FontAwesomeIcon className="nav-icon" alt="Dev Roster" icon={faAccessibleIcon}/>
                         </div>
                         
-                        <span>Dev Roster</span>
+                        <span>Development Roster</span>
                     </Link>                        
                 </li>
                 <li>
