@@ -12,6 +12,8 @@ import VehiclesList from '../components/vehicles';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import Houses from '../components/houses';
+import Containers from '../components/containers';
 
 
 const UserPage = ({match}) => {
@@ -319,11 +321,19 @@ const UserPage = ({match}) => {
                     <Tabs>
                         <TabList>
                             <Tab>Licenses</Tab>
+                            <Tab>Houses</Tab>
+                            <Tab>Containers</Tab>
                             <Tab>Support Cases</Tab>
                         </TabList>
 
                         <TabPanel>
                             <Licenses pid={userId}/>
+                        </TabPanel>
+                        <TabPanel>
+                            <Houses pid={userId}/>
+                        </TabPanel>
+                        <TabPanel>
+                            <Containers pid={userId}/>
                         </TabPanel>
                         <TabPanel>
                             <h2>Support Cases</h2>
@@ -342,6 +352,7 @@ const UserPage = ({match}) => {
                         <TabPanel>
                             <VehiclesList pid={userId} side="civ"/>
                         </TabPanel>
+                        
                         <TabPanel>
                             <VehiclesList pid={userId} side="cop"/>
                         </TabPanel>
