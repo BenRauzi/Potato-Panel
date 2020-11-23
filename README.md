@@ -31,7 +31,7 @@ To create a production build of the frontend:
 yarn build
 ```
 
-Build can be found in `/dist`
+Build can be found in `/build`
 
 ## Disclaimer
 
