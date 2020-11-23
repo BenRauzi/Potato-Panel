@@ -11,7 +11,10 @@ This requires you to have Git, Node.js and Yarn installed.
 
 In your own node environment/application:
 
-```yarn install && cd backend && npm install```
+```
+yarn install && cd backend && npm install
+npm run dev
+```
 
 If you want to contribute:
 
