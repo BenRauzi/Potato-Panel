@@ -13,7 +13,7 @@ In your own node environment/application:
 If you want to contribute:
 
 ```
-git clone https://github.com/BenRauzi/arma-faction-whitelisting.git
+git clone https://github.com/BenRauzi/Potato-Panel.git
 yarn install
 cd backend && npm install
 npm run dev
