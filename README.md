@@ -2,6 +2,9 @@
 
 The #1 most feature-rich server administration and user management tool in the ArmA 3 Life community.
 Licensed Under a GPL License. All copies and modified versions of this software must be made open source.
+
+This tool is completed is a proof of concept but is still under active development and therefore design is not finalised as functionality was prioritised. It is currently lacking unit testing and API is in the middle of a restructure.
+
 ## Instructions
 
 This requires you to have Git, Node.js and Yarn installed.
