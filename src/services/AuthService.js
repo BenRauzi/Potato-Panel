@@ -30,7 +30,7 @@ export const logout = async (setUser) => {
     return true;
 }
 
-module.exports = {
+export default {
     login,
     logout
 }

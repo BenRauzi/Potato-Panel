@@ -20,7 +20,7 @@ export const searchPolice = async (term, page, pageLength, minRank) => {
     return res
 }
 
-module.exports = {
+export default {
     getPolice,
     searchPolice
 };

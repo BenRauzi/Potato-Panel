@@ -10,4 +10,4 @@ const ServerSettingsPage = () => {
     )
 }
 
-module.exports = ServerSettingsPage;
+export default ServerSettingsPage;

@@ -73,4 +73,4 @@ export const MoreInfo = ({currentUserInfo}) => {
     )
 }
 
-module.exports = MoreInfo;
+export default MoreInfo;
