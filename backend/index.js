@@ -15,6 +15,8 @@ import vehicleController from "./controllers/vehicleController";
 import housesController from "./controllers/housesController";
 import experienceController from "./controllers/experienceController";
 
+import serverless from "serverless-http";
+
 const app = express();
 
 dotenv.config();
@@ -51,3 +53,5 @@ devController(app, sql, sqlAsync);
 vehicleController(app, sql, sqlAsync);
 housesController(app, sqlAsync);
 experienceController(app, sqlAsync);
+
+module.exports.handler = serverless(app);

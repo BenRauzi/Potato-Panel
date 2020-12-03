@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint",
     "dev": "concurrently \"npm start\" \"cd ../ && yarn start\"",
-    "start": "npx nodemon -r esm src/index.js",
+    "start": "npx nodemon -r esm index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ben Rauzi",
@@ -23,7 +23,8 @@
     "mysql": "^2.18.1",
     "mysql-async-simple": "^1.0.3",
     "mysql-await": "^2.1.6",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "serverless-http": "^2.6.0"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",
