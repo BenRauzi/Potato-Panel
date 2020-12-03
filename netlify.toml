@@ -2,3 +2,16 @@
   command="yarn build && cd backend && npm i"
   functions = "backend"
   publish = "build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/index"
+  status = 200
+  force = true
+  headers = { X-From = "Netlify" }
+
+[[redirects]]
+  from = "/*"
+  to = "index.html"
+  status = 200
+
