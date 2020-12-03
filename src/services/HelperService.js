@@ -92,7 +92,7 @@ export const getStaffPerms = (level) => {
     return "No Permissions";
 }
 
-export default {
+module.exports = {
    formatMoney,
    getRole,
    getCopRank,

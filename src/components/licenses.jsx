@@ -95,4 +95,4 @@ const Licenses = ({pid}) => {
     )
 }
 
-export default Licenses;
+module.exports = Licenses;

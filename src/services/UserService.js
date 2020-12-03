@@ -226,7 +226,7 @@ export const updateExperience = async (pid, level, points) => {
     return res
 }
 
-export default {
+module.exports = {
     getUsers,
     searchUsers,
     getUserById,

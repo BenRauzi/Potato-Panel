@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require("../services/authService");
 
-import { hash, compare } from "bcrypt";
+const { hash, compare } = require("bcrypt");
 
 const authController = (app, sql, sqlAsync) => {
     app.post('/auth/login', async (req,res)=>{
@@ -131,4 +131,4 @@ const authController = (app, sql, sqlAsync) => {
     });
 };
 
-export default authController;
+module.exports = authController;

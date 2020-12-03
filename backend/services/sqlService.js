@@ -1,18 +1,18 @@
-import mysql from "mysql";
-import mysqlAsync from "mysql-await";
+const mysql = require("mysql");
+const mysqlAsync = require("mysql-await");
 
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 
 dotenv.config();
 
-export const connection = mysql.createConnection({
+const sql = mysql.createConnection({
     host: process.env.DB_URL,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_SCHEMA
 });
 
-export const connectionAsync = mysqlAsync.createConnection({
+const  = mysqlAsync.createConnection({
     host: process.env.DB_URL,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -23,9 +23,9 @@ connectionAsync.on(`error`, (err) => {
     console.error(`Connection error ${err.code}`);
 });
 
-connection.connect((err) => {
+sql.connect((err) => {
     if (err) throw err;
     console.log('Connected to Database!');
 });
 
-export default connection;
+module.exports = { sql, connectionAsync };

@@ -150,4 +150,4 @@ const Vehicles = () => {
     )
 }
 
-export default Vehicles;
+module.exports = Vehicles;

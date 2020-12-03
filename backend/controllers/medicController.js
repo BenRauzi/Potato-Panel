@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
-import { hash } from "bcrypt";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require( "../services/authService");
+const { hash } = require("bcrypt")
 
 const medicController = (app, sql, sqlAsync) => {
     // Fetch Medic Users 
@@ -170,4 +170,4 @@ const medicController = (app, sql, sqlAsync) => {
     });
 };
 
-export default medicController;
+module.exports = medicController;

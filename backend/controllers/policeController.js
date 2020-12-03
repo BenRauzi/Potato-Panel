@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
-import { hash } from "bcrypt";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require( "../services/authService");
+const { hash } = require("bcrypt")
 
 const policeController = (app, sql, sqlAsync) => {
     // Fetch Police Users 
@@ -156,4 +156,4 @@ const policeController = (app, sql, sqlAsync) => {
     });
 };
 
-export default policeController;
+module.exports = policeController;

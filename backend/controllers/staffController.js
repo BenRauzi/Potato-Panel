@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
-import { hash } from "bcrypt";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require( "../services/authService");
+const { hash } = require("bcrypt")
 
 const staffController = (app, sql, sqlAsync) => {
     // Fetch Staff Users 
@@ -120,4 +120,4 @@ const staffController = (app, sql, sqlAsync) => {
     });
 };
 
-export default staffController;
+module.exports = staffController;

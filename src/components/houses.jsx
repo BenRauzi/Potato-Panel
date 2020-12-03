@@ -48,4 +48,4 @@ const Houses = ({pid}) => {
     )
 };
 
-export default Houses;
+module.exports = Houses;

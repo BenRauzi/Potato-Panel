@@ -99,4 +99,4 @@ const vehicleController = (app, sql) => {
     });
 };
 
-export default vehicleController;
+module.exports = vehicleController;

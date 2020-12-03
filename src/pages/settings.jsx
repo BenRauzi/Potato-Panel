@@ -10,4 +10,4 @@ const SettingsPage = () => {
     )
 }
 
-export default SettingsPage;
+module.exports = SettingsPage;

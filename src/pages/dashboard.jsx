@@ -10,4 +10,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard;
+module.exports = Dashboard;

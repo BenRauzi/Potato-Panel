@@ -49,7 +49,7 @@ export const removeContainer = async (containerId) => {
 
     if(code !== 200) return alert(`An error occured during deletion, error code: ${code}`)
 }
-export default {
+module.exports = {
     getHousesByID,
     removeHouse,
     getContainersByID,

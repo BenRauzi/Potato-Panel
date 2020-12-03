@@ -49,4 +49,4 @@ export const Containers = ({pid}) => {
     )
 }
 
-export default Containers;
+module.exports = Containers;

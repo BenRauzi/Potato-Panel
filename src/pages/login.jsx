@@ -12,4 +12,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+module.exports = Login;
