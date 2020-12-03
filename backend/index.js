@@ -15,6 +15,7 @@ const housesController = require("./controllers/housesController");
 const experienceController = require("./controllers/experienceController");
 
 const serverless = require("serverless-http");
+const webController = require("./controllers/webController");
 
 const app = express();
 
@@ -48,6 +49,7 @@ devController(router, sql, connectionAsync);
 vehicleController(router, sql, connectionAsync);
 housesController(router, connectionAsync);
 experienceController(router, connectionAsync);
+webController(router, connectionAsync)
 
 module.exports = app;
 module.exports.handler = serverless(app);
