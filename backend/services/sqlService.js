@@ -12,7 +12,7 @@ const sql = mysql.createConnection({
     database: process.env.DB_SCHEMA
 });
 
-const  = mysqlAsync.createConnection({
+const connectionAsync = mysqlAsync.createConnection({
     host: process.env.DB_URL,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,

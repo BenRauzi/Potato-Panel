@@ -94,4 +94,4 @@ const Main = () => {
     )
 }
 
-module.exports = Main;
+export default Main;

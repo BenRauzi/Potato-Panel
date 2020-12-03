@@ -20,7 +20,7 @@ export const searchDevs = async (term, page, pageLength, minRank) => {
     return res
 }
 
-module.exports = {
+export default {
     getDevs,
     searchDevs,
 };

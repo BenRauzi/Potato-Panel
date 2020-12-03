@@ -20,6 +20,9 @@ const app = express();
 
 dotenv.config();
 
+const router = express.Router();
+
+
 // middlewares
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
@@ -29,28 +32,22 @@ app.use(cors({
     credentials: true
 }));
 
+app.use('/api', router);  // path must route to lambda
 
-// listen
-
-const PORT = process.env.PORT || 9000;
-
-app.listen(PORT, () => {
-    console.log("API Online!");
-});
-
-app.get('/api' , (req,res)=>{
-    res.sendStatus(200);
+router.get('/test' , (req,res)=>{
+    res.send("asd");
 })
 
 // init controllers
-authController(app, sql, connectionAsync);
-userController(app, sql, connectionAsync);
-policeController(app, sql, connectionAsync);
-medicController(app, sql, connectionAsync);
-staffController(app, sql, connectionAsync);
-devController(app, sql, connectionAsync);
-vehicleController(app, sql, connectionAsync);
-housesController(app, connectionAsync);
-experienceController(app, connectionAsync);
+authController(router, sql, connectionAsync);
+userController(router, sql, connectionAsync);
+policeController(router, sql, connectionAsync);
+medicController(router, sql, connectionAsync);
+staffController(router, sql, connectionAsync);
+devController(router, sql, connectionAsync);
+vehicleController(router, sql, connectionAsync);
+housesController(router, connectionAsync);
+experienceController(router, connectionAsync);
 
+module.exports = app;
 module.exports.handler = serverless(app);

@@ -6,4 +6,4 @@ const NotFoundPage = () => (
     </>
 )
 
-module.exports = NotFoundPage;
+export default NotFoundPage;

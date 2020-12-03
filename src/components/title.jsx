@@ -7,4 +7,4 @@ const TitleComponent = ({ title }) => (
     </Helmet>
 )
 
-module.exports = TitleComponent;
+export default TitleComponent;

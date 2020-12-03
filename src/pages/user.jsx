@@ -373,4 +373,4 @@ const UserPage = ({match}) => {
     )
 }
 
-module.exports = UserPage;
+export default UserPage;

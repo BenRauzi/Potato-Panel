@@ -138,4 +138,4 @@ const Staff = () => {
     )
 }
 
-module.exports = Staff;
+export default Staff;
