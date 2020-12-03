@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
-import fetch from "node-fetch";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require( "../services/authService");
+const fetch = require("node-fetch");
 
 const userController = (app, sql, sqlAsync) => {
     // Fetch Generic Users 
@@ -206,4 +206,4 @@ const userController = (app, sql, sqlAsync) => {
     })
 };
 
-export default userController;
+module.exports = userController;

@@ -133,4 +133,4 @@ const Development = () => {
     )
 }
 
-export default Development;
+module.exports = Development;

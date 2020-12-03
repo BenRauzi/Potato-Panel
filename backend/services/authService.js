@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
 function checkToken (req, res, next) {
     // get authcookie from request
@@ -17,6 +17,6 @@ function checkToken (req, res, next) {
     })
 }
 
-export {
+module.exports = {
     checkToken
 }

@@ -117,4 +117,4 @@ const MainNav = () => {
     )
 }
 
-export default MainNav;
+module.exports = MainNav;

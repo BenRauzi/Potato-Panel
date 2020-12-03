@@ -132,4 +132,4 @@ const Police = () => {
     )
 }
 
-export default Police;
+module.exports = Police;

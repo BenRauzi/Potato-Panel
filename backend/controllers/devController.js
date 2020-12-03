@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
 const devController = (app, sql, sqlAsync) => {
     // Fetch Dev Users 
@@ -64,4 +64,4 @@ const devController = (app, sql, sqlAsync) => {
     });
 };
 
-export default devController;
+module.exports = devController;

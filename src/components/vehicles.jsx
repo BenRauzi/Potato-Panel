@@ -55,4 +55,4 @@ const VehiclesList = ({pid, side}) => {
     )
 }
 
-export default VehiclesList;
+module.exports = VehiclesList;

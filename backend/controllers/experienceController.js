@@ -11,4 +11,4 @@ const experienceController = (app, sql) => {
     })
 }
 
-export default experienceController;
+module.exports = experienceController;

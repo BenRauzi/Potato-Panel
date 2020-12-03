@@ -1,21 +1,20 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import authController from "./controllers/authController";
-import userController from "./controllers/userController";
+const express = require("express");
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const authController = require("./controllers/authController");
+const userController = require("./controllers/userController");
+const { sql, connectionAsync } = require("./services/sqlService")
+const policeController = require("./controllers/policeController");
+const medicController = require("./controllers/medicController");
+const staffController = require("./controllers/staffController");
+const devController = require("./controllers/devController");
+const vehicleController = require("./controllers/vehicleController");
+const housesController = require("./controllers/housesController");
+const experienceController = require("./controllers/experienceController");
 
-import sql, { connectionAsync as sqlAsync} from "./services/sqlService";
-import policeController from "./controllers/policeController";
-import medicController from "./controllers/medicController";
-import staffController from "./controllers/staffController";
-import devController from "./controllers/devController";
-import vehicleController from "./controllers/vehicleController";
-import housesController from "./controllers/housesController";
-import experienceController from "./controllers/experienceController";
-
-import serverless from "serverless-http";
+const serverless = require("serverless-http");
 
 const app = express();
 
@@ -44,14 +43,14 @@ app.get('/api' , (req,res)=>{
 })
 
 // init controllers
-authController(app, sql, sqlAsync);
-userController(app, sql, sqlAsync);
-policeController(app, sql, sqlAsync);
-medicController(app, sql, sqlAsync);
-staffController(app, sql, sqlAsync);
-devController(app, sql, sqlAsync);
-vehicleController(app, sql, sqlAsync);
-housesController(app, sqlAsync);
-experienceController(app, sqlAsync);
+authController(app, sql, connectionAsync);
+userController(app, sql, connectionAsync);
+policeController(app, sql, connectionAsync);
+medicController(app, sql, connectionAsync);
+staffController(app, sql, connectionAsync);
+devController(app, sql, connectionAsync);
+vehicleController(app, sql, connectionAsync);
+housesController(app, connectionAsync);
+experienceController(app, connectionAsync);
 
 module.exports.handler = serverless(app);

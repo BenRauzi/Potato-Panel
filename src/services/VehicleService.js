@@ -38,7 +38,7 @@ export const removeVehicle = async (uid) => {
     return res
 }
 
-export default {
+module.exports = {
     getVehicles,
     searchVehicles
 };

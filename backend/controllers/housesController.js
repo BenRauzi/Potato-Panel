@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import { checkToken } from "../services/authService";
+const jwt = require("jsonwebtoken");
+const { checkToken } = require( "../services/authService");
 
 const housesController = (app, sql) => {
     app.get('/user/houses', checkToken, async (req, res) => {
@@ -82,4 +82,4 @@ const housesController = (app, sql) => {
     })
 }
 
-export default housesController;
+module.exports = housesController;
