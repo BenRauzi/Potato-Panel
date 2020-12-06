@@ -235,9 +235,9 @@ const UserPage = ({match}) => {
                         </span>
                         </div>
                     }     
-                    
+                
                     {
-                        user.emsLevel > 0 || user.staffLevel > 1 ?
+                        user.emsLevel > 0 || user.adminLevel > 1 ?
                         <>
                          <input type="checkbox" className="tile-check-box" value={editState.ems} onChange={async () => { 
                             if (!editState.ems) return setEditState({...editState, ems: !editState.ems})

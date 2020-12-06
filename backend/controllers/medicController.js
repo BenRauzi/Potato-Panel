@@ -126,44 +126,28 @@ const medicController = (app, sql, sqlAsync) => {
                         });
                     };
                 } else {
-                    const updatePanelUsersMedicLevel = await sqlAsync.awaitQuery("UPDATE panel_users SET medicLevel = ? WHERE pid = ?", [...(level === 0 ? [0] : level < 9 ? [1] : [2]), pid]);
+                    const updatePanelUsersMedicLevel = await sqlAsync.awaitQuery("UPDATE panel_users SET emsLevel = ? WHERE pid = ?", [...(level === 0 ? [0] : level < 9 ? [1] : [2]), pid]);
                 };
                 
                 const updateIngameMedicLevel = await sqlAsync.awaitQuery("UPDATE players SET mediclevel = ? WHERE pid = ?", [level, pid]);
                 res.send({});
 
             } catch (error) {
-                return false;
+                return res.sendStatus(500)
             };
         });
     });
 
-    /* OLD SET WHITELIST LEVEL
-    // Set Users Medic Whitelist Level
-    app.post('/medic/setLevel', (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            const body = req.body;
-            const { pid, level } = body;
-            if ((data.adminLevel < 2  && data.emsLevel === 0)) return res.sendStatus(401); // Moderator+ OR Medic Whitelisting Access
-            if (data.adminLevel < 3 && level >= data.emsWhitelisting) return res.sendStatus(401); // Can't whitelist higher than ur own medic level, unless you are Admin+
-            
-            sql.query(`UPDATE players SET mediclevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
-                res.sendStatus(200);
-            });
-        });
-    });
-    */
-
     // Set Users Medic Department
-    app.post('/medic/setDepartment', (req, res) => {
+    app.post('/medic/setDepartment', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 2 && data.emsLevel === 8) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
 
             const body = req.body;
             const { pid, level } = body;
+
             sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
+                if(err) return res.sendStatus(500);
                 res.sendStatus(200);
             });
         });
