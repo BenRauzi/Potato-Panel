@@ -26,7 +26,7 @@ const vehicleController = (app, sql) => {
         const vid = req.query.vid; // Vehicle ID
         if(vid === undefined) return res.sendStatus(404);
         sql.query(`SELECT vehicles.id, vehicles.side, vehicles.type, players.name, players.pid vehicles.pid, vehicles.classname, vehicles.active, vehicles.fuel, vehicles.insert_time, vehicles.impound, vehicles.insured FROM vehicles INNER JOIN players ON players.pid = vehicles.pid WHERE vehicles.id = ?`, [vid] , (err, result) => {
-            if(err) res.sendStatus(400);
+            if(err) return res.sendstatus(400);
             res.send(result);
         });
     });
@@ -93,7 +93,7 @@ const vehicleController = (app, sql) => {
         const side = req.query.side; // Player ID
         if(pid === undefined) return res.sendStatus(404);
         sql.query(`SELECT id, side, type, classname, active, vehicles.insured FROM vehicles WHERE pid = ? AND side = ?`, [pid, side.toLowerCase()] , (err, result) => {
-            if(err) res.sendStatus(400);
+            if(err) return res.sendstatus(400);
             res.send(result);
         });
     });

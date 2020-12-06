@@ -27,7 +27,6 @@ export const MoreInfo = ({currentUserInfo}) => {
     
 
     if(!currentUser) return <></>
-    console.log(currentUser)
     return (
         <div className="page-row">
                     <div className="user-tile tile-large">
