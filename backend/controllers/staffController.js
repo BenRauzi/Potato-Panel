@@ -2,6 +2,10 @@ const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
 const { hash } = require("bcrypt")
 
+function randomInt(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 const staffController = (app, sql, sqlAsync) => {
     // Fetch Staff Users 
     app.get('/staff/users', (req, res) => {
@@ -87,8 +91,13 @@ const staffController = (app, sql, sqlAsync) => {
 
             sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
                 if(result[0]["COUNT(*)"] === 0) {
-                    const pass = (Math.floor(Math.random() * 999999) + 100000).toString();
-                    const hashedPassword = hash(pass, 10,(err, hashed) => {
+                    
+                    let pass = ""
+                    for(let i = 0; i < 12; i++) {
+                        pass = pass + String.fromCharCode(randomInt(40, 124))
+                    }
+
+                    hash(pass, 10,(err, hashed) => {
                         sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, ?, 0, 0)", [pid, username, hashed, level], (err, result) => {
                             if(err) return res.sendStatus(400);
                             res.send({pass : pass});
