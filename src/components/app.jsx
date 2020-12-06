@@ -6,7 +6,6 @@ import Main from './main';
 import Header from './header';
 import MainNav from "./nav";
 
-
 const App = () => {
     const [user, setUser] = React.useState(undefined);
 
