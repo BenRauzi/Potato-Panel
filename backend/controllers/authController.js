@@ -23,9 +23,11 @@ const authController = (app, sql, sqlAsync) => {
                     WHERE panel_users.username = ?`, [
             username
         ], (error, result) => {
-             if(result.length == 0) return res.sendStatus(401);
-            
+            if(error) return console.log(error)
+            if(result.length == 0) return res.sendStatus(401);
+            console.log(result[0].password, password)
             compare(password, result[0].password, (err, isValid) => {
+                console.log(isValid)
                 const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel} = result[0];
                 if(isValid === true) {
                     const token = jwt.sign({
@@ -60,14 +62,32 @@ const authController = (app, sql, sqlAsync) => {
             const body = req.body;
             const { pid, username, password } = body;
             const hashedPassword = hash(password, 10,(err, hashed) => {
-                if(err) return res.send(400)
+                if(err) return res.sendStatus(400)
+                
                 sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
                     pid,
                     username,
                     hashed
                 ], (error, results) => {
-                    res.send(200)
+                    res.sendStatus(200)
                 });
+            });
+        });
+    });
+
+    app.post('/auth/user/create-op', (req, res) => {
+        const body = req.body;
+        const { pid, username, password } = body;
+        
+        const hashedPassword = hash(password, 10,(err, hashed) => {
+            console.log(password, hashed)
+            if(err) return res.send(400)
+            sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
+                pid,
+                username,
+                hashed
+            ], (error, results) => {
+                res.send(200)
             });
         });
     });
