@@ -56,7 +56,7 @@ const casesController = (app, sql) => {
         }
     })
 
-    app.get('/case', async(req, res) => {
+    app.get('/case', checkToken, async(req, res) => {
         const caseId = req.query.id
 
         if(!caseId) return res.sendStatus(204)
@@ -77,6 +77,27 @@ const casesController = (app, sql) => {
                 members: result.map(({pid, reporter}) => ({pid: pid, reporter: reporter}))
             }
             return res.send(caseData)
+        } catch(error) {
+            console.log(error)
+            res.sendStatus(500)
+        }
+    })
+
+    app.get("/user/cases", checkToken, async(req, res) => {
+        const userId = req.query.pid;
+
+        if(!userId) return res.sendStatus(204)
+
+        try {
+            const result = await sql.awaitQuery(`SELECT support_cases.id, support_cases.uid, support_cases.staff_member, support_cases.case_type, support_cases.time FROM support_cases
+                INNER JOIN support_case_members
+                ON support_case_members.case_id = support_cases.uid
+                WHERE support_case_members.pid = ?  
+            `, [
+                userId
+            ])
+
+            res.send(result)
         } catch(error) {
             console.log(error)
             res.sendStatus(500)
