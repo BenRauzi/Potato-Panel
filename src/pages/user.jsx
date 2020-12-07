@@ -15,6 +15,7 @@ import 'react-tabs/style/react-tabs.css';
 import Houses from '../components/houses';
 import Containers from '../components/containers';
 import { MoreInfo } from '../components/moreInfo';
+import SupportCases from '../components/support-cases';
 
 
 const UserPage = ({match}) => {
@@ -341,7 +342,7 @@ const UserPage = ({match}) => {
                             <MoreInfo currentUserInfo={{currentUser: currentUser, setUser: setUser}}/>
                         </TabPanel>
                         <TabPanel>
-                            <h2>Support Cases</h2>
+                            <SupportCases pid={userId}/>
                         </TabPanel>
                     </Tabs>
                 </div>

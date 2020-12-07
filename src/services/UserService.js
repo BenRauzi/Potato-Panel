@@ -207,6 +207,19 @@ export const getUserVehicles = async (pid, side) => {
     return res
 }
 
+export const getUserCases = async (pid) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/user/cases?pid=${pid}`,  {
+        method: "GET",
+        
+        credentials: "include"
+    })
+
+    const res = response.json();
+
+    return res
+}
+
+
 export const updateExperience = async (pid, level, points) => {
     const devResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/user/setExperience`,  {
         method: "POST",
@@ -239,4 +252,5 @@ export default {
     setLicense,
     getUserVehicles,
     updateExperience,
+    getUserCases
 };

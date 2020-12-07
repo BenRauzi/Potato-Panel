@@ -93,6 +93,11 @@ export const CaseTypes = {
     "Player Reports": 4
 }
 
+export const CasePositions = {
+    "Complaintant": 0,
+    "Complainee": 1
+}
+
 export const LicenseList = {
     "Driving License": "license_civ_driver",
     "Boat License": "license_civ_boat",
