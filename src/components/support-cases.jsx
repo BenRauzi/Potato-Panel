@@ -18,9 +18,9 @@ const SupportCases = ({pid}) => {
         <>
              <div className="table">
                 <div className="table-head padded-table-head">
-                    <div>id</div>
+                    <div>Case ID</div>
                     <div>Staff Member</div>
-                    <div>Case type</div>
+                    <div>Case Type</div>
                     <div>Position</div>
                     <div>Time Since</div>
                 </div>
