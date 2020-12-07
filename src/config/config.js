@@ -85,6 +85,14 @@ export const Whitelist = {
     "Full Perms": 2
 }
 
+export const CaseTypes = {
+    "Any": 0,
+    "General": 1,
+    "Tag Changes": 2,
+    "Compensation": 3,
+    "Player Reports": 4
+}
+
 export const LicenseList = {
     "Driving License": "license_civ_driver",
     "Boat License": "license_civ_boat",
