@@ -153,15 +153,18 @@ const casesController = (app, sql) => {
         if(!userId) return res.sendStatus(204)
 
         try {
-            const result = await sql.awaitQuery(`SELECT support_cases.id, support_cases.uid, support_cases.staff_member, support_cases.case_type, support_cases.time FROM support_cases
+            const result = await sql.awaitQuery(`SELECT support_cases.id, support_cases.uid, support_cases.staff_member, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName, support_case_members.reporter FROM support_cases
                 INNER JOIN support_case_members
                 ON support_case_members.case_id = support_cases.uid
-                WHERE support_case_members.pid = ?  
+                INNER JOIN players
+                ON support_cases.staff_member = players.pid
+                WHERE support_case_members.pid = ? 
+                ORDER BY support_cases.id DESC 
             `, [
                 userId
             ])
 
-            res.send(result)
+            res.send(result.map(x => ({...x, timeSince: timeSince(x.time)})))
         } catch(error) {
             console.log(error)
             res.sendStatus(500)

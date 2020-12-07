@@ -1,4 +1,4 @@
-import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList} from "../config/config";
+import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions} from "../config/config";
 
 export const formatMoney = (string) => {
     const output = "$" + (string.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
@@ -92,6 +92,25 @@ export const getStaffPerms = (level) => {
     return "No Permissions";
 }
 
+export const getCaseType = (type) => {
+
+    if(!CaseTypes) return "Error"
+    for (var [name, caseType] of Object.entries(CaseTypes)) {
+        if(type === caseType) return name
+    }
+
+}
+
+
+export const getCasePosition = (position) => {
+
+    if(!CasePositions) return "Error"
+    for (var [name, casePosition] of Object.entries(CasePositions)) {
+        if(casePosition === position) return name
+    }
+}
+
+
 export default {
    formatMoney,
    getRole,
@@ -104,4 +123,6 @@ export default {
    getDevRank,
    getDevDept,
    getLicenseName,
+   getCaseType,
+   getCasePosition,
 }
