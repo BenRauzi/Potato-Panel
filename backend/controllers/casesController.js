@@ -2,33 +2,6 @@ const { checkToken } = require("../services/authService");
 
 const { v4: uuid } = require('uuid');
 
-const timeSince = (date) => {
-    var seconds = Math.floor((new Date() - date) / 1000);
-
-    var interval = seconds / 31536000;
-
-    if (interval > 1) {
-        return Math.floor(interval) + " years";
-    }
-    interval = seconds / 2592000;
-    if (interval > 1) {
-        return Math.floor(interval) + " months";
-    }
-    interval = seconds / 86400;
-    if (interval > 1) {
-        return Math.floor(interval) + " days";
-    }
-    interval = seconds / 3600;
-    if (interval > 1) {
-        return Math.floor(interval) + " hours";
-    }
-    interval = seconds / 60;
-    if (interval > 1) {
-        return Math.floor(interval) + " minutes";
-    }
-    return Math.floor(seconds) + " seconds";
-    }
-
 const casesController = (app, sql) => {
     app.get('/cases', checkToken, async(req, res) => {
         const pageNumber = req.query.p || 1;
@@ -37,7 +10,7 @@ const casesController = (app, sql) => {
         const startingPoint = (pageNumber - 1) * count;
 
         try {
-            const caseCount = await sql.awaitQuery("SELECT COUNT(*) from support_cases");
+            const caseCount = await sql.awaitQuery("SELECT CURRENT_TIMESTAMP, COUNT(*) from support_cases");
 
             const cases = await sql.awaitQuery(`SELECT id, support_cases.uid, support_cases.staff_member as staffMember, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName FROM support_cases 
             INNER JOIN players
@@ -50,7 +23,8 @@ const casesController = (app, sql) => {
 
             const response = {
                 count: caseCount[0]["COUNT(*)"],
-                result: cases.map(x => ({...x, timeSince: timeSince(new Date(x.time))}))
+                time: caseCount[0]["CURRENT_TIMESTAMP"],
+                result: cases
             }
 
             return res.send(response)
@@ -68,7 +42,7 @@ const casesController = (app, sql) => {
         const startingPoint = (pageNumber - 1) * count;
 
         try {
-            const caseCount = await sql.awaitQuery("SELECT COUNT(*) from support_cases WHERE case_type = ?", [caseType]);
+            const caseCount = await sql.awaitQuery("SELECT CURRENT_TIMESTAMP COUNT(*) from support_cases WHERE case_type = ?", [caseType]);
 
             const cases = await sql.awaitQuery(`SELECT id, support_cases.uid, support_cases.staff_member as staffMember, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName FROM support_cases 
             INNER JOIN players
@@ -83,7 +57,8 @@ const casesController = (app, sql) => {
 
             const response = {
                 count: caseCount[0]["COUNT(*)"],
-                result: cases.map(x => ({...x, timeSince: timeSince(new Date(x.time))}))
+                time: caseCount[0]["CURRENT_TIMESTAMP"],
+                result: cases
             }
 
             return res.send(response)
@@ -107,7 +82,7 @@ const casesController = (app, sql) => {
                 details,
                 evidence,
                 other,
-                caseType
+                caseType,
             ])
 
             const memberResult = await sql.awaitQuery(`INSERT INTO support_case_members (case_id, pid, reporter) VALUES
@@ -126,7 +101,7 @@ const casesController = (app, sql) => {
         if(!caseId) return res.sendStatus(204)
 
         try {
-            const result = await sql.awaitQuery(` SELECT support_cases.*, support_case_members.pid, support_case_members.reporter FROM support_cases INNER JOIN support_case_members 
+            const result = await sql.awaitQuery(` SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter FROM support_cases INNER JOIN support_case_members 
                 ON support_case_members.case_id = support_cases.uid 
                 WHERE support_cases.uid = ?
             `, [
@@ -153,7 +128,7 @@ const casesController = (app, sql) => {
         if(!userId) return res.sendStatus(204)
 
         try {
-            const result = await sql.awaitQuery(`SELECT support_cases.id, support_cases.uid, support_cases.staff_member, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName, support_case_members.reporter FROM support_cases
+            const result = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP as currentTime, support_cases.id, support_cases.uid, support_cases.staff_member, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName, support_case_members.reporter FROM support_cases
                 INNER JOIN support_case_members
                 ON support_case_members.case_id = support_cases.uid
                 INNER JOIN players
@@ -164,7 +139,7 @@ const casesController = (app, sql) => {
                 userId
             ])
 
-            res.send(result.map(x => ({...x, timeSince: timeSince(x.time)})))
+            res.send(result)
         } catch(error) {
             console.log(error)
             res.sendStatus(500)
