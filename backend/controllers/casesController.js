@@ -2,6 +2,33 @@ const { checkToken } = require("../services/authService");
 
 const { v4: uuid } = require('uuid');
 
+const timeSince = (date) => {
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = seconds / 31536000;
+
+    if (interval > 1) {
+        return Math.floor(interval) + " years";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+        return Math.floor(interval) + " months";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+        return Math.floor(interval) + " days";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+        return Math.floor(interval) + " hours";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+        return Math.floor(interval) + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
+    }
+
 const casesController = (app, sql) => {
     app.get('/cases', checkToken, async(req, res) => {
         const pageNumber = req.query.p || 1;
@@ -12,14 +39,51 @@ const casesController = (app, sql) => {
         try {
             const caseCount = await sql.awaitQuery("SELECT COUNT(*) from support_cases");
 
-            const cases = await sql.awaitQuery("SELECT id, uid, staff_member, case_type, time FROM support_cases ORDER BY id DESC LIMIT ?, ?", [
+            const cases = await sql.awaitQuery(`SELECT id, support_cases.uid, support_cases.staff_member as staffMember, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName FROM support_cases 
+            INNER JOIN players
+            ON players.pid = support_cases.staff_member
+            ORDER BY id DESC LIMIT ?, ?`, [
                 startingPoint,
                 count
             ])
+            
 
             const response = {
                 count: caseCount[0]["COUNT(*)"],
-                result: cases
+                result: cases.map(x => ({...x, timeSince: timeSince(new Date(x.time))}))
+            }
+
+            return res.send(response)
+        } catch(error) {
+            console.log(error)
+            return res.sendStatus(500)
+        }
+    })
+
+    app.get('/cases/filter', checkToken, async(req, res) => {
+        const pageNumber = req.query.p || 1;
+        const caseType = parseInt(req.query.type);
+        const count = parseInt(req.query.c) || 10;
+
+        const startingPoint = (pageNumber - 1) * count;
+
+        try {
+            const caseCount = await sql.awaitQuery("SELECT COUNT(*) from support_cases WHERE case_type = ?", [caseType]);
+
+            const cases = await sql.awaitQuery(`SELECT id, support_cases.uid, support_cases.staff_member as staffMember, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName FROM support_cases 
+            INNER JOIN players
+            ON players.pid = support_cases.staff_member
+            WHERE support_cases.case_type = ?
+            ORDER BY id DESC LIMIT ?, ?`, [
+                caseType,
+                startingPoint,
+                count
+            ])
+            
+
+            const response = {
+                count: caseCount[0]["COUNT(*)"],
+                result: cases.map(x => ({...x, timeSince: timeSince(new Date(x.time))}))
             }
 
             return res.send(response)

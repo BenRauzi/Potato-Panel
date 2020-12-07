@@ -57,7 +57,7 @@ const Staff = () => {
         <>
             <Title title="Staff Roster"/>
             <h1>Staff</h1>
-            Search for Staff
+            <p>Search for Staff</p>
 
             
 
