@@ -12,10 +12,8 @@ const Login = () => {
 
     if(user) return <Redirect to="/"/>
 
-    let validateForm = () => {
-        return username.length > 0 && password.length > 0;
-    }
-
+    let validateForm = () => (username.length > 0 && password.length > 0);
+    
     const handleLogin = (event) => {
         event.preventDefault();
 
@@ -30,13 +28,6 @@ const Login = () => {
 
                 <button disabled={!validateForm()} type="submit">Login</button>
             </form>
-
-            {username}
-            {password}
-
-            <br/>Test: {JSON.stringify(user)}
-
-            <button onClick={() => logout(setUser)}>Logout</button>
         </div>
     )
 }
