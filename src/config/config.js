@@ -90,7 +90,7 @@ export const CaseTypes = {
     "General": 1,
     "Tag Changes": 2,
     "Compensation": 3,
-    "Player Reports": 4
+    "Player Report": 4
 }
 
 export const CasePositions = {
