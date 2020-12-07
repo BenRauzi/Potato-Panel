@@ -2,7 +2,6 @@ const { checkToken } = require("../services/authService");
 
 const { v4: uuid } = require('uuid');
 
-
 const casesController = (app, sql) => {
     app.get('/cases', checkToken, async(req, res) => {
         const pageNumber = req.query.p || 1;
