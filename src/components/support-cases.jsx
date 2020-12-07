@@ -9,7 +9,6 @@ const SupportCases = ({pid}) => {
 
     useEffect(() => {
         const getCases = async() => {
-            console.log(pid)
             const cases = await getUserCases(pid)
             setCases(cases)
         }
@@ -30,7 +29,7 @@ const SupportCases = ({pid}) => {
                     <>
                         {
                             cases.map(({id, uid, staffMemberName, caseType, timeSince, reporter }, idx) => (
-                                <Link to={`/case/${uid}`} className="table-row">
+                                <Link to={`/case/${uid}`} key={idx} className="table-row">
                                     <div>{id}</div>
                                     <div>{staffMemberName}</div>
                                     <div>{getCaseType(caseType)}</div>
@@ -41,7 +40,7 @@ const SupportCases = ({pid}) => {
                         }
                     </> : 
                     <div className="table-row">
-                        <div>No Containers Found</div>
+                        <div>No Cases Found</div>
                     </div>
                 }
             </div>
