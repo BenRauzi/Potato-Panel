@@ -6,10 +6,12 @@ import { getCases, getFilteredCases } from "../services/StaffService";
 import { CaseTypes } from "../config/config"
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { getTimeSince } from "../services/HelperService";
 
 const CasesPage = () => {
     const [cases, setCases] = React.useState({
         count: 0,
+        time: new Date(),
         result: []
     })
 
@@ -69,12 +71,12 @@ const CasesPage = () => {
                 </div>
                 {
                     cases.result.length > 0 ?
-                    cases.result.map(({id, uid, staffMemberName, caseType, timeSince}, idx) => (
+                    cases.result.map(({id, uid, staffMemberName, caseType, time}, idx) => (
                         <Link to={`/case/${uid}`} key={idx} className="table-row">
                             <div>{id}</div>
                             <div>{staffMemberName}</div>
                             <div>{caseType}</div>
-                            <div>{timeSince}</div>
+                            <div>{getTimeSince(new Date(time), new Date(cases.time))}</div>
                         </Link>
                     )) :
                     <div className="table-row">

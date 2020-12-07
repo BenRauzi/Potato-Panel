@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getCasePosition, getCaseType } from "../services/HelperService";
+import { getCasePosition, getCaseType, getTimeSince } from "../services/HelperService";
 import { getUserCases } from "../services/UserService";
 
 const SupportCases = ({pid}) => {
@@ -28,13 +28,13 @@ const SupportCases = ({pid}) => {
                     cases.length > 0 ?
                     <>
                         {
-                            cases.map(({id, uid, staffMemberName, caseType, timeSince, reporter }, idx) => (
+                            cases.map(({id, uid, staffMemberName, caseType, time, reporter, currentTime }, idx) => (
                                 <Link to={`/case/${uid}`} key={idx} className="table-row">
                                     <div>{id}</div>
                                     <div>{staffMemberName}</div>
                                     <div>{getCaseType(caseType)}</div>
                                     <div>{getCasePosition(reporter)}</div>
-                                    <div>{timeSince}</div>
+                                    <div>{getTimeSince(new Date(time), new Date(currentTime))}</div>
                                 </Link>
                             ))
                         }
