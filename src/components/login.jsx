@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { login, logout } from '../services/AuthService';
+import { login } from '../services/AuthService';
 import UserContext from '../services/UserContext';
 
 const Login = () => {
