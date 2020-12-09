@@ -42,9 +42,21 @@ export const getFilteredCases = async (page, count, caseType) => {
     return res
 };
 
+export const getCase = async (caseId) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/case?id=${caseId}`,  {
+        method: "GET",
+        credentials: "include"
+    })
+
+    const res = await response.json();
+
+    return res
+};
+
 export default {
     getStaff,
     searchStaff,
     getCases,
-    getFilteredCases
+    getFilteredCases,
+    getCase,
 };

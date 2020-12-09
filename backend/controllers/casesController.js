@@ -101,8 +101,15 @@ const casesController = (app, sql) => {
         if(!caseId) return res.sendStatus(204)
 
         try {
-            const result = await sql.awaitQuery(` SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter FROM support_cases INNER JOIN support_case_members 
+            const result = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter, p1.name, p2.name AS staff_name, p3.name AS staff_helper_name FROM support_cases 
+                INNER JOIN support_case_members 
                 ON support_case_members.case_id = support_cases.uid 
+                INNER JOIN players p1
+                ON support_case_members.pid = p1.pid
+                INNER JOIN players p2
+                ON support_cases.staff_member = p2.pid
+                INNER JOIN players p3
+                ON support_cases.staff_helper = p3.pid
                 WHERE support_cases.uid = ?
             `, [
                 caseId
@@ -113,7 +120,8 @@ const casesController = (app, sql) => {
                 ...result[0],
                 pid: undefined,
                 reporter: undefined,
-                members: result.map(({pid, reporter}) => ({pid: pid, reporter: reporter}))
+                name: undefined,
+                members: result.map(({pid, reporter, name}) => ({pid: pid, reporter: reporter, name: name}))
             }
             return res.send(caseData)
         } catch(error) {
