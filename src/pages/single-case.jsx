@@ -46,8 +46,8 @@ const SingleCasePage = ({match}) => {
             <div className="table">
                 <div className="table-head padded-table-head">
                     <div>Name</div>
-                    <div>Id</div>
                     <div>Position</div>
+                    <div>Player ID</div>
                 </div>
                 {
                     currentCase.members.length === 0 ?
@@ -59,8 +59,8 @@ const SingleCasePage = ({match}) => {
                              currentCase.members.map(({pid, name, reporter}, idx) => (
                                 <div key={idx} className="table-row">
                                     <div>{name}</div>
-                                    <div>{pid}</div>
                                     <div>{getCasePosition(reporter)}</div>
+                                    <div>{pid}</div>
                                 </div>
                             ))
                         }
