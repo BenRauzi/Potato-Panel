@@ -12,6 +12,7 @@
   "author": "Ben Rauzi",
   "license": "GPL-3.0",
   "dependencies": {
+    "battle-node": "^0.1.2",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
