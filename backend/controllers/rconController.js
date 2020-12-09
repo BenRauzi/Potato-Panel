@@ -1,7 +1,6 @@
 const rconController = (app, rCon) => {
     // Fetch All Players
     app.get('/rcon/players', (req, res) => {
-        console.log(rCon);
         rCon.sendCommand('players', (players) => {
             // Split player list string (Remove first 3, and last line)
             const playersStringArray = players.split("\n");
