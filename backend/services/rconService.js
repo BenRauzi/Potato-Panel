@@ -18,8 +18,8 @@ rCon.on('login', (err, success) => {
     if (success) {
         console.log('Logged into RCON successfully.');
     } else {
-        console.log('Unsuccessful logon attempt to RCON, please check inputs.')
-    }
+        console.log('Unsuccessful logon attempt to RCON, please check inputs.');
+    };
 });
 
 module.exports = { rCon };
