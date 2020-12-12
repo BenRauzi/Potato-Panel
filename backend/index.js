@@ -53,7 +53,7 @@ housesController(router, connectionAsync);
 experienceController(router, connectionAsync);
 webController(router, connectionAsync);
 casesController(router, connectionAsync);
-rconController(router, rCon);
+rconController(router, rCon, connectionAsync);
 
 module.exports = app;
 module.exports.handler = serverless(app);
