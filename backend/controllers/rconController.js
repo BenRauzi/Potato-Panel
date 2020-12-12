@@ -18,33 +18,6 @@ const rconController = (app, rCon) => {
         });
     });
 
-    // Fetch a Player (Single)
-    app.get('/rcon/player', (req, res) => {
-        const playersID = req.query.id || 0; // Players ID
-
-        // Semi-Duplicate fkn code... YAAAAAAYY
-        rCon.sendCommand('players', (players) => {
-            const playersStringArray = players.split("\n");
-            playersStringArray.splice(0, 3);
-            playersStringArray.pop();
-            let playersInformation = [];
-
-            for (const player of playersStringArray) {
-                if (playersInformation.length > 0) break;
-                const splitArray = player.split(" ");
-                const playerFiltered = splitArray.filter(e => e);
-                const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
-                playerFiltered.splice(4, playerFiltered.length);
-                playerFiltered.push(playersNameArray.join(" "));
-
-                if (playerFiltered[0] == playersID) {
-                    playersInformation.push(playerFiltered);
-                };
-            };
-            res.send(playersInformation);
-        });
-    });
-
     // Fetch All Players
     app.get('/rcon/players', (req, res) => {
         rCon.sendCommand('players', (players) => {
@@ -55,11 +28,17 @@ const rconController = (app, rCon) => {
 
             // Filter through each individual players information, converting the string to an array
             let playersArray = [];
-            playersStringArray.forEach(player => {
+            for (const player of playersStringArray) {
                 // Filter ID, IP:PORT, Ping & GUID
                 const splitArray = player.split(" ");
                 const playerFiltered = splitArray.filter(e => e);
                 const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
+
+                // Remove port from players IP
+                playerFiltered[1] = playerFiltered[1].split(":")[0];
+
+                // Remove suffix from players GUID
+                playerFiltered[3] = playerFiltered[3].split("(")[0];
 
                 // Get players name, and join them to one string (if multiple words)
                 playerFiltered.splice(4, playerFiltered.length);
@@ -67,8 +46,35 @@ const rconController = (app, rCon) => {
             
                 // Push filtered players data to master array
                 playersArray.push(playerFiltered);
-            });
+            };
             res.send(playersArray);
+        });
+    });
+
+    // Fetch a Player (Single)
+    app.get('/rcon/player', (req, res) => {
+        const playersID = req.query.id || 0; // Players ID
+
+        // Semi-Duplicate fkn code... YAAAAAAYY
+        rCon.sendCommand('players', (players) => {
+            const playersStringArray = players.split("\n");
+            playersStringArray.splice(0, 3);
+            playersStringArray.pop();
+            let playersInformation = [];
+            for (const player of playersStringArray) {
+                if (playersInformation.length > 0) break;
+                const splitArray = player.split(" ");
+                const playerFiltered = splitArray.filter(e => e);
+                const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
+                playerFiltered[1] = playerFiltered[1].split(":")[0];
+                playerFiltered[3] = playerFiltered[3].split("(")[0];
+                playerFiltered.splice(4, playerFiltered.length);
+                playerFiltered.push(playersNameArray.join(" "));
+                if (playerFiltered[0] == playersID) {
+                    playersInformation.push(playerFiltered);
+                };
+            };
+            res.send(playersInformation);
         });
     });
 
@@ -87,6 +93,23 @@ const rconController = (app, rCon) => {
             }); 
         });
     });
+
+    // Create the reload bans function -- Need to do it this way to prevent timing out because I once again, cbf setting up async
+    const reloadServerBans = () => {
+        console.log("Now reloading the bans on the server"); // DEBUG ONLY
+        rCon.sendCommand('writeBans', (err) => {
+            if (err) {
+                console.log(err);
+                return res.sendStatus(503);
+            };
+            rCon.sendCommand('loadBans', (err) => {
+                if (err) {
+                    console.log(err);
+                    return res.sendStatus(503);
+                };
+            });
+        });
+    };
 
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', (req, res) => { // Will add checkToken
@@ -143,23 +166,6 @@ const rconController = (app, rCon) => {
                 };
 
                 console.log("Formatted Ban Reason: " + banReason); // DEBUG ONLY
-
-                // Create the reload bans function -- Need to do it this way to prevent timing out because I once again, cbf setting up async
-                const reloadServerBans = () => {
-                    console.log("Now reloading the bans on the server"); // DEBUG ONLY
-                    rCon.sendCommand('writeBans', (err) => {
-                        if (err) {
-                            console.log(err);
-                            return res.sendStatus(503);
-                        };
-                        rCon.sendCommand('loadBans', (err) => {
-                            if (err) {
-                                console.log(err);
-                                return res.sendStatus(503);
-                            };
-                        });
-                    });
-                };
 
                 // Now handle the actual ban
                 switch (banIDType) {
@@ -233,6 +239,54 @@ const rconController = (app, rCon) => {
 
                 res.sendStatus(200);
             });
+        });
+    });
+
+    // Remove a Ban (By ID -- Unban)
+    app.post('/rcon/unban', (req, res) => { // Will add checkToken
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            const { banID, reason } = req.body;
+            const user = "Nicholas Jo'Foski"; // data.user;
+
+            rCon.sendCommand(`removeBan ${banID}`, (err) => {
+                if (err) {
+                    console.log(err);
+                    return res.sendStatus(503);
+                };
+                reloadServerBans();
+                res.sendStatus(200);
+            });
+        });
+    });
+
+    // Fetch All Bans
+    app.get('/rcon/bans', (req, res) => {
+        reloadServerBans();
+        rCon.sendCommand('bans', (bans) => {
+            // Split player list string (Remove first 3, and last line)
+            let bansStringArray = bans.split("\n");
+            bansStringArray.splice(0, 3);
+            bansStringArray = bansStringArray.filter(e => e)
+
+            // Remove IP ban labels
+            bansStringArray.splice(bansStringArray.indexOf("IP Bans:"), 3);
+
+            // Filter through each individual ban, converting the string to an array
+            let bansArray = [];
+            for (const ban of bansStringArray) {
+                // Filter ID, BannedID, Minutes Left & Reason
+                const splitArray = ban.split(" ");
+                const banFiltered = splitArray.filter(e => e);
+                const banReason = banFiltered.slice(3, banFiltered.length);
+
+                // Get players name, and join them to one string (if multiple words)
+                banFiltered.splice(3, banFiltered.length);
+                banFiltered.push(banReason.join(" "));
+            
+                // Push filtered ban data to master array
+                bansArray.push(banFiltered);
+            };
+            res.send(bansArray);
         });
     });
 };
