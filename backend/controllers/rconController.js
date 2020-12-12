@@ -1,7 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require("../services/authService");
+const crypto = require("crypto");
+const moment = require('moment');
+const dotenv = require('dotenv');
 
-const rconController = (app, rCon) => {
+dotenv.config();
+
+const rconController = (app, rCon, sql) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
@@ -112,9 +117,9 @@ const rconController = (app, rCon) => {
     };
 
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
-    app.post('/rcon/ban', (req, res) => { // Will add checkToken
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
-            rCon.sendCommand('players', (players) => {
+    app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
+            rCon.sendCommand('players', async(players) => {
                 const { banID, banLength, reason } = req.body;
                 const banningUser = "Nicholas Jo'Foski"; // data.user;
         
@@ -135,6 +140,7 @@ const rconController = (app, rCon) => {
                 playersStringArray.splice(0, 3);
                 playersStringArray.pop();
                 
+                let playersGUID = "";
                 for (const player of playersStringArray) {
                     if (playerConnected) break;
                     const splitArray = player.split(" ");
@@ -148,7 +154,8 @@ const rconController = (app, rCon) => {
                     // If player is connected, then set 'pid' to the players ingame ID despite the input ID
                     if (playersData[banIDType] === banID) {
                         playerConnected = true;
-                        pid = playerData[0];
+                        pid = playersData[0];
+                        playersGUID = playersData[2];
                     };
                 };
 
@@ -158,12 +165,15 @@ const rconController = (app, rCon) => {
                 // If the player isn't connected, and the banIDType is 0 (ID) then cancel request, and return 'Not Found'
                 if (!playerConnected && banIDType === 0) return res.sendStatus(404);
 
-                // Format the ban reason -- Plan on changing this to a simple message that includes the ban id, and a basic way to appeal it
-                if (banLength === 0) {
-                    banReason = `You have been permenantly banned by ${banningUser}.`;
-                } else {
-                    banReason = `You have been banned for ${banLength} minutes by ${banningUser}.`;
+                // Generate ban appeal ID, and format the ban message
+                const rand = crypto.randomBytes(10);
+                let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                let banAppealID = "";
+                for(let i=0; i < rand.length; i++) {
+                    let index = rand[i] % chars.length;
+                    banAppealID += chars[index];
                 };
+                const banReason = `(   Ban ID: ${banAppealID} - appeal.arma-studios.com`;
 
                 console.log("Formatted Ban Reason: " + banReason); // DEBUG ONLY
 
@@ -184,7 +194,7 @@ const rconController = (app, rCon) => {
                         if (playerConnected) {
                             console.log("Player is online, so kicking then banning"); // DEBUG ONLY
                             // The player is currently on the server, therefore kick them off the server first then ip ban them using 'addBan'
-                            rCon.sendCommand(`kick ${pid} ${banReason}`, (err) => {
+                            rCon.sendCommand(`kick ${pid} Account Banned - ${banReason.substring(4)}`, (err) => {
                                 if (err) {
                                     console.log(err);
                                     return res.sendStatus(503);
@@ -237,7 +247,39 @@ const rconController = (app, rCon) => {
                         break;
                 };
 
-                res.sendStatus(200);
+                // Log ban to database
+                try {
+                    let banTable = "bans";
+                    let banningLogID = banID;
+                    let banColumn = "guid";
+                    if (banIDType === 1) {
+                        banTable = "ip_bans";
+                        banColumn = "ip";
+                        // Encrypt IP
+                        //const algorithm = 'aes-256-ctr';
+                        //const iv2 = crypto.randomBytes(banningLogID.length);
+                        //const cipher = crypto.createCipheriv(algorithm, process.env.IP_SECRET, iv2);
+                        //const encrypted = Buffer.concat([cipher.update(banningLogID), cipher.final()]);
+                        //banningLogID = encrypted.toString('hex');
+                    };
+
+                    if (banIDType === 0) {
+                        banningLogID = playersGUID;
+                    };
+
+                    console.log("Players GUID: " + playersGUID);
+
+                    // Get the expire datestamp
+                    const curDBTime = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP()`);
+                    const time_expire = moment(curDBTime[0]["CURRENT_TIMESTAMP()"]).add(banLength, 'm').toDate();
+
+                    const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, time_expire, banned_by, reason) VALUES (?, ?, ?, ?, ?)`, [banAppealID, banningLogID, time_expire, data.pid, reason]);
+        
+                    res.sendStatus(200);
+                } catch (error) {
+                    console.log(error)
+                    return res.sendStatus(500)
+                };
             });
         });
     });
