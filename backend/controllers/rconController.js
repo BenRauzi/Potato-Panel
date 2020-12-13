@@ -19,7 +19,7 @@ const rconController = (app, rCon, sql) => {
                     console.log(err);
                     return res.sendStatus(503);
                 };
-                res.sendStatus(200);
+                return res.sendStatus(200);
             });
         });
     });
@@ -31,6 +31,8 @@ const rconController = (app, rCon, sql) => {
             const playersStringArray = players.split("\n");
             playersStringArray.splice(0, 3);
             playersStringArray.pop();
+
+            console.log(playersStringArray);
 
             // Filter through each individual players information, converting the string to an array
             let playersArray = [];
@@ -50,11 +52,21 @@ const rconController = (app, rCon, sql) => {
                 playerFiltered.splice(4, playerFiltered.length);
                 playerFiltered.push(playersNameArray.join(" "));
 
+                const curPlayer = {
+                    id: playerFiltered[0],
+                    ip: playerFiltered[1],
+                    ping: playerFiltered[2],
+                    guid: playerFiltered[3],
+                    name: playerFiltered[4]
+                };
+
                 // Push filtered players data to master array
-                playersArray.push(playerFiltered);
+                playersArray.push(curPlayer);
             };
-            res.send(playersArray);
+
+            return res.send(playersArray);
         });
+        
     });
 
     // Fetch a Player (Single)
@@ -66,9 +78,9 @@ const rconController = (app, rCon, sql) => {
             const playersStringArray = players.split("\n");
             playersStringArray.splice(0, 3);
             playersStringArray.pop();
-            let playersInformation = [];
+            let playersInformation;
             for (const player of playersStringArray) {
-                if (playersInformation.length > 0) break;
+                if (playersInformation) break;
                 const splitArray = player.split(" ");
                 const playerFiltered = splitArray.filter(e => e);
                 const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
@@ -76,11 +88,16 @@ const rconController = (app, rCon, sql) => {
                 playerFiltered[3] = playerFiltered[3].split("(")[0];
                 playerFiltered.splice(4, playerFiltered.length);
                 playerFiltered.push(playersNameArray.join(" "));
-                if (playerFiltered[0] == playersID) {
-                    playersInformation.push(playerFiltered);
+
+                playersInformation = {
+                    id: playerFiltered[0],
+                    ip: playerFiltered[1],
+                    ping: playerFiltered[2],
+                    guid: playerFiltered[3],
+                    name: playerFiltered[4]
                 };
             };
-            res.send(playersInformation);
+            return res.send(playersInformation);
         });
     });
 
