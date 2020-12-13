@@ -66,7 +66,6 @@ const rconController = (app, rCon, sql) => {
 
             return res.send(playersArray);
         });
-        
     });
 
     // Fetch a Player (Single)
@@ -450,8 +449,8 @@ const rconController = (app, rCon, sql) => {
 
                 const curBan = {
                     id: banFiltered[0],
-                    bid: banFiltered[1],
-                    minutes: banFiltered[2],
+                    banned_id: banFiltered[1],
+                    duration: banFiltered[2],
                     reason: banFiltered[3],
                 };
 
