@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require("../services/authService");
 const crypto = require("crypto");
+const CryptoJS = require("crypto-js");
 const moment = require('moment');
 const dotenv = require('dotenv');
 
@@ -8,10 +9,10 @@ dotenv.config();
 
 const rconController = (app, rCon, sql) => {
     // Send a Message (Global & Private)
-    app.post('/rcon/message', (req, res) => {
+    app.post('/rcon/message', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
             let { pid, message } = req.body;
-            const user = "Nicholas Jo'Foski"; // data.user;
+            const user = data.user;
 
             rCon.sendCommand(`say ${pid} [${user}] ${message}`, (err) => {
                 if (err) {
@@ -24,7 +25,7 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Fetch All Players
-    app.get('/rcon/players', (req, res) => {
+    app.get('/rcon/players', checkToken, (req, res) => {
         rCon.sendCommand('players', (players) => {
             // Split player list string (Remove first 3, and last line)
             const playersStringArray = players.split("\n");
@@ -48,7 +49,7 @@ const rconController = (app, rCon, sql) => {
                 // Get players name, and join them to one string (if multiple words)
                 playerFiltered.splice(4, playerFiltered.length);
                 playerFiltered.push(playersNameArray.join(" "));
-            
+
                 // Push filtered players data to master array
                 playersArray.push(playerFiltered);
             };
@@ -57,7 +58,7 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Fetch a Player (Single)
-    app.get('/rcon/player', (req, res) => {
+    app.get('/rcon/player', checkToken, (req, res) => {
         const playersID = req.query.id || 0; // Players ID
 
         // Semi-Duplicate fkn code... YAAAAAAYY
@@ -84,8 +85,8 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Kick a Player (By ID)
-    app.post('/rcon/kick', (req, res) => { // Will add checkToken
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    app.post('/rcon/kick', checkToken, (req, res) => { // Will add checkToken
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
             const { pid, reason } = req.body;
             const user = "Nicholas Jo'Foski"; // data.user;
 
@@ -95,7 +96,7 @@ const rconController = (app, rCon, sql) => {
                     return res.sendStatus(503);
                 };
                 res.sendStatus(200);
-            }); 
+            });
         });
     });
 
@@ -119,10 +120,10 @@ const rconController = (app, rCon, sql) => {
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
-            rCon.sendCommand('players', async(players) => {
+            rCon.sendCommand('players', async (players) => {
                 const { banID, banLength, reason } = req.body;
                 const banningUser = "Nicholas Jo'Foski"; // data.user;
-        
+                console.log(banLength);
                 // Set the banID type
                 let banIDType = 0; // Default - ID
                 let pid = banID;
@@ -139,7 +140,7 @@ const rconController = (app, rCon, sql) => {
                 const playersStringArray = players.split("\n");
                 playersStringArray.splice(0, 3);
                 playersStringArray.pop();
-                
+
                 let playersGUID = "";
                 for (const player of playersStringArray) {
                     if (playerConnected) break;
@@ -166,10 +167,14 @@ const rconController = (app, rCon, sql) => {
                 if (!playerConnected && banIDType === 0) return res.sendStatus(404);
 
                 // Generate ban appeal ID, and format the ban message
-                const rand = crypto.randomBytes(10);
+                let idLength = 10;
+                if (banIDType === 1) {
+                    idLength = 11;
+                };
+                const rand = crypto.randomBytes(idLength);
                 let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                 let banAppealID = "";
-                for(let i=0; i < rand.length; i++) {
+                for (let i = 0; i < rand.length; i++) {
                     let index = rand[i] % chars.length;
                     banAppealID += chars[index];
                 };
@@ -200,6 +205,7 @@ const rconController = (app, rCon, sql) => {
                                     return res.sendStatus(503);
                                 };
                                 // Now ban the IP using `addBan`
+
                                 rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, (err) => {
                                     if (err) {
                                         console.log(err);
@@ -211,6 +217,8 @@ const rconController = (app, rCon, sql) => {
                         } else {
                             console.log("Player isn't online, so just banning the IP"); // DEBUG ONLY
                             // The player isn't currently on the server, therefore ban the IP using `addBan` -- Copying code because I cbf setting up async...
+                            console.log(`addBan ${banID} ${banLength} ${banReason}`);
+                            console.log(banLength);
                             rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, (err) => {
                                 if (err) {
                                     console.log(err);
@@ -255,12 +263,16 @@ const rconController = (app, rCon, sql) => {
                     if (banIDType === 1) {
                         banTable = "ip_bans";
                         banColumn = "ip";
+
                         // Encrypt IP
-                        //const algorithm = 'aes-256-ctr';
-                        //const iv2 = crypto.randomBytes(banningLogID.length);
-                        //const cipher = crypto.createCipheriv(algorithm, process.env.IP_SECRET, iv2);
-                        //const encrypted = Buffer.concat([cipher.update(banningLogID), cipher.final()]);
-                        //banningLogID = encrypted.toString('hex');
+                        encrypted = CryptoJS.AES.encrypt(banningLogID, process.env.IP_SECRET);
+                        banningLogID = encrypted.toString();
+                        console.log("Encrypted: " + banningLogID);
+
+                        // Decrypt IP - TESTING
+                        //var bytes = CryptoJS.AES.decrypt(encrypted.toString(), process.env.IP_SECRET);
+                        //var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+                        //console.log("Decrypted: " + plaintext);
                     };
 
                     if (banIDType === 0) {
@@ -269,13 +281,17 @@ const rconController = (app, rCon, sql) => {
 
                     console.log("Players GUID: " + playersGUID);
 
-                    // Get the expire datestamp
-                    const curDBTime = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP()`);
-                    const time_expire = moment(curDBTime[0]["CURRENT_TIMESTAMP()"]).add(banLength, 'm').toDate();
+                    if (banLength < 1) {
+                        const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, banned_by, reason) VALUES (?, ?, ?, ?)`, [banAppealID, banningLogID, data.pid, reason]);
+                    } else {
+                        // Get the expire datestamp
+                        const curDBTime = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP()`);
+                        const time_expire = moment(curDBTime[0]["CURRENT_TIMESTAMP()"]).add(banLength, 'm').toDate();
 
-                    const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, time_expire, banned_by, reason) VALUES (?, ?, ?, ?, ?)`, [banAppealID, banningLogID, time_expire, data.pid, reason]);
-        
-                    res.sendStatus(200);
+                        const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, time_expire, banned_by, reason) VALUES (?, ?, ?, ?, ?)`, [banAppealID, banningLogID, time_expire, data.pid, reason]);
+                    };
+
+                    return res.sendStatus(200);
                 } catch (error) {
                     console.log(error)
                     return res.sendStatus(500)
@@ -284,27 +300,117 @@ const rconController = (app, rCon, sql) => {
         });
     });
 
-    // Remove a Ban (By ID -- Unban)
-    app.post('/rcon/unban', (req, res) => { // Will add checkToken
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    // Remove a Ban (By Ban Appeal ID or Players GUID / IP -- Unban)
+    app.post('/rcon/unban', checkToken, async(req, res) => { // Will add checkToken
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
             const { banID, reason } = req.body;
-            const user = "Nicholas Jo'Foski"; // data.user;
+            const user = data.user;
 
-            rCon.sendCommand(`removeBan ${banID}`, (err) => {
-                if (err) {
-                    console.log(err);
-                    return res.sendStatus(503);
+            // Check what type of ID was given
+            let bannedID = banID;
+            let banIDType = 0; // Default - Appeal ID
+            let banTable = "bans";
+            if (banID.includes(".")) { // IP
+                banIDType = 1;
+                banTable = "ip_bans";
+            } else if (banID.length > 15) { // GUID
+                banIDType = 2;
+            };
+
+            // Determine if the given appeal ID is for a guid or ip ban
+            if (banIDType === 0 && banID.length === 11) {
+                banTable = "ip_bans";
+            };
+            console.log(banIDType);
+
+            // Set the correct column name
+            let selectedColumn = "guid";
+            if (banTable === "ip_bans") {
+                selectedColumn = "ip";
+            };
+
+            // Get the banned ID if the given input was an Appeal ID
+            let encryptedIP;
+            if (banIDType === 0) {
+                let query = await sql.awaitQuery(`SELECT ${selectedColumn} FROM ${banTable} WHERE id=?`, [banID]);
+                if (query.length <= 0) return res.sendStatus(404);
+                bannedID = query[0][selectedColumn];
+
+                // Decrypt result if an IP
+                if (banTable === "ip_bans") {
+                    encryptedIP = bannedID;
+                    const bytes = CryptoJS.AES.decrypt(bannedID.toString(), process.env.IP_SECRET);
+                    bannedID = bytes.toString(CryptoJS.enc.Utf8);
                 };
-                reloadServerBans();
-                res.sendStatus(200);
+            };
+            console.log(bannedID);
+
+            
+            // Now get all of the current bans on the server
+            reloadServerBans();
+            rCon.sendCommand('bans', async (bans) => {
+                console.log("Encrypted IP: " + encryptedIP);
+                // Split player list string (Remove first 3, and last line)
+                let bansStringArray = bans.split("\n");
+                bansStringArray.splice(0, 3);
+                bansStringArray = bansStringArray.filter(e => e)
+
+                // Remove IP ban labels
+                bansStringArray.splice(bansStringArray.indexOf("IP Bans:"), 3);
+
+                console.log("Banned ID: " + bannedID);
+
+                // Filter through each individual ban, converting the string to an array
+                let banFound = [];
+                for (const ban of bansStringArray) {
+                    if (banFound.length > 0) break;
+                    // Filter ID, BannedID, Minutes Left & Reason
+                    const splitArray = ban.split(" ");
+                    const banFiltered = splitArray.filter(e => e);
+                    banFiltered.splice(2, banFiltered.length);
+                    
+                    console.log("Ban Filtered: " + banFiltered);
+                    console.log(banFiltered[1]);
+
+                    if (banFiltered[1] === bannedID) {
+                        banFound.push(banFiltered[0]);
+                    };
+                };
+                console.log(banFound);
+
+                if (banFound.length === 0) return res.sendStatus(404);
+
+                rCon.sendCommand(`removeBan ${banFound[0]}`, async(err) => {
+                    if (err) {
+                        console.log(err);
+                        return res.sendStatus(503);
+                    };
+                    reloadServerBans();
+
+                    // Now update the database
+                    let whereColumn = "guid";
+                    if (banTable === "ip_bans") {
+                        whereColumn = "ip";
+                        bannedID = encryptedIP;
+                    };
+
+                    console.log(whereColumn);
+                    console.log(bannedID);
+
+                    const unbanQuery = await sql.awaitQuery(`INSERT INTO unbans (id, banned_id, time_ban, time_expire, banned_by, ban_reason, unbanned_by, unban_reason) SELECT id, ${whereColumn}, time_ban, time_expire, banned_by, reason, ?, ? FROM ${banTable} WHERE ${whereColumn} = '${bannedID}'`, [data.pid, reason]);
+                    const deleteBanQuery = await sql.awaitQuery(`DELETE FROM ${banTable} WHERE ${whereColumn} = ?`, [bannedID]);
+                    if (unbanQuery.length <= 0 || deleteBanQuery.length <= 0) return res.sendStatus(404);
+                
+                    return res.sendStatus(200);
+                });
             });
         });
     });
 
     // Fetch All Bans
-    app.get('/rcon/bans', (req, res) => {
+    app.get('/rcon/bans', checkToken, async (req, res) => {
         reloadServerBans();
-        rCon.sendCommand('bans', (bans) => {
+        rCon.sendCommand('bans', async (bans) => {
             // Split player list string (Remove first 3, and last line)
             let bansStringArray = bans.split("\n");
             bansStringArray.splice(0, 3);
@@ -324,11 +430,11 @@ const rconController = (app, rCon, sql) => {
                 // Get players name, and join them to one string (if multiple words)
                 banFiltered.splice(3, banFiltered.length);
                 banFiltered.push(banReason.join(" "));
-            
+
                 // Push filtered ban data to master array
                 bansArray.push(banFiltered);
             };
-            res.send(bansArray);
+            return res.send(bansArray);
         });
     });
 };
