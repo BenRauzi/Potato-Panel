@@ -7,6 +7,8 @@ import { CaseTypes } from "../config/config"
 import { Link } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { getTimeSince } from "../services/HelperService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const CasesPage = () => {
     const [cases, setCases] = React.useState({
@@ -51,7 +53,7 @@ const CasesPage = () => {
 
             <div className="filters">
                 <div className="filter">
-                    Minimum Rank: 
+                    Case Type: 
                     <select value={caseType} onChange={(e) => setCaseType(parseInt(e.target.value))}>
                         {
                             Object.entries(CaseTypes).map((values, idx) => (
@@ -59,6 +61,11 @@ const CasesPage = () => {
                             ))
                         }
                     </select>
+                </div>
+                <div className="add-button-box">
+                    <Link to="/case/new">
+                        New Case <FontAwesomeIcon icon={faPlus}/>
+                    </Link>
                 </div>
             </div>
 
@@ -107,8 +114,6 @@ const CasesPage = () => {
                         activeClassName={'active'}
                     />
                 </div>
-               
-               
             </div>
         </>
     )
