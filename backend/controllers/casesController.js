@@ -42,7 +42,7 @@ const casesController = (app, sql) => {
         const startingPoint = (pageNumber - 1) * count;
 
         try {
-            const caseCount = await sql.awaitQuery("SELECT CURRENT_TIMESTAMP COUNT(*) from support_cases WHERE case_type = ?", [caseType]);
+            const caseCount = await sql.awaitQuery("SELECT CURRENT_TIMESTAMP, COUNT(*) from support_cases WHERE case_type = ?", [caseType]);
 
             const cases = await sql.awaitQuery(`SELECT id, support_cases.uid, support_cases.staff_member as staffMember, support_cases.case_type as caseType, support_cases.time, players.name as staffMemberName FROM support_cases 
             INNER JOIN players
