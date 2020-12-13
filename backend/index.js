@@ -5,7 +5,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const authController = require("./controllers/authController");
 const userController = require("./controllers/userController");
-const { sql, connectionAsync } = require("./services/sqlService")
+const { sql, connectionAsync } = require("./services/sqlService");
+const { rCon } = require("./services/rconService");
 const policeController = require("./controllers/policeController");
 const medicController = require("./controllers/medicController");
 const staffController = require("./controllers/staffController");
@@ -15,6 +16,7 @@ const housesController = require("./controllers/housesController");
 const experienceController = require("./controllers/experienceController");
 const webController = require("./controllers/webController");
 const casesController = require("./controllers/casesController");
+const rconController = require("./controllers/rconController");
 
 const serverless = require("serverless-http");
 
@@ -23,7 +25,6 @@ const app = express();
 dotenv.config();
 
 const router = express.Router();
-
 
 // middlewares
 app.use(bodyParser.urlencoded({extended:true}))
@@ -52,6 +53,7 @@ housesController(router, connectionAsync);
 experienceController(router, connectionAsync);
 webController(router, connectionAsync);
 casesController(router, connectionAsync);
+rconController(router, rCon, connectionAsync);
 
 module.exports = app;
 module.exports.handler = serverless(app);
