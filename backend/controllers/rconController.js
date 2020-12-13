@@ -118,14 +118,14 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Create the reload bans function -- Need to do it this way to prevent timing out because I once again, cbf setting up async
-    const reloadServerBans = () => {
+    const reloadServerBans = async() => {
         console.log("Now reloading the bans on the server"); // DEBUG ONLY
-        rCon.sendCommand('writeBans', (err) => {
+        rCon.sendCommand('writeBans', async(err) => {
             if (err) {
                 console.log(err);
                 return res.sendStatus(503);
             };
-            rCon.sendCommand('loadBans', (err) => {
+            rCon.sendCommand('loadBans', async(err) => {
                 if (err) {
                     console.log(err);
                     return res.sendStatus(503);
@@ -448,8 +448,15 @@ const rconController = (app, rCon, sql) => {
                 banFiltered.splice(3, banFiltered.length);
                 banFiltered.push(banReason.join(" "));
 
+                const curBan = {
+                    id: banFiltered[0],
+                    bid: banFiltered[1],
+                    minutes: banFiltered[2],
+                    reason: banFiltered[3],
+                };
+
                 // Push filtered ban data to master array
-                bansArray.push(banFiltered);
+                bansArray.push(curBan);
             };
             return res.send(bansArray);
         });
