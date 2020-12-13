@@ -3,8 +3,8 @@ import Title from "../components/title";
 
 import DOMPurify from "dompurify";
 import { CaseTypes } from "../config/config"
-import { getUsers, getUserSteam, searchUsers } from "../services/UserService";
-import { getStaff, searchStaff, submitCase } from "../services/StaffService";
+import { getUserSteam, searchUsers } from "../services/UserService";
+import { searchStaff, submitCase } from "../services/StaffService";
 import { getCasePosition, getStaffRank } from "../services/HelperService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGavel, faMinus, faPlus, faSearch, faTrashAlt } from "@fortawesome/free-solid-svg-icons";

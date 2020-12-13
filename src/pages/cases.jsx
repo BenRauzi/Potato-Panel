@@ -114,8 +114,6 @@ const CasesPage = () => {
                         activeClassName={'active'}
                     />
                 </div>
-               
-               
             </div>
         </>
     )
