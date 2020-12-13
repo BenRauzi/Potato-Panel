@@ -1,0 +1,62 @@
+@mixin case-input {
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 15px;
+    background-color: $bg-tertiary;
+    color: $text-primary;
+
+    width: 98.9%;
+    // margin: 3px 0;
+}
+
+.case-details {
+    @include case-input;
+    height: 80px;
+}
+
+.evidence-input {
+    @include case-input;
+    height: 20px;
+}
+
+.other-input {
+    @include case-input;
+    height: 80px;
+}
+
+
+.steam-profile-support {
+    color: white;
+    text-decoration: none;
+    width: 97%;
+    background: $bg-tertiary;
+    border-radius: 5px;
+    height: 70px;
+    display: flex;
+    padding: 10px;
+
+    img {
+        margin: 10px 10px;
+        width: 55px;
+        height: 55px;
+        border-radius: 50px;
+    }
+}
+
+.case-type {
+    width: 25%;
+    height: 40px;
+    border-radius: 5px;
+    margin-top: 4px;
+    padding: 5px;
+    background: $bg-tertiary;
+
+}
+
+.case-submit-btn {
+    width: 73.5%;
+    height: 40px;
+    margin-left: 5px;
+}

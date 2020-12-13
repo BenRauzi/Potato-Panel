@@ -53,10 +53,27 @@ export const getCase = async (caseId) => {
     return res
 };
 
+export const submitCase = async (caseDetails) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/case/add`,  {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(caseDetails),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+
+    console.log(JSON.stringify(caseDetails))
+    const res = await response.status;
+
+    return res
+}
+
 export default {
     getStaff,
     searchStaff,
     getCases,
     getFilteredCases,
     getCase,
+    submitCase,
 };
