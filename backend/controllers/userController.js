@@ -11,9 +11,9 @@ const userController = (app, sql, sqlAsync) => {
         const startingPoint = (pageN - 1) * count;
 
         sql.query("SELECT COUNT(*) FROM players" , (err, countR) => {
-            if(err) return res.sendstatus(400);
+            if(err) return res.sendStatus(400);
             sql.query(`SELECT uid, name, pid, exp_level, cash, bankacc, coplevel, mediclevel from players LIMIT ?, ?`, [startingPoint, count] , (err, result) => {
-                if(err) return res.sendstatus(400);
+                if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
                     result: result
@@ -84,9 +84,9 @@ const userController = (app, sql, sqlAsync) => {
         const startingPoint = (pageN - 1) * count;
     
         sql.query(`SELECT COUNT(*) FROM players WHERE name like concat('%', ?, '%') order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name`, [uname, uname, uname, uname, startingPoint, count], (err, countR) => {
-            if(err) return res.sendstatus(400);
+            if(err) return res.sendStatus(400);
             sql.query(`SELECT uid, name, pid, exp_level, cash, bankacc, coplevel, mediclevel from players WHERE name like concat('%', ?, '%') order by name like concat(@?, '%') desc, ifnull(nullif(instr(name, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(name, @?), 0), 99999),name LIMIT ?, ?`, [uname, uname, uname, uname, startingPoint, count], (err, result) => {
-                if(err) return res.sendstatus(400);
+                if(err) return res.sendStatus(400);
                 const response = {
                     count: countR[0]["COUNT(*)"],
                     result: result
