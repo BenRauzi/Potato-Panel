@@ -13,7 +13,6 @@ const { getUserByGUID } = require("../services/RCON/getUserByGUID");
 const { reloadServerBans } = require("../services/RCON/reloadServerBans");
 
 const rconController = (app, rCon, sql) => {
-
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
@@ -429,42 +428,60 @@ const rconController = (app, rCon, sql) => {
         });
     });
 
-    // Fetch All Bans
-    app.get('/rcon/bans', checkToken, async(req, res) => {
-        await reloadServerBans(rCon);
-        rCon.sendCommand('bans', async(bans) => {
-            // Split player list string (Remove first 3, and last line)
-            let bansStringArray = bans.split("\n");
-            bansStringArray.splice(0, 3);
-            bansStringArray = bansStringArray.filter(e => e);
+    // Fetch All Active Bans (From DB)
+    app.get('/rcon/bans', checkToken, async (req, res) => {
+        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire = NULL) UNION ALL SELECT * FROM ip_bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire = NULL)");
+        console.log(bansQuery);
 
-            // Remove IP ban labels
-            bansStringArray.splice(bansStringArray.indexOf("IP Bans:"), 3);
-
-            // Filter through each individual ban, converting the string to an array
-            let bansArray = [];
-            for (const ban of bansStringArray) {
-                // Filter ID, BannedID, Minutes Left & Reason
-                const splitArray = ban.split(" ");
-                const banFiltered = splitArray.filter(e => e);
-                const banReason = banFiltered.slice(3, banFiltered.length);
-
-                // Get players name, and join them to one string (if multiple words)
-                banFiltered.splice(3, banFiltered.length);
-                banFiltered.push(banReason.join(" "));
-
-                const curBan = {
-                    id: banFiltered[0],
-                    banned_id: banFiltered[1],
-                    duration: banFiltered[2],
-                    reason: banFiltered[3],
-                };
-
-                // Push filtered ban data to master array
-                bansArray.push(curBan);
+        let bans = [];
+        for (const ban of bansQuery) {
+            console.log(ban);
+            let banType = 0;
+            let bannedUser = ban["guid"];
+            if (bannedUser.length > 35) {
+                banType = 1;
+                const bytes = CryptoJS.AES.decrypt(bannedUser.toString(), process.env.IP_SECRET);
+                bannedUser = bytes.toString(CryptoJS.enc.Utf8);
             };
-            return res.send(bansArray);
-        });
+            bans.push({
+                id: ban["id"],
+                type: banType,
+                user: bannedUser,
+                time_ban: ban["time_ban"],
+                time_expire: ban["time_expire"],
+                banned_by: ban["banned_by"],
+                reason: ban["reason"]
+            });
+        };
+        return res.send(bans);
+    });
+
+    // Fetch All Expired Bans (From DB)
+    app.get('/rcon/expired_bans', checkToken, async (req, res) => {
+        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE time_expire < CURRENT_TIMESTAMP() UNION ALL SELECT * FROM ip_bans WHERE time_expire < CURRENT_TIMESTAMP()");
+        console.log(bansQuery);
+
+        let bans = [];
+        for (const ban of bansQuery) {
+            console.log(ban);
+            let banType = 0;
+            let bannedUser = ban["guid"];
+            if (bannedUser.length > 35) {
+                banType = 1;
+                const bytes = CryptoJS.AES.decrypt(bannedUser.toString(), process.env.IP_SECRET);
+                bannedUser = bytes.toString(CryptoJS.enc.Utf8);
+            };
+            bans.push({
+                id: ban["id"],
+                type: banType,
+                user: bannedUser,
+                time_ban: ban["time_ban"],
+                time_expire: ban["time_expire"],
+                banned_by: ban["banned_by"],
+                reason: ban["reason"]
+            });
+        };
+        return res.send(bans);
     });
 };
 
