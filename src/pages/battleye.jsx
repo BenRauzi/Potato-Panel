@@ -39,7 +39,6 @@ const BattleyePage = () => {
                     </button>
                 </div>
             </div>
-
             
             <div className="table">
                 <div className="table-head">
