@@ -120,10 +120,11 @@ const rconController = (app, rCon, sql) => {
             try {
                 // Connect to RCON
                 const RCON = await rconConnection();
-        
+
                 // If given ID is a GUID, then convert it to their player list ID
-                if (playersID.length > 20) {
-                    playersID = getUserByGUID(playersID, RCON);
+                let usersID = playersID;
+                if (usersID.length > 20) {
+                    usersID = await getUserByGUID(playersID, RCON);
                 };
 
                 // Fetch Players Information
@@ -142,14 +143,19 @@ const rconController = (app, rCon, sql) => {
                         playerFiltered.splice(4, playerFiltered.length);
                         playerFiltered.push(playersNameArray.join(" "));
 
-                        playersInformation = {
-                            id: playerFiltered[0],
-                            ip: playerFiltered[1],
-                            ping: playerFiltered[2],
-                            guid: playerFiltered[3],
-                            name: playerFiltered[4]
+                        if (playerFiltered[0] === usersID) {
+                            playersInformation = {
+                                id: playerFiltered[0],
+                                ip: playerFiltered[1],
+                                ping: playerFiltered[2],
+                                guid: playerFiltered[3],
+                                name: playerFiltered[4]
+                            };
                         };
                     };
+
+                    // If player can't be found, return 404
+                    if (!playersInformation) return res.sendStatus(503); // idfk why 404 isn't working
 
                     // Log to Console (DEBUG)
                     console.log(`RCON: '${data.user}' has just fetched a players information (${playersID}).`);
