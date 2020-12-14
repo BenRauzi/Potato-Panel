@@ -9,6 +9,17 @@ export const getPlayers = async () => {
     return res
 };
 
+export const getBans = async () => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/bans`,  {
+        method: "GET",
+        credentials: "include"
+    })
+
+    const res = await response.json();
+
+    return res
+};
+
 export const kickPlayer = async (guid, reason) => {
     if(!reason) return 404
     const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/kick`,  {
@@ -108,11 +119,32 @@ export const messageAll = async (message) => {
 }
 
 
+export const removeBan = async (id, reason) => {
+    if(!reason) return 404
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/unban`,  {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            banID: id,
+            reason: reason
+        })
+    })
+
+    const res = await response.status;
+
+    return res
+}
+
 export default {
     getPlayers,
     kickPlayer,
     banPlayerGuid,
     banPlayerIP,
     messagePlayer,
-    messageAll
+    messageAll,
+    getBans,
+    removeBan
 }
