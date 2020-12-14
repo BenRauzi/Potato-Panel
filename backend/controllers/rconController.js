@@ -4,29 +4,52 @@ const crypto = require("crypto");
 const CryptoJS = require("crypto-js");
 const moment = require('moment');
 const dotenv = require('dotenv');
-
 dotenv.config();
 
+// RCON Functions
+const { rconConnection } = require("../services/RCON/rconConnection");
+const { disconnectRCON } = require("../services/RCON/disconnectRCON");
+const { getUserByGUID } = require("../services/RCON/getUserByGUID");
+const { reloadServerBans } = require("../services/RCON/reloadServerBans");
+
 const rconController = (app, rCon, sql) => {
+
     // Send a Message (Global & Private)
-    app.post('/rcon/message', checkToken, (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
+    app.post('/rcon/message', checkToken, async(req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             let { pid, message } = req.body;
             const user = data.user;
 
-            rCon.sendCommand(`say ${pid} [${user}] ${message}`, (err) => {
-                if (err) {
-                    console.log(err);
-                    return res.sendStatus(503);
-                };
+            // Check users permissions here..
+
+            try {
+                // Connect to RCON
+                const RCON = await rconConnection();
+        
+                // Send Message
+                RCON.sendCommand(`say ${pid} [${user}] ${message}`, async(err) => {
+                    if (err) {
+                        console.log(err);
+                    };
+                });
+
+                // Log to Console (DEBUG)
+                console.log(`RCON: '${user}' just sent the following message to '${pid}': ${message}.`);
+
+                // Disconnected RCON
+                //await disconnectRCON(RCON);
+
                 return res.sendStatus(200);
-            });
+            } catch (error) {
+                console.log(error);
+                res.sendStatus(500);
+            };
         });
     });
 
     // Fetch All Players
-    app.get('/rcon/players', checkToken, (req, res) => {
-        rCon.sendCommand('players', (players) => {
+    app.get('/rcon/players', checkToken, async(req, res) => {
+        rCon.sendCommand('players', async(players) => {
             // Split player list string (Remove first 3, and last line)
             const playersStringArray = players.split("\n");
             playersStringArray.splice(0, 3);
@@ -69,11 +92,11 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Fetch a Player (Single)
-    app.get('/rcon/player', checkToken, (req, res) => {
+    app.get('/rcon/player', checkToken, async(req, res) => {
         const playersID = req.query.id || 0; // Players ID
 
         // Semi-Duplicate fkn code... YAAAAAAYY
-        rCon.sendCommand('players', (players) => {
+        rCon.sendCommand('players', async(players) => {
             const playersStringArray = players.split("\n");
             playersStringArray.splice(0, 3);
             playersStringArray.pop();
@@ -101,12 +124,12 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Kick a Player (By ID)
-    app.post('/rcon/kick', checkToken, (req, res) => { // Will add checkToken
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, (err, data) => {
+    app.post('/rcon/kick', checkToken, async(req, res) => { // Will add checkToken
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             const { pid, reason } = req.body;
-            const user = "Nicholas Jo'Foski"; // data.user;
+            const user = data.user;
 
-            rCon.sendCommand(`kick ${pid} Reason: ${reason} | ${user}`, (err) => {
+            rCon.sendCommand(`kick ${pid} Reason: ${reason} | ${user}`, async(err) => {
                 if (err) {
                     console.log(err);
                     return res.sendStatus(503);
@@ -116,27 +139,10 @@ const rconController = (app, rCon, sql) => {
         });
     });
 
-    // Create the reload bans function -- Need to do it this way to prevent timing out because I once again, cbf setting up async
-    const reloadServerBans = async() => {
-        console.log("Now reloading the bans on the server"); // DEBUG ONLY
-        rCon.sendCommand('writeBans', async(err) => {
-            if (err) {
-                console.log(err);
-                return res.sendStatus(503);
-            };
-            rCon.sendCommand('loadBans', async(err) => {
-                if (err) {
-                    console.log(err);
-                    return res.sendStatus(503);
-                };
-            });
-        });
-    };
-
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
-            rCon.sendCommand('players', async (players) => {
+            rCon.sendCommand('players', async(players) => {
                 const { banID, banLength, reason } = req.body;
                 const banningUser = "Nicholas Jo'Foski"; // data.user;
                 console.log(banLength);
@@ -202,12 +208,12 @@ const rconController = (app, rCon, sql) => {
                 switch (banIDType) {
                     case 0: // ID -- Already checked to ensure the selected player exists and is online
                         console.log("Banning by ID"); // DEBUG ONLY
-                        rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, (err) => {
+                        rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, async(err) => {
                             if (err) {
                                 console.log(err);
                                 return res.sendStatus(503);
                             };
-                            reloadServerBans();
+                            await reloadServerBans(rCon);
                         });
                         break;
                     case 1: // IP - Checks if the player is on the server, if so then kick the player, then ban their IP using 'addBan'. Else, just ban the IP using 'addBan'
@@ -215,19 +221,19 @@ const rconController = (app, rCon, sql) => {
                         if (playerConnected) {
                             console.log("Player is online, so kicking then banning"); // DEBUG ONLY
                             // The player is currently on the server, therefore kick them off the server first then ip ban them using 'addBan'
-                            rCon.sendCommand(`kick ${pid} Account Banned - ${banReason.substring(4)}`, (err) => {
+                            rCon.sendCommand(`kick ${pid} Account Banned - ${banReason.substring(4)}`, async(err) => {
                                 if (err) {
                                     console.log(err);
                                     return res.sendStatus(503);
                                 };
                                 // Now ban the IP using `addBan`
 
-                                rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, (err) => {
+                                rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
                                     if (err) {
                                         console.log(err);
                                         return res.sendStatus(503);
                                     };
-                                    reloadServerBans();
+                                    await reloadServerBans(rCon);
                                 });
                             });
                         } else {
@@ -235,12 +241,12 @@ const rconController = (app, rCon, sql) => {
                             // The player isn't currently on the server, therefore ban the IP using `addBan` -- Copying code because I cbf setting up async...
                             console.log(`addBan ${banID} ${banLength} ${banReason}`);
                             console.log(banLength);
-                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, (err) => {
+                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
                                 if (err) {
                                     console.log(err);
                                     return res.sendStatus(503);
                                 };
-                                reloadServerBans();
+                                await reloadServerBans(rCon);
                             });
                         };
                         break;
@@ -248,22 +254,22 @@ const rconController = (app, rCon, sql) => {
                         console.log("Banning by GUID");
                         if (playerConnected) {
                             console.log("Player is online, so banning them using 'ban'"); // DEBUG ONLY
-                            rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, (err) => {
+                            rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, async(err) => {
                                 if (err) {
                                     console.log(err);
                                     return res.sendStatus(503);
                                 };
-                                reloadServerBans();
+                                await reloadServerBans(rCon);
                             });
                         } else {
                             console.log("Player isn't online, so banning them using 'addBan'"); // DEBUG ONLY
                             // The player isn't currently on the server, therefore ban them using `addBan`
-                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, (err) => {
+                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
                                 if (err) {
                                     console.log(err);
                                     return res.sendStatus(503);
                                 };
-                                reloadServerBans();
+                                await reloadServerBans(rCon);
                             });
                         };
                         break;
@@ -363,8 +369,8 @@ const rconController = (app, rCon, sql) => {
 
             
             // Now get all of the current bans on the server
-            reloadServerBans();
-            rCon.sendCommand('bans', async (bans) => {
+            await reloadServerBans(rCon);
+            rCon.sendCommand('bans', async(bans) => {
                 console.log("Encrypted IP: " + encryptedIP);
                 // Split player list string (Remove first 3, and last line)
                 let bansStringArray = bans.split("\n");
@@ -401,7 +407,7 @@ const rconController = (app, rCon, sql) => {
                         console.log(err);
                         return res.sendStatus(503);
                     };
-                    reloadServerBans();
+                    await reloadServerBans(rCon);
 
                     // Now update the database
                     let whereColumn = "guid";
@@ -424,13 +430,13 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Fetch All Bans
-    app.get('/rcon/bans', checkToken, async (req, res) => {
-        reloadServerBans();
-        rCon.sendCommand('bans', async (bans) => {
+    app.get('/rcon/bans', checkToken, async(req, res) => {
+        await reloadServerBans(rCon);
+        rCon.sendCommand('bans', async(bans) => {
             // Split player list string (Remove first 3, and last line)
             let bansStringArray = bans.split("\n");
             bansStringArray.splice(0, 3);
-            bansStringArray = bansStringArray.filter(e => e)
+            bansStringArray = bansStringArray.filter(e => e);
 
             // Remove IP ban labels
             bansStringArray.splice(bansStringArray.indexOf("IP Bans:"), 3);
