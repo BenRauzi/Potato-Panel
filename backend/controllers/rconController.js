@@ -483,6 +483,15 @@ const rconController = (app, rCon, sql) => {
         };
         return res.send(bans);
     });
+
+    app.get('/rcon/debugBans', checkToken, async (req, res) => {
+        rCon.sendCommand(`bans`, async (bans) => {
+            console.log(bans)
+            rCon.sendCommand(`removeBan 0`, async (err) => { });
+            reloadServerBans(rCon);
+        });
+
+    });
 };
 
 module.exports = rconController;
