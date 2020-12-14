@@ -41,13 +41,13 @@ const rconController = (app, rCon, sql) => {
                 return res.sendStatus(200);
             } catch (error) {
                 console.log(error);
-                res.sendStatus(500);
+                return res.sendStatus(500);
             };
         });
     });
 
     // Fetch All Players
-    app.get('/rcon/players', checkToken, async (req, res) => {
+    app.get('/rcon/players', checkToken, async(req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
 
             // Check users permissions here..
@@ -56,7 +56,7 @@ const rconController = (app, rCon, sql) => {
                 // Connect to RCON
                 const RCON = await rconConnection();
         
-                // Fetch Players
+                // Fetch Players List
                 RCON.sendCommand('players', async(players) => {
                     // Split player list string (Remove first 3, and last line)
                     const playersStringArray = players.split("\n");
@@ -105,83 +105,64 @@ const rconController = (app, rCon, sql) => {
                 });
             } catch (error) {
                 console.log(error);
-                res.sendStatus(500);
+                return res.sendStatus(500);
             };
-
-
-
-            // rCon.sendCommand('players', async (players) => {
-            //     // Split player list string (Remove first 3, and last line)
-            //     const playersStringArray = players.split("\n");
-            //     playersStringArray.splice(0, 3);
-            //     playersStringArray.pop();
-
-            //     console.log(playersStringArray);
-
-            //     // Filter through each individual players information, converting the string to an array
-            //     let playersArray = [];
-            //     for (const player of playersStringArray) {
-            //         // Filter ID, IP:PORT, Ping & GUID
-            //         const splitArray = player.split(" ");
-            //         const playerFiltered = splitArray.filter(e => e);
-            //         const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
-
-            //         // Remove port from players IP
-            //         playerFiltered[1] = playerFiltered[1].split(":")[0];
-
-            //         // Remove suffix from players GUID
-            //         playerFiltered[3] = playerFiltered[3].split("(")[0];
-
-            //         // Get players name, and join them to one string (if multiple words)
-            //         playerFiltered.splice(4, playerFiltered.length);
-            //         playerFiltered.push(playersNameArray.join(" "));
-
-            //         const curPlayer = {
-            //             id: playerFiltered[0],
-            //             ip: playerFiltered[1],
-            //             ping: playerFiltered[2],
-            //             guid: playerFiltered[3],
-            //             name: playerFiltered[4]
-            //         };
-
-            //         // Push filtered players data to master array
-            //         playersArray.push(curPlayer);
-            //     };
-
-            //     return res.send(playersArray);
-            // });
         });
     });
 
     // Fetch a Player (Single)
     app.get('/rcon/player', checkToken, async(req, res) => {
-        const playersID = req.query.id || 0; // Players ID
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
+            let playersID = req.query.id || 0; // Players ID
 
-        // Semi-Duplicate fkn code... YAAAAAAYY
-        rCon.sendCommand('players', async(players) => {
-            const playersStringArray = players.split("\n");
-            playersStringArray.splice(0, 3);
-            playersStringArray.pop();
-            let playersInformation;
-            for (const player of playersStringArray) {
-                if (playersInformation) break;
-                const splitArray = player.split(" ");
-                const playerFiltered = splitArray.filter(e => e);
-                const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
-                playerFiltered[1] = playerFiltered[1].split(":")[0];
-                playerFiltered[3] = playerFiltered[3].split("(")[0];
-                playerFiltered.splice(4, playerFiltered.length);
-                playerFiltered.push(playersNameArray.join(" "));
+            // Check users permissions here..
 
-                playersInformation = {
-                    id: playerFiltered[0],
-                    ip: playerFiltered[1],
-                    ping: playerFiltered[2],
-                    guid: playerFiltered[3],
-                    name: playerFiltered[4]
+            try {
+                // Connect to RCON
+                const RCON = await rconConnection();
+        
+                // If given ID is a GUID, then convert it to their player list ID
+                if (playersID.length > 20) {
+                    playersID = getUserByGUID(playersID, RCON);
                 };
+
+                // Fetch Players Information
+                RCON.sendCommand('players', async (players) => {
+                    const playersStringArray = players.split("\n");
+                    playersStringArray.splice(0, 3);
+                    playersStringArray.pop();
+                    let playersInformation;
+                    for (const player of playersStringArray) {
+                        if (playersInformation) break;
+                        const splitArray = player.split(" ");
+                        const playerFiltered = splitArray.filter(e => e);
+                        const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
+                        playerFiltered[1] = playerFiltered[1].split(":")[0];
+                        playerFiltered[3] = playerFiltered[3].split("(")[0];
+                        playerFiltered.splice(4, playerFiltered.length);
+                        playerFiltered.push(playersNameArray.join(" "));
+
+                        playersInformation = {
+                            id: playerFiltered[0],
+                            ip: playerFiltered[1],
+                            ping: playerFiltered[2],
+                            guid: playerFiltered[3],
+                            name: playerFiltered[4]
+                        };
+                    };
+
+                    // Log to Console (DEBUG)
+                    console.log(`RCON: '${data.user}' has just fetched a players information (${playersID}).`);
+
+                    // Disconnected RCON
+                    //await disconnectRCON(RCON);
+
+                    return res.send(playersInformation);
+                });
+            } catch (error) {
+                console.log(error);
+                return res.sendStatus(500);
             };
-            return res.send(playersInformation);
         });
     });
 
