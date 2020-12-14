@@ -4,7 +4,7 @@ import React, { useEffect } from "react"
 import { banPlayerGuid, banPlayerIP } from "../services/RconService";
 
 const BanInputBox = ({controls}) => {
-    const { banUser, setBanUser } = controls
+    const { banUser, setBanUser, players, setPlayers } = controls
 
     const [ reason, setReason ] = React.useState();
 
@@ -51,6 +51,8 @@ const BanInputBox = ({controls}) => {
         } else {
             await banPlayerIP(ip, reason, calcBanLength(banLength))
         }
+
+        setPlayers(players.filter(x => x.guid !== guid))
 
         setBanUser(undefined)
         setSubmitDisabled(false)

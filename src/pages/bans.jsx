@@ -1,34 +1,35 @@
-import { faBan, faEnvelope, faSearch, faUserMinus } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import BanInputBox from "../components/banInput";
 import Title from "../components/title";
-import { getPlayers, kickPlayer, messagePlayer } from "../services/RconService";
+import { getTimeSince } from "../services/HelperService";
 
-const BattleyePage = () => {
-    const [players, setPlayers] = React.useState([])
+import { getBans, removeBan } from "../services/RconService";
+
+const BansPage = () => {
+    const [banList, setBanList] = React.useState([])
     const [pageLength, setPageLength] = React.useState(10);
     const [page, setPage] = React.useState(0);
 
     useEffect(() => {
-        const fetchPlayers = async () => {
-            const players = await getPlayers();
+        const fetchBanList = async () => {
+            const banList = await getBans();
 
             
-            setPlayers(players)
+            setBanList(banList)
+            console.log(banList)
         }   
-        fetchPlayers() 
-    }, [setPlayers])
+        fetchBanList() 
+    }, [setBanList])
 
-    const [banUser, setBanUser] = React.useState();
-
-    const sendKickPlayer = (id, reason) => {
+    const sendRemoveBan = async (id, reason) => {
         if(!reason) return
-        kickPlayer(id, reason)
-        setPlayers(players.filter(x => x.id !== id))
-    }
+        setBanList(banList.filter(x => x.id !== id))
 
+        removeBan(id, reason)
+    }
+    
     return (
         <>
             <Title title="Battleye"/>
@@ -48,25 +49,25 @@ const BattleyePage = () => {
             <div className="table">
                 <div className="table-head">
                     <div>ID</div>
-                    <div>Name</div>
-                    <div>IP</div>
-                    <div>Ping</div>
+                    <div>Staff Name</div>
+                    <div>User</div>
+                    <div>Reason</div>
+                    <div>Remaining Time</div>
                     <div></div>
                 </div>
                 {
-                    players.length > 0 ?
-                    players.map(({id, name, ip, ping, guid}, idx) => {
+                    banList.length > 0 ?
+                    banList.map(({id, name, user, reason, time_expire}, idx) => {
                         if(idx >= (page + 1) * pageLength || (idx < ((page + 1) * pageLength) - pageLength)) return undefined;
                         return (
                             <div key={idx} className="table-row">
                                 <div>{id}</div>
                                 <div>{name}</div>
-                                <div>{ip}</div>
-                                <div>{ping}</div>
+                                <div>{user}</div>
+                                <div>{reason}</div>
+                                <div>{time_expire ? getTimeSince(new Date(time_expire), new Date()) : "Permanent"}</div>
                                 <div>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(id, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {sendKickPlayer(id,  window.prompt("Kick Reason:", "Admin Kick"))}} icon={faUserMinus}/>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {setBanUser({name, guid, ip})}} icon={faBan}/>
+                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {sendRemoveBan(id, window.prompt("Reason for ban removal", "Because I can"))}} icon={faTrashAlt}/>
                                 </div>
                             </div>
                         )
@@ -90,7 +91,7 @@ const BattleyePage = () => {
                         nextLabel={'Next'}
                         breakLabel={'...'}
                         breakClassName={'break-me'}
-                        pageCount={Math.ceil(players.length / pageLength)}
+                        pageCount={Math.ceil(banList.length / pageLength)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
                         onPageChange={(e) => {setPage(e.selected)}}
@@ -98,13 +99,10 @@ const BattleyePage = () => {
                         subContainerClassName={'pages pagination'}
                         activeClassName={'active'}
                     />
-                </div>
-
-                <BanInputBox controls={{banUser, setBanUser, players, setPlayers}} />
-               
+                </div>               
             </div>
         </>
     )
 }
 
-export default BattleyePage;
+export default BansPage;
