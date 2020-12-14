@@ -6,13 +6,9 @@ const moment = require('moment');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// RCON Functions
-const { rconConnection } = require("../services/RCON/rconConnection");
-const { disconnectRCON } = require("../services/RCON/disconnectRCON");
-const { getUserByGUID } = require("../services/RCON/getUserByGUID");
-const { reloadServerBans } = require("../services/RCON/reloadServerBans");
+const { getPlayers, getUserByGUID, reloadServerBans, rconConnection, kickPlayer, banPlayer } = require("../services/rconHelpers")
 
-const rconController = (app, rCon, sql) => {
+const rconController = (app, rcon, sql) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
@@ -22,11 +18,7 @@ const rconController = (app, rCon, sql) => {
             // Check users permissions here..
 
             try {
-                // Connect to RCON
-                const RCON = await rconConnection();
-        
-                // Send Message
-                RCON.sendCommand(`say ${pid} [${user}] ${message}`, async(err) => {
+                rcon.sendCommand(`say ${pid} [${user}] ${message}`, async(err) => {
                     if (err) {
                         console.log(err);
                     };
@@ -36,7 +28,6 @@ const rconController = (app, rCon, sql) => {
                 console.log(`RCON: '${user}' just sent the following message to '${pid}': ${message}.`);
 
                 // Disconnected RCON
-                //await disconnectRCON(RCON);
 
                 return res.sendStatus(200);
             } catch (error) {
@@ -53,56 +44,14 @@ const rconController = (app, rCon, sql) => {
             // Check users permissions here..
 
             try {
-                // Connect to RCON
-                const RCON = await rconConnection();
-        
                 // Fetch Players List
-                RCON.sendCommand('players', async(players) => {
-                    // Split player list string (Remove first 3, and last line)
-                    const playersStringArray = players.split("\n");
-                    playersStringArray.splice(0, 3);
-                    playersStringArray.pop();
-
-                    console.log(playersStringArray); // DEBUG ONLY
-
-                    // Filter through each individual players information, converting the string to an array
-                    let playersArray = [];
-                    for (const player of playersStringArray) {
-                        // Filter ID, IP:PORT, Ping & GUID
-                        const splitArray = player.split(" ");
-                        const playerFiltered = splitArray.filter(e => e);
-                        const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
-
-                        // Remove port from players IP
-                        playerFiltered[1] = playerFiltered[1].split(":")[0];
-
-                        // Remove suffix from players GUID
-                        playerFiltered[3] = playerFiltered[3].split("(")[0];
-
-                        // Get players name, and join them to one string (if multiple words)
-                        playerFiltered.splice(4, playerFiltered.length);
-                        playerFiltered.push(playersNameArray.join(" "));
-
-                        const curPlayer = {
-                            id: playerFiltered[0],
-                            ip: playerFiltered[1],
-                            ping: playerFiltered[2],
-                            guid: playerFiltered[3],
-                            name: playerFiltered[4]
-                        };
-
-                        // Push filtered players data to master array
-                        playersArray.push(curPlayer);
-                    };
-
+                const playersArray = await getPlayers(rcon)
                     // Log to Console (DEBUG)
-                    console.log(`RCON: '${data.user}' has just fetched the players list.`);
+                console.log(`RCON: '${data.user}' has just fetched the players list.`);
 
-                    // Disconnected RCON
-                    //await disconnectRCON(RCON);
 
-                    return res.send(playersArray);
-                });
+                return res.send(playersArray);
+            
             } catch (error) {
                 console.log(error);
                 return res.sendStatus(500);
@@ -117,54 +66,12 @@ const rconController = (app, rCon, sql) => {
 
             // Check users permissions here..
 
-            try {
-                // Connect to RCON
-                const RCON = await rconConnection();
-
+            try {        
                 // If given ID is a GUID, then convert it to their player list ID
-                let usersID = playersID;
-                if (usersID.length > 20) {
-                    usersID = await getUserByGUID(playersID, RCON);
-                };
+                const player = await getUserByGUID(playersID, rcon);
+                if(!player) return res.sendStatus(404);
+                return res.send(player);
 
-                // Fetch Players Information
-                RCON.sendCommand('players', async (players) => {
-                    const playersStringArray = players.split("\n");
-                    playersStringArray.splice(0, 3);
-                    playersStringArray.pop();
-                    let playersInformation;
-                    for (const player of playersStringArray) {
-                        if (playersInformation) break;
-                        const splitArray = player.split(" ");
-                        const playerFiltered = splitArray.filter(e => e);
-                        const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
-                        playerFiltered[1] = playerFiltered[1].split(":")[0];
-                        playerFiltered[3] = playerFiltered[3].split("(")[0];
-                        playerFiltered.splice(4, playerFiltered.length);
-                        playerFiltered.push(playersNameArray.join(" "));
-
-                        if (playerFiltered[0] === usersID) {
-                            playersInformation = {
-                                id: playerFiltered[0],
-                                ip: playerFiltered[1],
-                                ping: playerFiltered[2],
-                                guid: playerFiltered[3],
-                                name: playerFiltered[4]
-                            };
-                        };
-                    };
-
-                    // If player can't be found, return 404
-                    if (!playersInformation) return res.sendStatus(503); // idfk why 404 isn't working
-
-                    // Log to Console (DEBUG)
-                    console.log(`RCON: '${data.user}' has just fetched a players information (${playersID}).`);
-
-                    // Disconnected RCON
-                    //await disconnectRCON(RCON);
-
-                    return res.send(playersInformation);
-                });
             } catch (error) {
                 console.log(error);
                 return res.sendStatus(500);
@@ -178,7 +85,7 @@ const rconController = (app, rCon, sql) => {
             const { pid, reason } = req.body;
             const user = data.user;
 
-            rCon.sendCommand(`kick ${pid} Reason: ${reason} | ${user}`, async(err) => {
+            rcon.sendCommand(`kick ${pid} Reason: ${reason} | ${user}`, async(err) => {
                 if (err) {
                     console.log(err);
                     return res.sendStatus(503);
@@ -191,183 +98,77 @@ const rconController = (app, rCon, sql) => {
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
-            rCon.sendCommand('players', async(players) => {
-                const { banID, banLength, reason } = req.body;
-                const banningUser = "Nicholas Jo'Foski"; // data.user;
-                console.log(banLength);
-                // Set the banID type
-                let banIDType = 0; // Default - ID
-                let pid = banID;
-                if (banID.includes(".")) { // IP
-                    banIDType = 1;
-                } else if (banID.length > 10) { // GUID
-                    banIDType = 2;
-                };
 
-                console.log("Ban Type: " + banIDType); // DEBUG ONLY
+            const players = await getPlayers(rcon);
 
-                // Check if player is currently connected
-                let playerConnected = false;
-                const playersStringArray = players.split("\n");
-                playersStringArray.splice(0, 3);
-                playersStringArray.pop();
+            const { banID, banLength, reason } = req.body;
 
-                let playersGUID = "";
-                for (const player of playersStringArray) {
-                    if (playerConnected) break;
-                    const splitArray = player.split(" ");
-                    const playerData = splitArray.filter(e => e);
-                    const playersData = [playerData[0], playerData[1].split(":")[0], playerData[3].split("(")[0]];
+            let banIDType = "guid";
+            if(banID.includes(".")) {
+                banIDType = "ip";
+            };
 
-                    console.log(playersData); // DEBUG ONLY
-                    console.log(banIDType); // DEBUG ONLY
-                    console.log(playersData[banIDType]); // DEBUG ONLY
+            let appealIdLength = banIDType === "guid" ? 10 : 11 //10 if GUID,  11 if IP
 
-                    // If player is connected, then set 'pid' to the players ingame ID despite the input ID
-                    if (playersData[banIDType] === banID) {
-                        playerConnected = true;
-                        pid = playersData[0];
-                        playersGUID = playersData[2];
-                    };
-                };
+            const userToBan = players.find(player => player[banIDType] === banID);
 
-                console.log("Player is Connected: " + playerConnected); // DEBUG ONLY
-                console.log("Players ID: " + pid); // DEBUG ONLY
+            //Generate Appeal ID
+            const rand = crypto.randomBytes(appealIdLength);
+            let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            let banAppealID = "";
+            for (let i = 0; i < rand.length; i++) {
+                let index = rand[i] % chars.length;
+                banAppealID += chars[index];
+            };
+            const banReason = `(   Ban ID: ${banAppealID} - appeal.arma-studios.com`;
 
-                // If the player isn't connected, and the banIDType is 0 (ID) then cancel request, and return 'Not Found'
-                if (!playerConnected && banIDType === 0) return res.sendStatus(404);
-
-                // Generate ban appeal ID, and format the ban message
-                let idLength = 10;
-                if (banIDType === 1) {
-                    idLength = 11;
-                };
-                const rand = crypto.randomBytes(idLength);
-                let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                let banAppealID = "";
-                for (let i = 0; i < rand.length; i++) {
-                    let index = rand[i] % chars.length;
-                    banAppealID += chars[index];
-                };
-                const banReason = `(   Ban ID: ${banAppealID} - appeal.arma-studios.com`;
-
-                console.log("Formatted Ban Reason: " + banReason); // DEBUG ONLY
-
-                // Now handle the actual ban
-                switch (banIDType) {
-                    case 0: // ID -- Already checked to ensure the selected player exists and is online
-                        console.log("Banning by ID"); // DEBUG ONLY
-                        rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, async(err) => {
-                            if (err) {
-                                console.log(err);
-                                return res.sendStatus(503);
-                            };
-                            await reloadServerBans(rCon);
-                        });
-                        break;
-                    case 1: // IP - Checks if the player is on the server, if so then kick the player, then ban their IP using 'addBan'. Else, just ban the IP using 'addBan'
-                        console.log("Banning by IP");
-                        if (playerConnected) {
-                            console.log("Player is online, so kicking then banning"); // DEBUG ONLY
-                            // The player is currently on the server, therefore kick them off the server first then ip ban them using 'addBan'
-                            rCon.sendCommand(`kick ${pid} Account Banned - ${banReason.substring(4)}`, async(err) => {
-                                if (err) {
-                                    console.log(err);
-                                    return res.sendStatus(503);
-                                };
-                                // Now ban the IP using `addBan`
-
-                                rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
-                                    if (err) {
-                                        console.log(err);
-                                        return res.sendStatus(503);
-                                    };
-                                    await reloadServerBans(rCon);
-                                });
-                            });
-                        } else {
-                            console.log("Player isn't online, so just banning the IP"); // DEBUG ONLY
-                            // The player isn't currently on the server, therefore ban the IP using `addBan` -- Copying code because I cbf setting up async...
-                            console.log(`addBan ${banID} ${banLength} ${banReason}`);
-                            console.log(banLength);
-                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
-                                if (err) {
-                                    console.log(err);
-                                    return res.sendStatus(503);
-                                };
-                                await reloadServerBans(rCon);
-                            });
-                        };
-                        break;
-                    case 2: // GUID -- Checks if the player is on the server, if so then just ban them using 'ban'. However if they aren't, use 'addBan'
-                        console.log("Banning by GUID");
-                        if (playerConnected) {
-                            console.log("Player is online, so banning them using 'ban'"); // DEBUG ONLY
-                            rCon.sendCommand(`ban ${pid} ${banLength} ${banReason}`, async(err) => {
-                                if (err) {
-                                    console.log(err);
-                                    return res.sendStatus(503);
-                                };
-                                await reloadServerBans(rCon);
-                            });
-                        } else {
-                            console.log("Player isn't online, so banning them using 'addBan'"); // DEBUG ONLY
-                            // The player isn't currently on the server, therefore ban them using `addBan`
-                            rCon.sendCommand(`addBan ${banID} ${banLength} ${banReason}`, async(err) => {
-                                if (err) {
-                                    console.log(err);
-                                    return res.sendStatus(503);
-                                };
-                                await reloadServerBans(rCon);
-                            });
-                        };
-                        break;
-                    default:
-                        break;
-                };
-
-                // Log ban to database
+            if(userToBan) {
                 try {
-                    let banTable = "bans";
-                    let banningLogID = banID;
-                    let banColumn = "guid";
-                    if (banIDType === 1) {
-                        banTable = "ip_bans";
-                        banColumn = "ip";
+                    const result = await kickPlayer(`Account Banned - ${banReason.substring(4)}`, userToBan.id, rcon);
+                    if(result) console.log("Kicked Player");
+                }  catch(err) {
+                    console.log(err)
+                    return res.sendStatus(500);
+                }
+            }
+            
+            try {
+                const result = await banPlayer(banReason, banID, banLength, rcon);
+                if(result) console.log("Banned Player");
+            } catch(err) {
+                console.log(err);
+                return res.sendStatus(500);
+            };
 
-                        // Encrypt IP
-                        encrypted = CryptoJS.AES.encrypt(banningLogID, process.env.IP_SECRET);
-                        banningLogID = encrypted.toString();
-                        console.log("Encrypted: " + banningLogID);
+            try {
+                await reloadServerBans();
+            } catch(err) {
+                console.log(err);
+            };
 
-                        // Decrypt IP - TESTING
-                        //var bytes = CryptoJS.AES.decrypt(encrypted.toString(), process.env.IP_SECRET);
-                        //var plaintext = bytes.toString(CryptoJS.enc.Utf8);
-                        //console.log("Decrypted: " + plaintext);
-                    };
 
-                    if (banIDType === 0) {
-                        banningLogID = playersGUID;
-                    };
+            // Log ban to database
+            try {
+                const banTable = banIDType === "ip" ? "ip_bans" : "bans";
+                const banColumn = banIDType === "ip" ? "ip" : "guid";
+                const banningLogID = banIDType === "ip" ? CryptoJS.AES.encrypt(banID, process.env.IP_SECRET).toString() : banID;
 
-                    console.log("Players GUID: " + playersGUID);
+                console.log("Players GUID: " + banID);
 
-                    if (banLength < 1) {
-                        const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, banned_by, reason) VALUES (?, ?, ?, ?)`, [banAppealID, banningLogID, data.pid, reason]);
-                    } else {
-                        // Get the expire datestamp
-                        const curDBTime = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP()`);
-                        const time_expire = moment(curDBTime[0]["CURRENT_TIMESTAMP()"]).add(banLength, 'm').toDate();
-
-                        const logBan = await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, time_expire, banned_by, reason) VALUES (?, ?, ?, ?, ?)`, [banAppealID, banningLogID, time_expire, data.pid, reason]);
-                    };
-
-                    return res.sendStatus(200);
-                } catch (error) {
-                    console.log(error)
-                    return res.sendStatus(500)
+                if (banLength < 1) {
+                    await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, banned_by, reason) VALUES (?, ?, ?, ?)`, [banAppealID, banningLogID, data.pid, reason]);
+                } else {
+                    // Get the expire datestamp
+                    const curDBTime = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP()`);
+                    const time_expire = moment(curDBTime[0]["CURRENT_TIMESTAMP()"]).add(banLength, 'm').toDate();
+                    await sql.awaitQuery(`INSERT INTO ${banTable} (id, ${banColumn}, time_expire, banned_by, reason) VALUES (?, ?, ?, ?, ?)`, [banAppealID, banningLogID, time_expire, data.pid, reason]);
                 };
-            });
+
+                return res.sendStatus(200);
+            } catch (error) {
+                console.log(error)
+                return res.sendStatus(500)
+            };
         });
     });
 
@@ -418,8 +219,8 @@ const rconController = (app, rCon, sql) => {
 
             
             // Now get all of the current bans on the server
-            await reloadServerBans(rCon);
-            rCon.sendCommand('bans', async(bans) => {
+            await reloadServerBans(rcon);
+            rcon.sendCommand('bans', async(bans) => {
                 console.log("Encrypted IP: " + encryptedIP);
                 // Split player list string (Remove first 3, and last line)
                 let bansStringArray = bans.split("\n");
@@ -451,12 +252,12 @@ const rconController = (app, rCon, sql) => {
 
                 if (banFound.length === 0) return res.sendStatus(404);
 
-                rCon.sendCommand(`removeBan ${banFound[0]}`, async(err) => {
+                rcon.sendCommand(`removeBan ${banFound[0]}`, async(err) => {
                     if (err) {
                         console.log(err);
                         return res.sendStatus(503);
                     };
-                    await reloadServerBans(rCon);
+                    await reloadServerBans(rcon);
 
                     // Now update the database
                     let whereColumn = "guid";
@@ -540,10 +341,10 @@ const rconController = (app, rCon, sql) => {
     });
 
     app.get('/rcon/debugBans', checkToken, async (req, res) => {
-        rCon.sendCommand(`bans`, async (bans) => {
+        rcon.sendCommand(`bans`, async (bans) => {
             console.log(bans)
-            rCon.sendCommand(`removeBan 0`, async (err) => { });
-            reloadServerBans(rCon);
+            rcon.sendCommand(`removeBan 0`, async (err) => { });
+            reloadServerBans(rcon);
         });
 
     });
