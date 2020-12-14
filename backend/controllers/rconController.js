@@ -474,8 +474,16 @@ const rconController = (app, rCon, sql) => {
 
     // Fetch All Active Bans (From DB)
     app.get('/rcon/bans', checkToken, async (req, res) => {
-        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL) UNION ALL SELECT * FROM ip_bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL)");
-        console.log(bansQuery);
+        const bansQuery = await sql.awaitQuery(`
+            SELECT bans.*, players.name FROM bans 
+                INNER JOIN players 
+                ON bans.banned_by = players.name
+                WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL) 
+            UNION ALL 
+            SELECT ip_bans.*, players.name FROM ip_bans 
+                INNER JOIN players ON 
+                ip_bans.banned_by = players.pid
+                WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL)`);
 
         let bans = [];
         for (const ban of bansQuery) {
@@ -488,13 +496,10 @@ const rconController = (app, rCon, sql) => {
                 bannedUser = bytes.toString(CryptoJS.enc.Utf8);
             };
             bans.push({
-                id: ban["id"],
-                type: banType,
+                ...ban,
                 user: bannedUser,
-                time_ban: ban["time_ban"],
-                time_expire: ban["time_expire"],
-                banned_by: ban["banned_by"],
-                reason: ban["reason"]
+                type: banType,
+                guid: undefined
             });
         };
         return res.send(bans);
