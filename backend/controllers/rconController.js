@@ -477,7 +477,7 @@ const rconController = (app, rCon, sql) => {
         const bansQuery = await sql.awaitQuery(`
             SELECT bans.*, players.name FROM bans 
                 INNER JOIN players 
-                ON bans.banned_by = players.name
+                ON bans.banned_by = players.pid
                 WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL) 
             UNION ALL 
             SELECT ip_bans.*, players.name FROM ip_bans 
