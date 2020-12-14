@@ -28,7 +28,6 @@ const BansPage = () => {
         setBanList(banList.filter(x => x.id !== id))
 
         removeBan(id, reason)
-        
     }
     
     return (
