@@ -17,6 +17,7 @@ import Vehicles from "../pages/vehicles";
 import CasesPage from "../pages/cases";
 import SingleCasePage from "../pages/single-case";
 import NewCasePage from "../pages/new-case";
+import BattleyePage from "../pages/battleye";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -90,6 +91,7 @@ const Main = () => {
                 <ProtectedRoute exact path='/case/new' component={NewCasePage}/>
                 <ProtectedRoute exact path='/case/:id' component={SingleCasePage}/>   
                 <ProtectedRoute exact path='/settings' component={SettingsPage}/>
+                <ProtectedRoute exact path='/battleye' component={BattleyePage}/>
                 <GuardedRoute exact path='/server-settings' roles={{adminLevel: 8}} component={ServerSettingsPage}/>
                 <Route exact path='/login' component={Login}/>
                 <ProtectedRoute exact path="/user/:id" component={UserPage} />
