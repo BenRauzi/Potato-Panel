@@ -47,46 +47,109 @@ const rconController = (app, rCon, sql) => {
     });
 
     // Fetch All Players
-    app.get('/rcon/players', checkToken, async(req, res) => {
-        rCon.sendCommand('players', async(players) => {
-            // Split player list string (Remove first 3, and last line)
-            const playersStringArray = players.split("\n");
-            playersStringArray.splice(0, 3);
-            playersStringArray.pop();
+    app.get('/rcon/players', checkToken, async (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
 
-            console.log(playersStringArray);
+            // Check users permissions here..
 
-            // Filter through each individual players information, converting the string to an array
-            let playersArray = [];
-            for (const player of playersStringArray) {
-                // Filter ID, IP:PORT, Ping & GUID
-                const splitArray = player.split(" ");
-                const playerFiltered = splitArray.filter(e => e);
-                const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
+            try {
+                // Connect to RCON
+                const RCON = await rconConnection();
+        
+                // Fetch Players
+                RCON.sendCommand('players', async(players) => {
+                    // Split player list string (Remove first 3, and last line)
+                    const playersStringArray = players.split("\n");
+                    playersStringArray.splice(0, 3);
+                    playersStringArray.pop();
 
-                // Remove port from players IP
-                playerFiltered[1] = playerFiltered[1].split(":")[0];
+                    console.log(playersStringArray); // DEBUG ONLY
 
-                // Remove suffix from players GUID
-                playerFiltered[3] = playerFiltered[3].split("(")[0];
+                    // Filter through each individual players information, converting the string to an array
+                    let playersArray = [];
+                    for (const player of playersStringArray) {
+                        // Filter ID, IP:PORT, Ping & GUID
+                        const splitArray = player.split(" ");
+                        const playerFiltered = splitArray.filter(e => e);
+                        const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
 
-                // Get players name, and join them to one string (if multiple words)
-                playerFiltered.splice(4, playerFiltered.length);
-                playerFiltered.push(playersNameArray.join(" "));
+                        // Remove port from players IP
+                        playerFiltered[1] = playerFiltered[1].split(":")[0];
 
-                const curPlayer = {
-                    id: playerFiltered[0],
-                    ip: playerFiltered[1],
-                    ping: playerFiltered[2],
-                    guid: playerFiltered[3],
-                    name: playerFiltered[4]
-                };
+                        // Remove suffix from players GUID
+                        playerFiltered[3] = playerFiltered[3].split("(")[0];
 
-                // Push filtered players data to master array
-                playersArray.push(curPlayer);
+                        // Get players name, and join them to one string (if multiple words)
+                        playerFiltered.splice(4, playerFiltered.length);
+                        playerFiltered.push(playersNameArray.join(" "));
+
+                        const curPlayer = {
+                            id: playerFiltered[0],
+                            ip: playerFiltered[1],
+                            ping: playerFiltered[2],
+                            guid: playerFiltered[3],
+                            name: playerFiltered[4]
+                        };
+
+                        // Push filtered players data to master array
+                        playersArray.push(curPlayer);
+                    };
+
+                    // Log to Console (DEBUG)
+                    console.log(`RCON: '${data.user}' has just fetched the players list.`);
+
+                    // Disconnected RCON
+                    //await disconnectRCON(RCON);
+
+                    return res.send(playersArray);
+                });
+            } catch (error) {
+                console.log(error);
+                res.sendStatus(500);
             };
 
-            return res.send(playersArray);
+
+
+            // rCon.sendCommand('players', async (players) => {
+            //     // Split player list string (Remove first 3, and last line)
+            //     const playersStringArray = players.split("\n");
+            //     playersStringArray.splice(0, 3);
+            //     playersStringArray.pop();
+
+            //     console.log(playersStringArray);
+
+            //     // Filter through each individual players information, converting the string to an array
+            //     let playersArray = [];
+            //     for (const player of playersStringArray) {
+            //         // Filter ID, IP:PORT, Ping & GUID
+            //         const splitArray = player.split(" ");
+            //         const playerFiltered = splitArray.filter(e => e);
+            //         const playersNameArray = playerFiltered.slice(4, playerFiltered.length);
+
+            //         // Remove port from players IP
+            //         playerFiltered[1] = playerFiltered[1].split(":")[0];
+
+            //         // Remove suffix from players GUID
+            //         playerFiltered[3] = playerFiltered[3].split("(")[0];
+
+            //         // Get players name, and join them to one string (if multiple words)
+            //         playerFiltered.splice(4, playerFiltered.length);
+            //         playerFiltered.push(playersNameArray.join(" "));
+
+            //         const curPlayer = {
+            //             id: playerFiltered[0],
+            //             ip: playerFiltered[1],
+            //             ping: playerFiltered[2],
+            //             guid: playerFiltered[3],
+            //             name: playerFiltered[4]
+            //         };
+
+            //         // Push filtered players data to master array
+            //         playersArray.push(curPlayer);
+            //     };
+
+            //     return res.send(playersArray);
+            // });
         });
     });
 
@@ -430,7 +493,7 @@ const rconController = (app, rCon, sql) => {
 
     // Fetch All Active Bans (From DB)
     app.get('/rcon/bans', checkToken, async (req, res) => {
-        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire = NULL) UNION ALL SELECT * FROM ip_bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire = NULL)");
+        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL) UNION ALL SELECT * FROM ip_bans WHERE (time_expire > CURRENT_TIMESTAMP() OR time_expire IS NULL)");
         console.log(bansQuery);
 
         let bans = [];
