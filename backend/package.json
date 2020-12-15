@@ -14,10 +14,12 @@
   "dependencies": {
     "battle-node": "^0.1.2",
     "bcrypt": "^5.0.0",
+    "big-integer": "^1.6.48",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
+    "divmod": "0.0.3",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
