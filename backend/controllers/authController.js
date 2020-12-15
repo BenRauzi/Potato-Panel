@@ -41,7 +41,7 @@ const authController = (app, sql, sqlAsync) => {
                         
                     }, process.env.JWT_SECRET);
                     // save token in cookie
-                    res.cookie('authcookie',token,{maxAge:1000*60*60,httpOnly:true});
+                    res.cookie('authcookie',token,{maxAge:1000*60*60*60,httpOnly:true});
 
                     res.send({...result[0], password: undefined});
                 } else {
