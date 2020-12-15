@@ -64,8 +64,8 @@ const BattleyePage = () => {
                                 <div>{ip}</div>
                                 <div>{ping}</div>
                                 <div>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(id, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {sendKickPlayer(id,  window.prompt("Kick Reason:", "Admin Kick"))}} icon={faUserMinus}/>
+                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(guid, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/>
+                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {sendKickPlayer(guid,  window.prompt("Kick Reason:", "Admin Kick"))}} icon={faUserMinus}/>
                                     <FontAwesomeIcon className="delete-btn large" onClick={() => {setBanUser({name, guid, ip})}} icon={faBan}/>
                                 </div>
                             </div>
