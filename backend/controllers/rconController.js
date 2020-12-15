@@ -18,7 +18,15 @@ const rconController = (app, rcon, sql) => {
             // Check users permissions here..
 
             try {
-                await sendMessageRcon(pid, `[${user}] ${message}`, rcon);
+
+                if(pid !== -1) {
+                    const player = await getUserByGUID(pid, rcon);
+
+                    await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
+                } else {
+                    await sendMessageRcon(pid, `[${user}] ${message}`, rcon);
+                }
+              
 
                 // Log to Console (DEBUG)
                 console.log(`RCON: '${user}' just sent the following message to '${pid}': ${message}.`);
@@ -55,7 +63,7 @@ const rconController = (app, rcon, sql) => {
     // Fetch a Player (Single)
     app.get('/rcon/player', checkToken, async(req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
-            let playersID = req.query.id || 0; // Players ID
+            let playersID = req.query.pid || 0; // Players ID
 
             // Check users permissions here..
 
