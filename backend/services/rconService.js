@@ -22,10 +22,10 @@ rCon.on('login', (err, success) => {
     };
 });
 
-rCon.on('message', function(message) {
+// rCon.on('message', function(message) {
   
-  console.log(message);
+//   console.log(message);
   
-});
+// });
 
 module.exports = { rCon };

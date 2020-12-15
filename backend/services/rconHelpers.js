@@ -1,5 +1,5 @@
-const BattleNode = require('battle-node');
 const dotenv = require('dotenv');
+const CryptoJS = require("crypto-js");
 
 dotenv.config();
 
@@ -68,36 +68,6 @@ const getUserByGUID = async (guid, rcon) => {
         return players.find(player => player.guid === guid) || undefined
 };
 
-const rconConnection = () => {
-    return new Promise((resolve, reject) => {
-        console.log("Attempting to connect to rCon"); // DEBUG ONLY
-
-        const RCON = new BattleNode({
-            ip: process.env.RCON_IP,
-            port: parseInt(process.env.RCON_PORT),
-            rconPassword: process.env.RCON_PASS
-        });
-
-        RCON.login();
-
-        console.log(process.env.RCON_IP)
-
-        RCON.on('login', (err, success) => {
-            if (err) {
-                console.log('Unable to connect to the rCon serve.')
-                reject("Unable to connect to the rCon server");
-            };
-            if (success) {
-                console.log('Logged into rCon successfully.');
-                resolve(RCON);
-            } else {
-                console.log('Unsuccessful logon attempt to rCon, please check inputs.');
-                reject("Unsuccessful logon attempt to rCon, please check inputs");
-            };
-        });
-    }); 
-};
-
 const writeBans = (rcon) => {
     return  new Promise((resolve, reject) => {
         rcon.sendCommand('writeBans', async(err) => {
@@ -120,7 +90,6 @@ const loadBans = (rcon) => {
     })
 }
 
-
 const reloadServerBans = async (rcon) => {
         console.log("Now reloading the bans on the server"); // DEBUG ONLY
 
@@ -135,14 +104,12 @@ const reloadServerBans = async (rcon) => {
         return true
 };
 
-const kickPlayer = (reason, guid, rcon) => {
+const kickPlayer = (reason, id, rcon) => {
     return new Promise((resolve, reject) => {
-        rcon.sendCommand(`kick ${guid} ${reason}}`, async(err) => {
+        rcon.sendCommand(`kick ${id} ${reason}}`, async(err) => {
             if (err) {
                 reject(err)
             };
-
-            // Now ban the IP using `addBan`
 
             resolve(true)
         });
@@ -161,12 +128,95 @@ const banPlayer = (reason, guid, length, rcon) => {
     })
 }
 
+const sendMessageRcon = (pid, message, rcon) => {
+    return new Promise((resolve, reject) => {
+        rcon.sendCommand(`say ${pid} ${message}`, async(err) => {
+            if (err) {
+                console.log(err);
+                reject(err)
+            };
+            resolve(true)
+        });
+    })
+}
+
+const getBansFromRcon = (rcon) => {
+    return new Promise((resolve) => {
+        rcon.sendCommand('bans', async(bans) => {
+            let bansStringArray = bans.split("\n");
+            bansStringArray.splice(0, 3);
+            bansStringArray = bansStringArray.filter(e => e);
+
+            // Remove IP ban labels
+            bansStringArray.splice(bansStringArray.indexOf("IP Bans:"), 3);
+
+            let filteredBans = bansStringArray.map(ban => {
+                const splitArray = ban.split(" ");
+                const banFiltered = splitArray.filter(e => e);
+                banFiltered.splice(2, banFiltered.length);
+                
+                console.log("Ban Filtered: " + banFiltered);
+                console.log(banFiltered[1]);
+
+                return {id: banFiltered[0], user: banFiltered[1]};
+            })
+            resolve(filteredBans);
+        })
+    })
+}
+
+const getBanFromDb = async (sql, banId) => {
+    const banColumn = banId.length === 11 ? "ip" : "guid";
+    const banTable = banColumn === "ip" ? "ip_bans" : "bans";
+    
+    const result = await sql.awaitQuery(`SELECT ${banColumn} FROM ${banTable} WHERE id = ?`, [banId]);
+
+    if(result.length === 0) return { user: null }
+    if(banColumn === "ip") {
+        const encryptedIP = result[0].ip
+        const bytes = CryptoJS.AES.decrypt(encryptedIP.toString(), process.env.IP_SECRET);
+        const decyrptedIP = bytes.toString(CryptoJS.enc.Utf8);
+
+        return {
+            user: decyrptedIP
+        }
+    }
+    return {
+        user: result[0].guid
+    };
+}
+
+const removeBan = async (id, appealId, reason, staffId, sql, rcon) => {
+    return new Promise((resolve, reject) => {
+        rcon.sendCommand(`removeBan ${id}`, async (err) => {
+            if (err) {
+                console.log(err);
+                reject(err)
+            };
+
+            const column = appealId.length === 11 ? "ip": "guid";
+            const banTable = column === "ip" ? "ip_bans" : "bans";
+            console.log(`DELETE FROM ${banTable} WHERE ${column} = ${appealId}`)
+            const unbanQuery = await sql.awaitQuery(`INSERT INTO unbans (id, banned_id, time_ban, time_expire, banned_by, ban_reason, unbanned_by, unban_reason) SELECT id, ${column}, time_ban, time_expire, banned_by, reason, ?, ? FROM ${banTable} WHERE id = '${appealId}'`, [staffId, reason]);
+            const deleteBanQuery = await sql.awaitQuery(`DELETE FROM ${banTable} WHERE id = ?`, [appealId]);
+            if (unbanQuery.length <= 0 || deleteBanQuery.length <= 0) reject("Ban Not Found");
+        
+            await reloadServerBans(rcon);
+
+            resolve(true)
+        });
+    })
+}
+
 module.exports = {
     disconnectRCON,
     getUserByGUID,
-    rconConnection,
     reloadServerBans,
     getPlayers,
     kickPlayer,
-    banPlayer
+    banPlayer,
+    getBansFromRcon,
+    getBanFromDb,
+    removeBan,
+    sendMessageRcon
 }
