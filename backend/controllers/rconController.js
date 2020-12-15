@@ -258,7 +258,7 @@ const rconController = (app, rcon, sql) => {
     });
 
     // Set GUID
-    app.get('/rcon/setGUID', checkToken, async (req, res) => {
+    app.get('/rcon/setGUID', async (req, res) => {
         const pid = req.query.pid;
         if (!pid) return res.sendStatus(500);
         try {
