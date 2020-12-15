@@ -259,8 +259,10 @@ const rconController = (app, rcon, sql) => {
 
     // Set GUID
     app.get('/rcon/setGUID', async (req, res) => {
+        const apiKey = req.query.k;
         const pid = req.query.pid;
-        if (!pid) return res.sendStatus(500);
+        if (!apiKey || !pid) return res.sendStatus(500);
+        if (apiKey !== process.env.WEB_API_KEY) return res.sendStatus(401);
         try {
             const guid = await convertPID(pid);
             const updateQuery = await sql.awaitQuery('UPDATE players SET guid = ? WHERE pid = ?', [guid, pid]);
