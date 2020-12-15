@@ -4,9 +4,10 @@ const crypto = require("crypto");
 const CryptoJS = require("crypto-js");
 const moment = require('moment');
 const dotenv = require('dotenv');
+
 dotenv.config();
 
-const { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan } = require("../services/rconHelpers")
+const { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } = require("../services/rconHelpers")
 
 const rconController = (app, rcon, sql) => {
     // Send a Message (Global & Private)
@@ -253,6 +254,21 @@ const rconController = (app, rcon, sql) => {
             });
         };
         return res.send(bans);
+    });
+
+    // Set GUID
+    app.get('/rcon/setGUID', checkToken, async (req, res) => {
+        const pid = req.query.pid;
+        if (!pid) return res.sendStatus(500);
+        try {
+            const guid = await convertPID(pid);
+            const updateQuery = await sql.awaitQuery('UPDATE players SET guid = ? WHERE pid = ?', [guid, pid]);
+            if (updateQuery.length === 0) return res.sendStatus(400);
+            return res.sendStatus(200);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        };
     });
 };
 
