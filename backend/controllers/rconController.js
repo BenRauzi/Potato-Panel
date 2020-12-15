@@ -88,12 +88,13 @@ const rconController = (app, rcon, sql) => {
             const user = data.user;
 
             const player = await getUserByGUID(pid, rcon);
+            if(!player) return res.sendStatus(404);
             try {
                 await kickPlayer(`${reason} | ${user}`, player.id, rcon)
                 return res.sendStatus(200);
             } catch(err) {
-                console.log(err)
-                return res.sendStatus(500)
+                console.log(err);
+                return res.sendStatus(500);
             }
         });
     });
