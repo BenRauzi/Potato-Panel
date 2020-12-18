@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getUsers, searchUsers } from "../services/UserService";
@@ -13,6 +13,7 @@ import Title from "../components/title";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import UserContext from '../services/UserContext';
 
 
 const Users = () => {
@@ -27,6 +28,8 @@ const Users = () => {
 
     const [query, setQuery] = React.useState("");
     
+    const { user } = useContext(UserContext);
+
     useEffect(() => {
         if(query !== "") return
         const fetchUsers = async () => {
@@ -82,8 +85,8 @@ const Users = () => {
                     <div>XP Level</div>
                     <div>Cop Rank</div>
                     <div>Medic Rank</div>
-                    <div>Cash</div>
-                    <div>Bank Account</div>
+                    { user.adminLevel > 1 ? <div>Cash</div> : undefined}
+                    { user.adminLevel > 1 ? <div>Bank Account</div> : undefined}
                 </div>
                 {
                     users.result.length > 0 ?
@@ -94,8 +97,8 @@ const Users = () => {
                             <div>{exp_level}</div>
                             <div>{getCopRank(coplevel) || "None"}</div>
                             <div>{getEmsRank(mediclevel) || "None"}</div>
-                            <div>{formatMoney(cash)}</div>
-                            <div>{formatMoney(bankacc)}</div>
+                            { user.adminLevel > 1 ? <div>{formatMoney(cash)}</div> : undefined}
+                            { user.adminLevel > 1 ? <div>{formatMoney(bankacc)}</div> : undefined}
                         </Link>
                     )) :
                     <div className="table-row">
