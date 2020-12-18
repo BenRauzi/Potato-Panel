@@ -94,12 +94,13 @@ export const saveCop = async (level, copdept, username, pid) => {
     return [res, res2]
 }
 
-export const saveEms = async (level, emsdept, pid) => {
+export const saveEms = async (level, emsdept, username, pid) => {
     const levelResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/medic/setLevel/`,  {
         method: "POST",
         body: JSON.stringify({
             pid: pid,
             level: level,
+            username: username,
         }),
         headers: {
             'Content-Type': 'application/json'
