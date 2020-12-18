@@ -1,15 +1,19 @@
 import { faBan, faEnvelope, faSearch, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import BanInputBox from "../components/banInput";
 import Title from "../components/title";
 import { getPlayers, kickPlayer, messagePlayer } from "../services/RconService";
 
+import UserContext from "../services/UserContext";
+
 const BattleyePage = () => {
     const [players, setPlayers] = React.useState([])
     const [pageLength, setPageLength] = React.useState(10);
     const [page, setPage] = React.useState(0);
+
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const fetchPlayers = async () => {
@@ -28,6 +32,8 @@ const BattleyePage = () => {
         kickPlayer(id, reason)
         setPlayers(players.filter(x => x.id !== id))
     }
+
+    const showIP = (rank) => rank >= 5 ? true : false;
 
     return (
         <>
@@ -49,7 +55,7 @@ const BattleyePage = () => {
                 <div className="table-head">
                     <div>ID</div>
                     <div>Name</div>
-                    <div>IP</div>
+                    { showIP(user.adminLevel) ? <div>IP</div> : undefined }
                     <div>Ping</div>
                     <div></div>
                 </div>
@@ -61,7 +67,7 @@ const BattleyePage = () => {
                             <div key={idx} className="table-row">
                                 <div>{id}</div>
                                 <div>{name}</div>
-                                <div>{ip}</div>
+                                { showIP(user.adminLevel) ? <div>{ip}</div> : undefined }
                                 <div>{ping}</div>
                                 <div>
                                     <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(guid, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/>

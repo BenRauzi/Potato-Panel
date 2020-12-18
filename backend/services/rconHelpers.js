@@ -1,7 +1,6 @@
 const dotenv = require('dotenv');
 const CryptoJS = require("crypto-js");
 const bigInt = require("big-integer");
-const divmod = require('divmod');
 
 dotenv.config();
 
