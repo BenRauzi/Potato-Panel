@@ -27,7 +27,7 @@ const authController = (app, sql, sqlAsync) => {
             if(result.length == 0) return res.sendStatus(401);
             // console.log(result[0].password, password)
             compare(password, result[0].password, (err, isValid) => {
-                console.log(isValid)
+                // console.log(isValid)
                 const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel} = result[0];
                 if(isValid === true) {
                     const token = jwt.sign({
