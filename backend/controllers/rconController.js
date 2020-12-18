@@ -7,7 +7,8 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } = require("../services/rconHelpers")
+const { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } = require("../services/rconHelpers");
+const { jwtVerify } = require("../services/authHelper");
 
 const rconController = (app, rcon, sql) => {
     // Send a Message (Global & Private)
@@ -44,21 +45,24 @@ const rconController = (app, rcon, sql) => {
 
     // Fetch All Players
     app.get('/rcon/players', checkToken, async(req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
+       
             try {
+                const userData = await jwtVerify(req.cookies.authcookie);
                 // Fetch Players List
-                const playersArray = await getPlayers(rcon)
+                const playersArray = await getPlayers(rcon);
                     // Log to Console (DEBUG)
-                console.log(`RCON: '${data.user}' has just fetched the players list.`);
+                console.log(`RCON: '${userData.user}' has just fetched the players list.`);
 
 
-                return res.send(playersArray);
+                return res.send(playersArray.map(player => ({
+                    ...player,
+                    ip: userData.adminLevel >= 5 ? player.ip : undefined
+                })));
             
             } catch (error) {
                 console.log(error);
                 return res.sendStatus(500);
             };
-        });
     });
 
     // Fetch a Player (Single)
