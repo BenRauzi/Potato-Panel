@@ -166,9 +166,12 @@ const UserPage = ({ match }) => {
                                 <span>
                                     <select value={currentUser.copWhitelisting} onChange={(e) => setCopRank(parseInt(e.target.value))}>
                                         {
-                                            Object.entries(copRanks).map((values, idx) => (
-                                                <option key={idx} value={values[1]}>{values[0]}</option>
-                                            ))
+                                            Object.entries(copRanks).map((values, idx) => {
+                                                if(values[1] >= user.copWhitelisting && user.adminLevel < 2) return undefined
+                                                return (
+                                                    <option key={idx} value={values[1]}>{values[0]}</option>
+                                                )
+                                            })
                                         }
                                     </select></span>
                                 <span><b>POLICE DEPARTMENT</b></span>
@@ -218,9 +221,12 @@ const UserPage = ({ match }) => {
                                 <span>
                                     <select value={currentUser.medicWhitelisting} onChange={(e) => setEmsRank(parseInt(e.target.value))}>
                                         {
-                                            Object.entries(emsRanks).map((values, idx) => (
-                                                <option key={idx} value={values[1]}>{values[0]}</option>
-                                            ))
+                                            Object.entries(emsRanks).map((values, idx) => {
+                                                if(values[1] >= user.emsWhitelisting && user.adminLevel < 2) return undefined
+                                                return (
+                                                    <option key={idx} value={values[1]}>{values[0]}</option>
+                                                )
+                                            })
                                         }
                                     </select></span>
                                 <span><b>MEDIC DEPARTMENT</b></span>
