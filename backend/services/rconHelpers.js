@@ -103,7 +103,7 @@ const reloadServerBans = async (rcon) => {
 
 const kickPlayer = (reason, id, rcon) => {
     return new Promise((resolve, reject) => {
-        rcon.sendCommand(`kick ${id} ${reason}}`, async (err) => {
+        rcon.sendCommand(`kick ${id} ${reason}`, async (err) => {
             if (err) {
                 reject(err)
             };
