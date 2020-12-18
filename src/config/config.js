@@ -105,11 +105,6 @@ export const LicenseList = {
     "Gun License": "license_civ_gun",
     "Diving License": "license_civ_dive",
     "Home Owners License": "license_civ_home",
-    "Marshal License": "license_civ_marshal",
-    //Licenses are from Active
-    // "Mucker License": "license_civ_mucker",
-    // "Whitewater License": "license_civ_whitewater",
-    "DOJ License": "license_civ_doj",
     "Mucker Company" : "license_civ_mucker",
     "Churchill Company": "license_civ_churchill",
     "Metro Company": "license_civ_metroState"
