@@ -102,7 +102,8 @@ const Main = () => {
                 <GuardedRoute exact path='/case/:id' roles={{adminLevel: 2}} component={SingleCasePage}/>
                 
                 {/* RCON / Administration */}
-                <GuardedRoute exact path='/users' roles={{adminLevel: 1}} component={Users}/>
+                <ProtectedRoute exact path='/users' component={Users}/>
+                {/* <GuardedRoute exact path='/users' roles={{adminLevel: 1}} component={Users}/> */}
 
                 <GuardedRoute exact path='/battleye' roles={{adminLevel: 3}} component={BattleyePage}/>
                 <GuardedRoute exact path='/bans' roles={{adminLevel: 4}} component={BansPage}/>

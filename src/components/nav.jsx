@@ -24,20 +24,17 @@ const MainNav = () => {
                         <span>Dashboard</span>
                     </Link>
                 </li>
-                {
-                    user.adminLevel > 0 ?
-                    <li>
-                        <Link to="/users">
+                <li>
+                    <Link to="/users">
 
-                            <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon" alt="Users" icon={faUsers}/>
-                            </div>
+                        <div className="nav-icon">
+                        <FontAwesomeIcon className="nav-icon" alt="Users" icon={faUsers}/>
+                        </div>
 
-                        
-                            <span>Users</span>
-                        </Link>   
-                    </li> : undefined
-                }
+                    
+                        <span>Users</span>
+                    </Link>   
+                </li>
                 <li>
                     <Link to="/police">
 

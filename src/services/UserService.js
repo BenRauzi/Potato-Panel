@@ -61,11 +61,12 @@ export const saveMoney = async (cash, bank, pid) => {
     return res
 }
 
-export const saveCop = async (level, copdept, pid) => {
+export const saveCop = async (level, copdept, username, pid) => {
     const levelResponse = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/police/setLevel/`,  {
         method: "POST",
         body: JSON.stringify({
             pid: pid,
+            username: username,
             level: level,
         }),
         headers: {

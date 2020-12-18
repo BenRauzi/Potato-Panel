@@ -56,7 +56,7 @@ const authController = (app, sql, sqlAsync) => {
         res.sendStatus(200);
     });
 
-    app.post('/auth/user/create', (req, res) => {
+    app.post('/auth/user/create', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 5) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -75,22 +75,24 @@ const authController = (app, sql, sqlAsync) => {
         });
     });
 
-    app.post('/auth/user/create-op', (req, res) => {
-        const body = req.body;
-        const { pid, username, password } = body;
+    //Create new User (Testing)
+
+    // app.post('/auth/user/create-op', (req, res) => {
+    //     const body = req.body;
+    //     const { pid, username, password } = body;
         
-        const hashedPassword = hash(password, 10,(err, hashed) => {
-            console.log(password, hashed)
-            if(err) return res.send(400)
-            sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
-                pid,
-                username,
-                hashed
-            ], (error, results) => {
-                res.send(200)
-            });
-        });
-    });
+    //     const hashedPassword = hash(password, 10,(err, hashed) => {
+    //         console.log(password, hashed)
+    //         if(err) return res.send(400)
+    //         sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
+    //             pid,
+    //             username,
+    //             hashed
+    //         ], (error, results) => {
+    //             res.send(200)
+    //         });
+    //     });
+    // });
 
     app.get('/auth/verifyToken', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
