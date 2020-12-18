@@ -108,7 +108,7 @@ const casesController = (app, sql) => {
                 ON support_case_members.pid = p1.pid
                 INNER JOIN players p2
                 ON support_cases.staff_member = p2.pid
-                INNER JOIN players p3
+                LEFT JOIN players p3
                 ON support_cases.staff_helper = p3.pid
                 WHERE support_cases.uid = ?
             `, [
