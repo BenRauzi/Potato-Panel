@@ -10,7 +10,7 @@ import { logout } from '../services/AuthService';
 import UserContext from '../services/UserContext';
 
 const MainNav = () => {
-    const { setUser } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
     return (
         <nav>
             <ul>
@@ -24,17 +24,20 @@ const MainNav = () => {
                         <span>Dashboard</span>
                     </Link>
                 </li>
-                <li>
-                    <Link to="/users">
+                {
+                    user.adminLevel > 0 ?
+                    <li>
+                        <Link to="/users">
 
-                        <div className="nav-icon">
-                        <FontAwesomeIcon className="nav-icon" alt="Users" icon={faUsers}/>
-                        </div>
+                            <div className="nav-icon">
+                            <FontAwesomeIcon className="nav-icon" alt="Users" icon={faUsers}/>
+                            </div>
 
-                       
-                        <span>Users</span>
-                    </Link>   
-                </li>
+                        
+                            <span>Users</span>
+                        </Link>   
+                    </li> : undefined
+                }
                 <li>
                     <Link to="/police">
 
@@ -73,33 +76,43 @@ const MainNav = () => {
                         <span>Development Roster</span>
                     </Link>                        
                 </li>
-                <li>
-                    <Link to="/vehicles">
-                        <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon" alt="Vehicles" icon={faCar}/>
-                        </div>
-                        
-                        <span>Vehicles</span>
-                    </Link>                        
-                </li>
-                <li>
-                    <Link to="/cases">
-                        <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon" alt="Support Cases" icon={faGavel}/>
-                        </div>
-                        
-                        <span>Support Cases</span>
-                    </Link>                        
-                </li>
-                <li>
-                    <Link to="/battleye">
-                        <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon" alt="Battleye" icon={faEye}/>
-                        </div>
-                        
-                        <span>Battleye</span>
-                    </Link>                        
-                </li>
+                {
+                    user.adminLevel > 1 ?
+                    <li>
+                        <Link to="/vehicles">
+                            <div className="nav-icon">
+                                <FontAwesomeIcon className="nav-icon" alt="Vehicles" icon={faCar}/>
+                            </div>
+                            
+                            <span>Vehicles</span>
+                        </Link>                        
+                    </li> : undefined
+                }
+                {
+                    user.adminLevel > 1 ?
+                    <li>
+                        <Link to="/cases">
+                            <div className="nav-icon">
+                                <FontAwesomeIcon className="nav-icon" alt="Support Cases" icon={faGavel}/>
+                            </div>
+                            
+                            <span>Support Cases</span>
+                        </Link>                        
+                    </li> : undefined
+                }
+                {
+                    user.adminLevel > 4 ? 
+                    <li>
+                        <Link to="/battleye">
+                            <div className="nav-icon">
+                                <FontAwesomeIcon className="nav-icon" alt="Battleye" icon={faEye}/>
+                            </div>
+                            
+                            <span>Battleye</span>
+                        </Link>                        
+                    </li> : undefined
+                }
+                
                 <li>
                     <Link to="/settings">
                          <div className="nav-icon">
@@ -110,15 +123,19 @@ const MainNav = () => {
                     </Link>
                       
                 </li>
-                <li>
-                    <Link to="server-settings">
-                        <div className="nav-icon">
-                            <FontAwesomeIcon className="nav-icon" alt="Server Settings" icon={faSlidersH}/>
-                        </div>
-                        
-                        <span>Server Settings</span>
-                    </Link>
-                </li>
+                {
+                    user.adminLevel >= 8 ?
+                    <li>
+                        <Link to="/server-settings">
+                            <div className="nav-icon">
+                                <FontAwesomeIcon className="nav-icon" alt="Server Settings" icon={faSlidersH}/>
+                            </div>
+                            
+                            <span>Server Settings</span>
+                        </Link>
+                    </li> : undefined
+                }
+             
                 <li>
                     <Link to="/login" onClick={() => logout(setUser)}>
                         <div className="nav-icon">

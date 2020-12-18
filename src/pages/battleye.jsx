@@ -70,9 +70,9 @@ const BattleyePage = () => {
                                 { showIP(user.adminLevel) ? <div>{ip}</div> : undefined }
                                 <div>{ping}</div>
                                 <div>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(guid, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {sendKickPlayer(guid,  window.prompt("Kick Reason:", "Admin Kick"))}} icon={faUserMinus}/>
-                                    <FontAwesomeIcon className="delete-btn large" onClick={() => {setBanUser({name, guid, ip})}} icon={faBan}/>
+                                    { user.adminLevel > 1 ? <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(guid, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/> : undefined}
+                                    { user.adminLevel > 2 ? <FontAwesomeIcon className="delete-btn large" onClick={() => {sendKickPlayer(guid,  window.prompt("Kick Reason:", "Admin Kick"))}} icon={faUserMinus}/> : undefined}
+                                    { user.adminLevel > 3 ? <FontAwesomeIcon className="delete-btn large" onClick={() => {setBanUser({name, guid, ip})}} icon={faBan}/> : undefined}
                                 </div>
                             </div>
                         )
