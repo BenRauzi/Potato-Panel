@@ -23,12 +23,11 @@ const rconController = (app, rcon, sql) => {
 
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
-
                     await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
                 } else {
                     await sendMessageRcon(pid, `[${user}] ${message}`, rcon);
                 }
-              
+
 
                 // Log to Console (DEBUG)
                 console.log(`RCON: '${user}' just sent the following message to '${pid}': ${message}.`);
@@ -45,24 +44,23 @@ const rconController = (app, rcon, sql) => {
 
     // Fetch All Players
     app.get('/rcon/players', checkToken, async(req, res) => {
-       
-            try {
-                const userData = await jwtVerify(req.cookies.authcookie);
-                // Fetch Players List
-                const playersArray = await getPlayers(rcon);
-                    // Log to Console (DEBUG)
-                console.log(`RCON: '${userData.user}' has just fetched the players list.`);
+        try {
+            const userData = await jwtVerify(req.cookies.authcookie);
+            // Fetch Players List
+            const playersArray = await getPlayers(rcon);
+                // Log to Console (DEBUG)
+            console.log(`RCON: '${userData.user}' has just fetched the players list.`);
 
 
-                return res.send(playersArray.map(player => ({
-                    ...player,
-                    ip: userData.adminLevel >= 5 ? player.ip : undefined
-                })));
-            
-            } catch (error) {
-                console.log(error);
-                return res.sendStatus(500);
-            };
+            return res.send(playersArray.map(player => ({
+                ...player,
+                ip: userData.adminLevel >= 5 ? player.ip : undefined
+            })));
+        
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        };
     });
 
     // Fetch a Player (Single)

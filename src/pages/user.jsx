@@ -49,7 +49,6 @@ const UserPage = ({ match }) => {
         cop: false,
         ems: false,
         dev: false,
-
     })
 
     const setCash = (amount) => {
@@ -322,25 +321,34 @@ const UserPage = ({ match }) => {
                 <div className="user-info-tab">
                     <Tabs>
                         <TabList>
-                            <Tab>Licenses</Tab>
+                            { user.adminLevel > 0 ? <Tab>Licenses</Tab> : undefined}
                             <Tab>Houses</Tab>
                             <Tab>Containers</Tab>
-                            <Tab>Support Cases</Tab>
+                            { user.adminLevel > 0 ?  <Tab>Support Cases</Tab> : undefined}
+                           
                             <Tab>More Info</Tab>
                         </TabList>
 
-                        <TabPanel>
-                            <Licenses pid={userId} />
-                        </TabPanel>
+                        { user.adminLevel > 0 ?  
+                           <TabPanel>
+                                <Licenses pid={userId} />
+                            </TabPanel> : undefined
+                        }
+
+                        
                         <TabPanel>
                             <Houses pid={userId} />
                         </TabPanel>
                         <TabPanel>
                             <Containers pid={userId} />
                         </TabPanel>
-                        <TabPanel>
-                            <SupportCases pid={userId} />
-                        </TabPanel>
+
+                        { user.adminLevel > 0 ?  
+                            <TabPanel>
+                                <SupportCases pid={userId} />
+                            </TabPanel> : undefined
+                        }
+                        
                         <TabPanel>
                             <MoreInfo currentUserInfo={{ currentUser: currentUser, setUser: setUser }} />
                         </TabPanel>
@@ -349,24 +357,31 @@ const UserPage = ({ match }) => {
                 <div className="user-info-tab">
                     <Tabs>
                         <TabList>
-
-                            <Tab>Civilian Vehicles</Tab>
-                            <Tab>Police Vehicles</Tab>
-                            <Tab>Medic Vehicles</Tab>
+                            { user.adminLevel > 0 ? <Tab>Civilian Vehicles</Tab> : undefined}
+                            { user.adminLevel > 0 || user.copWhitelisting > 3 ?  <Tab>Police Vehicles</Tab> : undefined}
+                            { user.adminLevel > 0 || user.emsWhitelisting > 3 ? <Tab>Medic Vehicles</Tab> : undefined}
+                            
                         </TabList>
 
-                        <TabPanel>
-                            <VehiclesList pid={userId} side="civ" />
-                        </TabPanel>
+                        { user.adminLevel > 0 ?  
+                            <TabPanel>
+                                <VehiclesList pid={userId} side="civ" />
+                            </TabPanel> : undefined
+                        }
 
-                        <TabPanel>
-                            <VehiclesList pid={userId} side="cop" />
-                        </TabPanel>
-                        <TabPanel>
-                            <VehiclesList pid={userId} side="med" />
-                        </TabPanel>
+                        { user.adminLevel > 0 || user.copWhitelisting > 3 ?  
+                            <TabPanel>
+                                <VehiclesList pid={userId} side="cop" />
+                            </TabPanel> : undefined
+                        }
+
+                        { user.adminLevel > 0 || user.emsWhitelisting > 3 ?  
+                            <TabPanel>
+                                <VehiclesList pid={userId} side="med" />
+                            </TabPanel> : undefined
+                        }
+
                     </Tabs>
-
                 </div>
             </div>
         </>

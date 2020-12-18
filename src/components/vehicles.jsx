@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { getUserVehicles } from '../services/UserService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { removeVehicle } from '../services/VehicleService';
+import UserContext from '../services/UserContext';
 
 const VehiclesList = ({pid, side}) => {
 
     const [vehicles, setVehicles] = React.useState([])
+
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const getVehicles = async () => {
@@ -44,7 +47,7 @@ const VehiclesList = ({pid, side}) => {
                                     <div>{classname}</div>
                                     <div>{type}</div>
                                     <div>{active === 1 ? "True" : "False"}</div>
-                                    <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>
+                                    { user.adminLevel > 1 ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>: <div></div>}
                                 </div>
                             ))
                         }

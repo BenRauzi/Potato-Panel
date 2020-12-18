@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { getLicenseName } from '../services/HelperService';
 import { getLicenses, setLicense } from '../services/UserService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { LicenseList } from '../config/config';
-
+import UserContext from '../services/UserContext';
 
 const Licenses = ({pid}) => {
     const [licenses, setLicenses] = React.useState()
     const [currentLicense, setCurrentLicense] = React.useState(undefined)
     const [unownedLicenses, setUnownedLicenses] = React.useState()
+
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const fetchLicenses = async () => {
@@ -59,19 +61,21 @@ const Licenses = ({pid}) => {
             <div className="table-head">
                 <div>Name</div>
                 <div>ID</div>
-                <div className="nowrap">
-                    
-                <select className="dropdown" value={currentLicense} onChange={(e) => setCurrentLicense(e.target.value)}>
-                    {
-                        unownedLicenses.map((values, idx) => (
-                            <option key={idx} value={values[1]}>{getLicenseName(values[1])}</option>
-                        ))
-                    }
-                </select>
-                
-                <button className="add-btn"><FontAwesomeIcon icon={faPlus} onClick={() => addLicense(currentLicense)}/></button>
-                    
-                </div>
+
+                {
+                    user.adminLevel > 3 ?
+                    <div className="nowrap">
+                        <select className="dropdown" value={currentLicense} onChange={(e) => setCurrentLicense(e.target.value)}>
+                            {
+                                unownedLicenses.map((values, idx) => (
+                                    <option key={idx} value={values[1]}>{getLicenseName(values[1])}</option>
+                                ))
+                            }
+                        </select>
+                        
+                        <button className="add-btn"><FontAwesomeIcon icon={faPlus} onClick={() => addLicense(currentLicense)}/></button>   
+                    </div> : <div></div>
+                }
             </div>
             {
                 licenses.length === 0 ?
@@ -84,7 +88,7 @@ const Licenses = ({pid}) => {
                             <div key={idx} className="table-row">
                                 <div>{getLicenseName(license)}</div>
                                 <div>{license}</div>
-                                <div><FontAwesomeIcon onClick={() => deleteLicense(license)} className="delete-btn" icon={faTrashAlt}/></div>
+                                { user.adminLevel > 3 ? <div><FontAwesomeIcon onClick={() => deleteLicense(license)} className="delete-btn" icon={faTrashAlt}/></div> : <div></div> }
                             </div>
                         ))
                     }

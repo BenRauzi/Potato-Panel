@@ -1,10 +1,14 @@
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { getHousesByID, removeHouse } from '../services/housesService';
+import UserContext from '../services/UserContext';
 
 const Houses = ({pid}) => {
     const [houses, setHouses] = React.useState([]);
+
+    const { user } = useContext(UserContext);
+    
     useEffect(() => {
         const fetchHouses = async () => {
             const houses = await getHousesByID(pid);
@@ -34,9 +38,8 @@ const Houses = ({pid}) => {
                             <div className="table-row">
                                 <div>{pos}</div>
                                 <div>{insert_time}</div>
-                                <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteHouse(id)} icon={faTrashAlt}/></div>
+                                { user.adminLevel > 3 ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteHouse(id)} icon={faTrashAlt}/></div> : <div></div> }
                             </div>
-                                
                         ))
                     }
                 </> : 

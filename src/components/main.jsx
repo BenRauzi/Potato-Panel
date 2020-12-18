@@ -81,22 +81,36 @@ const Main = () => {
     return (
         <>
             <Switch> {/* The Switch decides which component to show based on the current URL.*/}
+                {/* General */}
                 <ProtectedRoute exact path='/dashboard' component={NotFoundPage}/>
-                <ProtectedRoute exact path='/users' component={Users}/>
-                <ProtectedRoute exact path='/staff' component={Staff}/>
+                
+                <ProtectedRoute exact path="/user/:id" component={UserPage} />
+                <ProtectedRoute exact path='/settings' component={SettingsPage}/>
+
+
+                {/* Rosters */}
                 <ProtectedRoute exact path='/police' component={Police}/>
                 <ProtectedRoute exact path='/medic' component={Ems}/>
                 <ProtectedRoute exact path='/development-team' component={Development}/>
-                <ProtectedRoute exact path='/vehicles' component={Vehicles}/>
-                <ProtectedRoute exact path='/cases' component={CasesPage}/>
-                <ProtectedRoute exact path='/case/new' component={NewCasePage}/>
-                <ProtectedRoute exact path='/case/:id' component={SingleCasePage}/>   
-                <ProtectedRoute exact path='/settings' component={SettingsPage}/>
-                <ProtectedRoute exact path='/battleye' component={BattleyePage}/>
-                <ProtectedRoute exact path='/bans' component={BansPage}/>
-                <GuardedRoute exact path='/server-settings' roles={{adminLevel: 8}} component={ServerSettingsPage}/>
+                <ProtectedRoute exact path='/staff' component={Staff}/>
+                
+                <GuardedRoute exact path='/vehicles' roles={{adminLevel: 1}} component={Vehicles}/>
+
+                {/* Support */}
+                <GuardedRoute exact path='/cases' roles={{adminLevel: 2}} component={CasesPage}/>
+                <GuardedRoute exact path='/case/new' roles={{adminLevel: 2}} component={NewCasePage}/>
+                <GuardedRoute exact path='/case/:id' roles={{adminLevel: 2}} component={SingleCasePage}/>
+                
+                {/* RCON / Administration */}
+                <GuardedRoute exact path='/users' roles={{adminLevel: 1}} component={Users}/>
+
+                <GuardedRoute exact path='/battleye' roles={{adminLevel: 3}} component={BattleyePage}/>
+                <GuardedRoute exact path='/bans' roles={{adminLevel: 4}} component={BansPage}/>
+                <GuardedRoute exact path='/server-settings' roles={{adminLevel: 7}} component={ServerSettingsPage}/>
+               
                 <Route exact path='/login' component={Login}/>
-                <ProtectedRoute exact path="/user/:id" component={UserPage} />
+
+                {/* Guards */}
                 <ProtectedRoute exact path="/" component={Dashboard} />
                 <Route path="*" component={NotFoundPage} />
             </Switch>            
