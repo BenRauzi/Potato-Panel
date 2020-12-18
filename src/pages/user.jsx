@@ -248,7 +248,7 @@ const UserPage = ({ match }) => {
                                 <input type="checkbox" className="tile-check-box" value={editState.ems} onChange={async () => {
                                     if (!editState.ems) return setEditState({ ...editState, ems: !editState.ems })
 
-                                    await saveEms(currentUser.medicWhitelisting, currentUser.medicdept, userId);
+                                    await saveEms(currentUser.medicWhitelisting, currentUser.medicdept, currentUser.emsWhitelisting, userId);
 
                                     setEditState({ ...editState, ems: !editState.ems })
 
