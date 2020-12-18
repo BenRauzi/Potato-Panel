@@ -191,7 +191,7 @@ const UserPage = ({ match }) => {
                                     if (!editState.cop) return setEditState({ ...editState, cop: !editState.cop })
 
 
-                                    await saveCop(currentUser.copWhitelisting, currentUser.copdept, userId);
+                                    await saveCop(currentUser.copWhitelisting, currentUser.copdept, currentUser.username, userId);
 
                                     setEditState({ ...editState, cop: !editState.cop })
 

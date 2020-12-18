@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const { checkToken } = require("../services/authService");
 
 const devController = (app, sql, sqlAsync) => {
     // Fetch Dev Users 
-    app.get('/dev/users', (req, res) => {
+    app.get('/dev/users', checkToken, (req, res) => {
         const pageN = req.query.p || 1; // Page Number
         const count = parseInt(req.query.c) || 10; // Total Entires Gathered
         const minRank = parseInt(req.query.mR) || 1; // Minimum Rank
@@ -23,7 +24,7 @@ const devController = (app, sql, sqlAsync) => {
     });
 
     // Search Dev User (By Username)
-    app.get('/dev/search', (req, res) => {
+    app.get('/dev/search', checkToken, (req, res) => {
         const uname = req.query.uname; // Players Username
         const pageN = req.query.p || 1; // Page Number
         const count = parseInt(req.query.c) || 10; // Total Entires Gathered
@@ -44,7 +45,7 @@ const devController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Developer Whitelist Level
-    app.post('/dev/setLevel', (req, res) => {
+    app.post('/dev/setLevel', checkToken, (req, res) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET developerlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
@@ -54,7 +55,7 @@ const devController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Developer Department Level
-    app.post('/dev/setDepartment', (req, res) => {
+    app.post('/dev/setDepartment', checkToken, (req, res) => {
         const body = req.body;
         const { pid, level } = body;
         sql.query(`UPDATE players SET developerdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
