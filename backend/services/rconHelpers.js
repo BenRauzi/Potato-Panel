@@ -7,6 +7,7 @@ dotenv.config();
 const getPlayers = (rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand('players', async (players) => {
+            // Process raw string output from Battleye. Entire player list outputs as one string....
             const playersStringArray = players.split("\n");
             playersStringArray.splice(0, 3);
             playersStringArray.pop();
