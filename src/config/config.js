@@ -112,7 +112,7 @@ export const LicenseList = {
     "DOJ License": "license_civ_doj",
     "Mucker Company" : "license_civ_mucker",
     "Churchill Company": "license_civ_churchill",
-    "Metro Company": "license_civ_metro"
+    "Metro Company": "license_civ_metroState"
 }
 
 export const GameSides = ["Any", "Cop", "Civ", "Med"]
