@@ -18,7 +18,6 @@ const SingleCasePage = ({match}) => {
             const supportCase = await getCase(caseId);
 
             setCase(supportCase)
-            console.log(supportCase)
         }
         fetchCase()
     }, [caseId, setCase])
@@ -50,9 +49,9 @@ const SingleCasePage = ({match}) => {
                     <div>Player ID</div>
                 </div>
                 {
-                    currentCase.members.length === 0 ?
+                    currentCase.members.filter(x => x.pid).length === 0 ?
                     <div className="table-row">
-                    <div>No Members Found</div>
+                        <div>No Members Found</div>
                     </div> :
                     <>
                         {
