@@ -44,18 +44,18 @@ const authController = (app, sql, sqlAsync) => {
                         
                     }, process.env.JWT_SECRET);
                     // save token in cookie
-                    res.cookie('authcookie',token,{maxAge:1000*60*60*60,httpOnly:true, domain: process.env.DOMAIN});
+                    res.cookie('authcookie',token,{maxAge:1000*60*60*60,httpOnly:true, domain: process.env.DOMAIN, path: '/'});
 
                     res.send({...result[0], password: undefined});
                 } else {
                     res.sendStatus(401);
                 };
-            });
+            }); 
         });
     });
 
     app.get('/auth/logout', checkToken, (req, res) => {
-        res.clearCookie("authcookie", {httpOnly:true, domain: process.env.DOMAIN});
+        res.clearCookie("authcookie", {maxAge:1000*60*60*60, httpOnly:true, domain: process.env.DOMAIN, path: '/'});
         res.sendStatus(200);
     });
 
