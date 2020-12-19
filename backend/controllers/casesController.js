@@ -1,6 +1,7 @@
 const { checkToken } = require("../services/authService");
 
 const { v4: uuid } = require('uuid');
+const { getSteamInfo } = require("../services/steamHelper");
 
 const casesController = (app, sql) => {
     app.get('/cases', checkToken, async(req, res) => {
@@ -101,13 +102,18 @@ const casesController = (app, sql) => {
         if(!caseId) return res.sendStatus(204)
 
         try {
-            const result = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter, p1.name, p2.name AS staff_name, p3.name AS staff_helper_name FROM support_cases 
+            const result = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter, p1.name, p2.name AS staff_name, p3.name AS staff_helper_name, panel_1.adminLevel as staff_rank, panel_2.adminLevel as staff_helper_rank
+                FROM support_cases 
                 LEFT JOIN support_case_members 
                 ON support_case_members.case_id = support_cases.uid 
                 LEFT JOIN players p1
                 ON support_case_members.pid = p1.pid
                 INNER JOIN players p2
                 ON support_cases.staff_member = p2.pid
+                INNER JOIN panel_users panel_1
+                ON support_cases.staff_member = panel_1.pid
+                LEFT JOIN panel_users panel_2
+                ON support_cases.staff_helper = panel_2.pid
                 LEFT JOIN players p3
                 ON support_cases.staff_helper = p3.pid
                 WHERE support_cases.uid = ?
@@ -123,7 +129,15 @@ const casesController = (app, sql) => {
                 name: undefined,
                 members: result.map(({pid, reporter, name}) => ({pid: pid, reporter: reporter, name: name}))
             }
-            return res.send(caseData)
+
+            if(caseData.staff_helper) {
+                const [ staffMemberSteam, staffHelperSteam ] = await Promise.all([getSteamInfo(caseData.staff_member), getSteamInfo(caseData.staff_helper)])
+                return res.send({...caseData, staffHelperSteam, staffMemberSteam})
+            }
+
+            const staffMemberSteam = await getSteamInfo(caseData.staff_member);
+            
+            return res.send({...caseData, staffMemberSteam})
         } catch(error) {
             console.log(error)
             res.sendStatus(500)

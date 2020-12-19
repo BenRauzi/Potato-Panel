@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
-const fetch = require("node-fetch");
+const { getSteamInfo } = require("../services/steamHelper");
 
 const userController = (app, sql, sqlAsync) => {
     // Fetch Generic Users 
@@ -186,18 +186,10 @@ const userController = (app, sql, sqlAsync) => {
     // Gets User Steam Profile Details
     app.get('/user/steam', async (req, res) => {
         const pid = req.query.pid;
-        const response = await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${pid}`, {
-            method: "GET"
-        })
-
-        const steamDetails = await response.json()
-        const { personaname, profileurl, avatarfull } = steamDetails.response.players[0]
-        res.send({
-            profileName: personaname,
-            profileUrl: profileurl,
-            avatarUrl: avatarfull
-            
-        });
+        
+        const userSteamInfo = await getSteamInfo(pid)
+       
+        res.send(userSteamInfo);
     });
 
     app.get('/user/test', async (req, res) => {

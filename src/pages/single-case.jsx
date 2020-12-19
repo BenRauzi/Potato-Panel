@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Title from "../components/title";
-import { getCasePosition, getCaseType, getTimeSince } from "../services/HelperService";
+import { getCasePosition, getCaseType, getStaffRank, getTimeSince } from "../services/HelperService";
 import { getCase } from "../services/StaffService";
 
 import DOMPurify from 'dompurify';
@@ -26,6 +26,8 @@ const SingleCasePage = ({match}) => {
 
     const caseTime = new Date(currentCase.time);
     const currentTime = new Date(currentCase.currentTime);
+
+    const { staffHelperSteam, staffMemberSteam, staff_member, staff_rank, staff_name, staff_helper, staff_helper_name, staff_helper_rank, case_type, details, evidence_link, other } = currentCase
     return (
         <>
             <Title title={`Support Case - ${caseId}`}/>
@@ -33,13 +35,32 @@ const SingleCasePage = ({match}) => {
             {moment(caseTime).format('DD/MM/YY')} - {getTimeSince(caseTime, currentTime)}
 
             <div className="case-info">
-                <p>Staff Member: <Link to={`/user/${currentCase.staff_member}`}>{currentCase.staff_name}</Link></p>
-                <p>Staff Helper: <Link to={`/user/${currentCase.staff_helper}`}>{currentCase.staff_helper_name}</Link></p>
 
-                <p>Case Type: {getCaseType(currentCase.case_type)}</p>
-                <p>Details: {DOMPurify.sanitize(currentCase.details)}</p>
-                <p>Evidence Link: <a href={currentCase.evidence_link}>Link</a></p>
-                <p>Other Infromation: {DOMPurify.sanitize(currentCase.other)}</p>
+                <Link to={`/user/${staff_member}`} className="steam-profile-support profile-cases">
+                    <img alt="Avatar" src={staffMemberSteam.avatarUrl}></img>
+                    <div className="steam-details">
+                        <span>{staff_name}</span>
+                        <span className="userid">Staff Rank: {getStaffRank(staff_rank)}</span>
+                        <span className="userid">PID: {staff_member}</span>
+                    </div>
+                </Link>
+
+                {
+                    staff_helper ? 
+                    <Link to={`/user/${staff_helper}`} className="steam-profile-support profile-cases">
+                        <img alt="Avatar" src={staffHelperSteam.avatarUrl}></img>
+                        <div className="steam-details">
+                            <span>{staff_helper_name}</span>
+                            <span className="userid">Staff Rank: {getStaffRank(staff_helper_rank)}</span>
+                            <span className="userid">PID: {staff_helper}</span>
+                        </div>
+                    </Link> : undefined
+                }
+
+                <p>Case Type: {getCaseType(case_type)}</p>
+                <p>Details: {DOMPurify.sanitize(details)}</p>
+                <p>Evidence Link: <a href={evidence_link}>Link</a></p>
+                <p>Other Infromation: {DOMPurify.sanitize(other)}</p>
             </div>
 
             <div className="table">
