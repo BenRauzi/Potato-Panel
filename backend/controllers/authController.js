@@ -2,6 +2,9 @@ const jwt = require("jsonwebtoken");
 const { checkToken } = require("../services/authService");
 
 const { hash, compare } = require("bcrypt");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const authController = (app, sql, sqlAsync) => {
     app.post('/auth/login', async (req,res)=>{
@@ -41,7 +44,7 @@ const authController = (app, sql, sqlAsync) => {
                         
                     }, process.env.JWT_SECRET);
                     // save token in cookie
-                    res.cookie('authcookie',token,{maxAge:1000*60*60*60,httpOnly:true});
+                    res.cookie('authcookie',token,{maxAge:1000*60*60*60,httpOnly:true, domain: process.env.DOMAIN});
 
                     res.send({...result[0], password: undefined});
                 } else {
@@ -52,7 +55,7 @@ const authController = (app, sql, sqlAsync) => {
     });
 
     app.get('/auth/logout', checkToken, (req, res) => {
-        res.clearCookie("authcookie");
+        res.clearCookie("authcookie", {httpOnly:true, domain: process.env.DOMAIN});
         res.sendStatus(200);
     });
 
