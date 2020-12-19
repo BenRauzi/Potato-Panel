@@ -37,7 +37,7 @@ const SingleCasePage = ({match}) => {
                 <p>Staff Helper: <Link to={`/user/${currentCase.staff_helper}`}>{currentCase.staff_helper_name}</Link></p>
 
                 <p>Case Type: {getCaseType(currentCase.case_type)}</p>
-                <p>Details: {currentCase.details}</p>
+                <p>Details: {DOMPurify.sanitize(currentCase.details)}</p>
                 <p>Evidence Link: <a href={currentCase.evidence_link}>Link</a></p>
                 <p>Other Infromation: {DOMPurify.sanitize(currentCase.other)}</p>
             </div>
