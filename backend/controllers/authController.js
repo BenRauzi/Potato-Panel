@@ -45,9 +45,6 @@ const authController = (app, sql, sqlAsync) => {
                     }, process.env.JWT_SECRET);
                     // save token in cookie
 
-                    const currentDate = new Date();
-                    const expireDate = currentDate.getDate() + 1;
-
                     res.cookie('authcookie',token,{ path: '/api', maxAge: 1000*60*60*60, httpOnly:true});
 
                     res.send({...result[0], password: undefined});
