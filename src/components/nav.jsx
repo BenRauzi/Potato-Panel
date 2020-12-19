@@ -11,6 +11,7 @@ import UserContext from '../services/UserContext';
 
 const MainNav = () => {
     const { user, setUser } = useContext(UserContext)
+
     return (
         <nav>
             <ul>

@@ -27,6 +27,7 @@ export const logout = async (setUser) => {
     
     if (code === 401) return false;
     setUser(undefined)
+
     return true;
 }
 
