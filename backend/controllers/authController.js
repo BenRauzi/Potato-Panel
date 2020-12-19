@@ -49,7 +49,7 @@ const authController = (app, sql, sqlAsync) => {
                     const currentDate = new Date();
                     const expireDate = currentDate.getDate() + 1;
 
-                    res.cookie('authcookie',token,{domain: process.env.DOMAIN, path: '/api', maxAge: 1000*60*60*60, httpOnly:true});
+                    res.cookie('authcookie',token,{ path: '/api', maxAge: 1000*60*60*60, httpOnly:true});
 
                     res.send({...result[0], password: undefined});
                 } else {
@@ -59,9 +59,10 @@ const authController = (app, sql, sqlAsync) => {
         });
     });
 
-    app.get('/auth/logout', checkToken, (req, res) => {
+    app.post('/auth/logout', checkToken, (req, res) => {
         console.log(process.env.DOMAIN)
-        res.cookie("authcookie", '', { domain: process.env.DOMAIN, path: '/api', maxAge: 1000*60*60*60, httpOnly:true, overwrite: true })
+        res.clearCookie('authcookie', { path: "/api" })
+        // res.cookie('authcookie', {}, { path: '/api', maxAge: 1000*60*60*60, httpOnly:true, overwrite: true })
         res.sendStatus(200);
     });
 
