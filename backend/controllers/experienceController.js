@@ -1,5 +1,7 @@
+const { checkToken } = require("../services/authService");
+
 const experienceController = (app, sql) => {
-    app.post('/user/setExperience', async (req, res) => {
+    app.post('/user/setExperience', checkToken, async (req, res) => {
         const { pid, level, points } = req.body;
 
         try {
