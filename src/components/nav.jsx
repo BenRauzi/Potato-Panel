@@ -12,6 +12,11 @@ import UserContext from '../services/UserContext';
 const MainNav = () => {
     const { user, setUser } = useContext(UserContext)
 
+    const signOut = async (setUser) => {
+        await logout();
+        setUser(undefined)
+    }
+
     return (
         <nav>
             <ul>
@@ -135,7 +140,7 @@ const MainNav = () => {
                 }
 
                 <li>
-                    <Link to="/login" onClick={() => logout(setUser)}>
+                    <Link to="/login" onClick={() => signOut(setUser)}>
                         <div className="nav-icon">
                             <FontAwesomeIcon className="nav-icon" alt="Server Settings" icon={faSignOutAlt} />
                         </div>
