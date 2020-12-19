@@ -44,7 +44,6 @@ const authController = (app, sql, sqlAsync) => {
                         
                     }, process.env.JWT_SECRET);
                     // save token in cookie
-                    console.log(process.env.DOMAIN)
 
                     const currentDate = new Date();
                     const expireDate = currentDate.getDate() + 1;
@@ -60,9 +59,7 @@ const authController = (app, sql, sqlAsync) => {
     });
 
     app.post('/auth/logout', checkToken, (req, res) => {
-        console.log(process.env.DOMAIN)
         res.clearCookie('authcookie', { path: "/api" })
-        // res.cookie('authcookie', {}, { path: '/api', maxAge: 1000*60*60*60, httpOnly:true, overwrite: true })
         res.sendStatus(200);
     });
 
