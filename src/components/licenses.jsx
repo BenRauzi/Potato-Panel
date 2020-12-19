@@ -63,7 +63,7 @@ const Licenses = ({pid}) => {
                 <div>ID</div>
 
                 {
-                    user.adminLevel > 3 ?
+                    user.adminLevel > 2 ?
                     <div className="nowrap">
                         <select className="dropdown" value={currentLicense} onChange={(e) => setCurrentLicense(e.target.value)}>
                             {
@@ -88,7 +88,7 @@ const Licenses = ({pid}) => {
                             <div key={idx} className="table-row">
                                 <div>{getLicenseName(license)}</div>
                                 <div>{license}</div>
-                                { user.adminLevel > 3 ? <div><FontAwesomeIcon onClick={() => deleteLicense(license)} className="delete-btn" icon={faTrashAlt}/></div> : <div></div> }
+                                { user.adminLevel > 2 ? <div><FontAwesomeIcon onClick={() => deleteLicense(license)} className="delete-btn" icon={faTrashAlt}/></div> : <div></div> }
                             </div>
                         ))
                     }
