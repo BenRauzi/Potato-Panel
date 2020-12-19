@@ -11,21 +11,21 @@ import moment from "moment";
 const SingleCasePage = ({match}) => {
     const caseId = match.params.id;
 
-    const [currentCase, setCase] = React.useState()
+    const [currentCase, setCase] = React.useState();
 
     useEffect(() => {
         const fetchCase = async () => {
             const supportCase = await getCase(caseId);
 
-            setCase(supportCase)
+            setCase(supportCase);
         }
-        fetchCase()
-    }, [caseId, setCase])
+        fetchCase();
+    }, [caseId, setCase]);
 
     if(!currentCase) return <Title title={`Support Case - ${caseId}`}/>
 
-    const caseTime = new Date(currentCase.time)
-    const currentTime = new Date(currentCase.currentTime)
+    const caseTime = new Date(currentCase.time);
+    const currentTime = new Date(currentCase.currentTime);
     return (
         <>
             <Title title={`Support Case - ${caseId}`}/>
