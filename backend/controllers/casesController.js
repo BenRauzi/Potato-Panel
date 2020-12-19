@@ -102,9 +102,9 @@ const casesController = (app, sql) => {
 
         try {
             const result = await sql.awaitQuery(`SELECT CURRENT_TIMESTAMP as currentTime, support_cases.*, support_case_members.pid, support_case_members.reporter, p1.name, p2.name AS staff_name, p3.name AS staff_helper_name FROM support_cases 
-                INNER JOIN support_case_members 
+                LEFT JOIN support_case_members 
                 ON support_case_members.case_id = support_cases.uid 
-                INNER JOIN players p1
+                LEFT JOIN players p1
                 ON support_case_members.pid = p1.pid
                 INNER JOIN players p2
                 ON support_cases.staff_member = p2.pid
