@@ -55,7 +55,7 @@ const authController = (app, sql, sqlAsync) => {
     });
 
     app.get('/auth/logout', checkToken, (req, res) => {
-        res.cookie("authcookie", {maxAge: 1, expires: new Date(), overwrite: true, domain: process.env.DOMAIN, path: '/'});
+        res.cookie("authcookie", {maxAge: 1, httpOnly: true, domain: process.env.DOMAIN, path: '/',  overwrite: true});
         res.sendStatus(200);
     });
 
