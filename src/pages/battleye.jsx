@@ -2,6 +2,7 @@ import { faBan, faEnvelope, faSearch, faUserMinus } from "@fortawesome/free-soli
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect } from "react";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 import BanInputBox from "../components/banInput";
 import Title from "../components/title";
 import { getPlayers, kickPlayer, messagePlayer } from "../services/RconService";
@@ -43,12 +44,20 @@ const BattleyePage = () => {
             <div className="filters">
                <div></div>
 
-                <div className="search-box">
+                <div className="filters">
+                    <Link to="/bans" className="table-heading-button">
+                        <FontAwesomeIcon icon={faBan}/>
+                        <span>Bans</span>
+                    </Link>
+                    <div className="search-box">
                     <input type="text" placeholder="Search" onChange={(e) => {}}/>
                     <button>
                         <FontAwesomeIcon icon={faSearch}/>
                     </button>
                 </div>
+                </div>
+                
+                
             </div>
             
             <div className="table">
