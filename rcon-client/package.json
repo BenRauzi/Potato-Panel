@@ -1,0 +1,39 @@
+{
+  "name": "whitelisting-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint",
+    "dev": "concurrently \"npm start\" \"cd ../ && yarn start\"",
+    "start": "npx nodemon -r esm index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ben Rauzi",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "battle-node": "^0.1.2",
+    "bcrypt": "^5.0.0",
+    "big-integer": "^1.6.48",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
+    "divmod": "0.0.3",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql-await": "^2.1.6",
+    "node-fetch": "^2.6.1",
+    "node-pre-gyp": "^0.17.0",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "eslint": "^7.11.0",
+    "eslint-plugin-import": "^2.22.1",
+    "fs-extra": "^9.0.1",
+    "nodemon": "^2.0.6"
+  }
+}
