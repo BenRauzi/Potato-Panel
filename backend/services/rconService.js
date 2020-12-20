@@ -12,20 +12,9 @@ const rCon = new BattleNode({
 rCon.login();
 
 rCon.on('login', (err, success) => {
-    if (err) {
-        console.log('Unable to connect to the RCON server.');
-    };
-    if (success) {
-        console.log('Logged into RCON successfully.');
-    } else {
-        console.log('Unsuccessful logon attempt to RCON, please check inputs.');
-    };
+    if (err) return console.log('Unable to connect to the RCON server.');
+    if (success) return console.log('Logged into RCON successfully.');
+    console.log('Unsuccessful logon attempt to RCON, please check inputs.');
 });
-
-// rCon.on('message', function(message) {
-  
-//   console.log(message);
-  
-// });
 
 module.exports = { rCon };
