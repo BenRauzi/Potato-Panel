@@ -10,9 +10,12 @@ import { getPlayers, kickPlayer, messagePlayer } from "../services/RconService";
 import UserContext from "../services/UserContext";
 
 const BattleyePage = () => {
-    const [players, setPlayers] = React.useState([])
+    const [players, setPlayers] = React.useState([]);
+    const [filteredPlayers, setFiilteredPlayers] = React.useState([]);
     const [pageLength, setPageLength] = React.useState(10);
     const [page, setPage] = React.useState(0);
+
+    const [ searchTerm, setSearchTerm ] = React.useState("");
 
     const { user } = useContext(UserContext);
 
@@ -25,6 +28,13 @@ const BattleyePage = () => {
         }   
         fetchPlayers() 
     }, [setPlayers])
+
+
+    useEffect(() => {
+        if(players.length === 0) return
+
+        setFiilteredPlayers(players.filter(player => player.name.toLowerCase().includes(searchTerm.toLowerCase())))
+    }, [players, searchTerm, setFiilteredPlayers])
 
     const [banUser, setBanUser] = React.useState();
 
@@ -50,7 +60,7 @@ const BattleyePage = () => {
                         <span>Bans</span>
                     </Link>
                     <div className="search-box">
-                    <input type="text" placeholder="Search" onChange={(e) => {}}/>
+                    <input type="text" placeholder="Search" onChange={(e) => setSearchTerm(e.target.value)}/>
                     <button>
                         <FontAwesomeIcon icon={faSearch}/>
                     </button>
@@ -69,8 +79,8 @@ const BattleyePage = () => {
                     <div></div>
                 </div>
                 {
-                    players.length > 0 ?
-                    players.map(({id, name, ip, ping, guid}, idx) => {
+                    filteredPlayers.length > 0 ?
+                    filteredPlayers.map(({id, name, ip, ping, guid}, idx) => {
                         if(idx >= (page + 1) * pageLength || (idx < ((page + 1) * pageLength) - pageLength)) return undefined;
                         return (
                             <div key={idx} className="table-row">
