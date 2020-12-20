@@ -100,7 +100,7 @@ export const MoreInfo = ({currentUserInfo}) => {
                     </div>
                         
                     {
-                        user.adminLevel > 2 ? 
+                        user.adminLevel > 1 ? 
                         <>
                                 <input type="checkbox" className="tile-check-box" value={editState.doj} onChange={async () => { 
                                 if (!editState.doj) return setEditState({...editState, doj: !editState.doj})
