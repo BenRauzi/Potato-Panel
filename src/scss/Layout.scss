@@ -139,6 +139,25 @@ select {
     }
 }
 
+.table-heading-button {
+    height: 50px;
+    width: 200px;
+    border-radius: 30px;
+    background-color: $bg-tertiary;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+    span {
+        margin-left: 10px;
+        font-size: 18px;
+        
+    }
+    margin-right: 10px;
+}
+
 .add-button-box {
     height: 40px;
     width: 200px;
