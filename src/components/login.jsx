@@ -57,7 +57,7 @@ const Login = () => {
             <Grid item xs={12}>
                 <Grid container spacing={1}>
                 <Grid item xs={12}>
-                    <TextField fullWidth label="Email" name="email" variant="outlined" onChange={e => setUsername(e.target.value)}/>
+                    <TextField fullWidth label="Username" name="username" variant="outlined" onChange={e => setUsername(e.target.value)}/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
