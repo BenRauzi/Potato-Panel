@@ -36,6 +36,7 @@ const userController = (app, sql, sqlAsync) => {
             let queryString = `SELECT name, players.aliases, players.exp_level, players.exp_perkPoints, exp_perks,
             players.coplevel AS copWhitelisting, players.copdept, players.mediclevel AS medicWhitelisting, 
             players.medicdept, 
+            players.dojlevel, players.dojdept,
             players.donorlevel,
             players.arrested, 
             players.playtime, players.jail_time, players.developerlevel, players.developerdept,

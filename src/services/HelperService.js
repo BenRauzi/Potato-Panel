@@ -1,4 +1,4 @@
-import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions} from "../config/config";
+import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions, dojRanks, dojDepartments} from "../config/config";
 
 export const formatMoney = (string) => {
     const output = "$" + (string.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
@@ -65,6 +65,20 @@ export const getEmsDept = (level) => {
 export const getDevDept = (level) => {
 
     for (var [rank, rankLevel] of Object.entries(developerDepartments)) {
+        if(rankLevel === level) return rank
+    }
+}
+
+export const getDojLevel = (level) => {
+
+    for (var [rank, rankLevel] of Object.entries(dojRanks)) {
+        if(rankLevel === level) return rank
+    }
+}
+
+export const getDojDept = (level) => {
+
+    for (var [rank, rankLevel] of Object.entries(dojDepartments)) {
         if(rankLevel === level) return rank
     }
 }

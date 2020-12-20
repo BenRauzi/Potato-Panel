@@ -5,8 +5,7 @@ export const copRanks = {
     "Senior Deputy": 3,
     "Corporal": 4,
     "Sergeant": 5,
-    "Lieutenant": 6,
-    "Captain": 7,
+    "Lieutenant / Captain": 7,
     "Office of the Sheriff": 8,
     "Sheriff": 9
 };
@@ -111,11 +110,11 @@ export const LicenseList = {
 }
 
 export const dojDepartments = {
-    "No Department": 1, 
-    "Secret Service": 2,
-    "District Attorneys Office": 3, 
-    "District Court": 4,
-    "Supreme Court": 5
+    "No Department": 0, 
+    "Secret Service": 1,
+    "District Attorneys Office": 2, 
+    "District Court": 3,
+    "Supreme Court": 4
 }
 
 export const dojRanks = {
