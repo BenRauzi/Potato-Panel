@@ -80,13 +80,17 @@ const Licenses = ({pid}) => {
                 licenses ?
                 <>
                     {
+                        licenses.length > 0 ?
                         licenses.map((license, idx) => (
                             <div key={idx} className="table-row">
                                 <div>{getLicenseName(license)}</div>
                                 <div>{license}</div>
                                 { user.adminLevel > 2 ? <div><FontAwesomeIcon onClick={() => deleteLicense(license)} className="delete-btn" icon={faTrashAlt}/></div> : <div></div> }
                             </div>
-                        ))
+                        )) : 
+                        <div className="table-row">
+                            <div>No Licenses Found</div>
+                        </div>
                     }
                 </> : 
                 <div className="table-row">
