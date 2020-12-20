@@ -110,5 +110,31 @@ export const LicenseList = {
     "Metro Company": "license_civ_metroState"
 }
 
+export const dojDepartments = {
+    "No Department": 1, 
+    "Secret Service": 2,
+    "District Attorneys Office": 3, 
+    "District Court": 4,
+    "Supreme Court": 5
+}
+
+export const dojRanks = {
+    "No Level": 0,
+    "SS Trainee": 1,
+    "SS Agent": 2,
+    "SS Special Agent": 3,
+    "State Prosecutor": 4,
+    "State Investigator": 5,
+    "Lay Judge": 6,
+    "District Judge": 7,
+    "Senior Judge": 8,
+    "SS Agent In Charge": 9,
+    "SS Director": 10,
+    "Justice": 11,
+    "Lead State Prosecutor": 12,
+    "District Attorney": 13,
+    "Chief Justice": 14
+}
+
 export const GameSides = ["Any", "Cop", "Civ", "Med"]
 export const VehicleTypes = ["Any", "Air", "Car", "Ship"]

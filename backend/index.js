@@ -19,6 +19,7 @@ const casesController = require("./controllers/casesController");
 const rconController = require("./controllers/rconController");
 
 const serverless = require("serverless-http");
+const dojController = require("./controllers/dojController");
 
 const app = express();
 
@@ -54,6 +55,7 @@ experienceController(router, connectionAsync);
 webController(router, connectionAsync);
 casesController(router, connectionAsync);
 rconController(router, rCon, connectionAsync);
+dojController(router, connectionAsync);
 
 module.exports = app;
 module.exports.handler = serverless(app);
