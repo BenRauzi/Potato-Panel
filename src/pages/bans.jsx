@@ -33,7 +33,7 @@ const BansPage = () => {
     return (
         <>
             <Title title="Battleye"/>
-            <h1>Active Players List</h1>
+            <h1>Active Bans List</h1>
 
             <div className="filters">
                <div></div>
