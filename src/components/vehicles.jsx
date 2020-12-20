@@ -47,7 +47,7 @@ const VehiclesList = ({pid, side}) => {
                                     <div>{classname}</div>
                                     <div>{type}</div>
                                     <div>{active === 1 ? "True" : "False"}</div>
-                                    { user.adminLevel > 1 ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>: <div></div>}
+                                    { user.adminLevel > 2 ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>: <div></div>}
                                 </div>
                             ))
                         }
