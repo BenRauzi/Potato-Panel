@@ -52,8 +52,6 @@ const Licenses = ({pid}) => {
         setCurrentLicense(undefined)
         
     }, [licenses])
-
-    if(!licenses || !unownedLicenses) return <></>
     
     return (
         <>
@@ -67,9 +65,10 @@ const Licenses = ({pid}) => {
                     <div className="nowrap">
                         <select className="dropdown" value={currentLicense} onChange={(e) => setCurrentLicense(e.target.value)}>
                             {
+                                unownedLicenses ?
                                 unownedLicenses.map((values, idx) => (
                                     <option key={idx} value={values[1]}>{getLicenseName(values[1])}</option>
-                                ))
+                                )) : undefined
                             }
                         </select>
                         
@@ -78,10 +77,7 @@ const Licenses = ({pid}) => {
                 }
             </div>
             {
-                licenses.length === 0 ?
-                <div className="table-row">
-                    <div>No Licenses Found</div>
-                </div> :
+                licenses ?
                 <>
                     {
                         licenses.map((license, idx) => (
@@ -92,7 +88,10 @@ const Licenses = ({pid}) => {
                             </div>
                         ))
                     }
-                </>
+                </> : 
+                <div className="table-row">
+                    <div>No Licenses Found</div>
+                </div>
             }
           </div>
         </>
