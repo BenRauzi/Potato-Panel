@@ -36,6 +36,10 @@ const BattleyePage = () => {
         setFiilteredPlayers(players.filter(player => player.name.toLowerCase().includes(searchTerm.toLowerCase())))
     }, [players, searchTerm, setFiilteredPlayers])
 
+    useEffect(() => {
+        setPage(0)
+    }, [filteredPlayers, setPage])
+
     const [banUser, setBanUser] = React.useState();
 
     const sendKickPlayer = (id, reason) => {
@@ -115,9 +119,10 @@ const BattleyePage = () => {
                         nextLabel={'Next'}
                         breakLabel={'...'}
                         breakClassName={'break-me'}
-                        pageCount={Math.ceil(players.length / pageLength)}
+                        pageCount={Math.ceil(filteredPlayers.length / pageLength)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
+                        forcePage={page}
                         onPageChange={(e) => {setPage(e.selected)}}
                         containerClassName={'pagination'}
                         subContainerClassName={'pages pagination'}
