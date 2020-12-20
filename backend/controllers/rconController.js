@@ -55,7 +55,7 @@ const rconController = (app, rcon, sql) => {
             return res.send(playersArray.map(player => ({
                 ...player,
                 ip: userData.adminLevel >= 5 ? player.ip : undefined
-            })).reverse());
+            })));
         
         } catch (error) {
             console.log(error);
