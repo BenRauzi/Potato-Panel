@@ -7,7 +7,7 @@ const dojController = (app, sql) => {
 
         if(!pid || !level) return res.sendStatus(403)
         const userData = await jwtVerify(req.cookies.authcookie);
-        if(userData.adminLevel < 3) return res.send(401);
+        if(userData.adminLevel < 2) return res.send(401);
 
         try {
             await sql.awaitQuery("UPDATE players SET dojlevel = ? WHERE pid = ?", [level, pid]);
@@ -23,7 +23,7 @@ const dojController = (app, sql) => {
 
         if(!pid || !department) return res.sendStatus(403)
         const userData = await jwtVerify(req.cookies.authcookie);
-        if(userData.adminLevel < 3) return res.send(401);
+        if(userData.adminLevel < 2) return res.send(401);
 
         try {
             await sql.awaitQuery("UPDATE players SET dojdept = ? WHERE pid = ?", [department, pid]);
