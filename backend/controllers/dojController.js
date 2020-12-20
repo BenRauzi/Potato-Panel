@@ -5,7 +5,7 @@ const dojController = (app, sql) => {
     app.post("/doj/whitelist", checkToken, async (req, res) => {
         const { pid, level } = req.body;
 
-        if(!pid || !level) return res.sendStatus(403)
+        if(!pid || level === undefined) return res.sendStatus(403)
         const userData = await jwtVerify(req.cookies.authcookie);
         if(userData.adminLevel < 2) return res.send(401);
 
@@ -21,7 +21,7 @@ const dojController = (app, sql) => {
     app.post("/doj/set-department", checkToken, async (req, res) => {
         const { pid, department } = req.body;
 
-        if(!pid || !department) return res.sendStatus(403)
+        if(!pid || !department === undefined) return res.sendStatus(403)
         const userData = await jwtVerify(req.cookies.authcookie);
         if(userData.adminLevel < 2) return res.send(401);
 
