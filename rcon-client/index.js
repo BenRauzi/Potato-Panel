@@ -10,6 +10,7 @@ const { rCon } = require("./services/rconService");
 const dotenv = require('dotenv');
 
 const app = express();
+const router = express.Router();
 
 const PORT = process.env.PORT || 9000;
 
@@ -24,12 +25,14 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: `${process.env.ORIGIN || "http://localhost:3000"}`,
+    origin: `${process.env.ORIGIN || "http://localhost:9000"}`,
     credentials: true
 }));
 // init controllers
 
-rconController(app, rCon, sql);
-authController(app, sql);
+app.use('/', router);  // path must route to lambda
+
+rconController(router, rCon, sql);
+authController(router, sql);
 
 module.exports = app;
