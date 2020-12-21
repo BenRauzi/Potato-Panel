@@ -127,7 +127,7 @@ const userController = (app, sql, sqlAsync) => {
                 res.sendStatus(200);
             });
         });
-    }); 
+    });
 
     // Set Users Bank & Cash Amount
     app.post('/user/setFinance', checkToken, (req, res) => {
