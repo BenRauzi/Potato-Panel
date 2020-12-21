@@ -16,10 +16,6 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use(cookieParser())
-// app.use(cors({
-//     origin: process.env.ORIGIN,
-//     credentials: true
-// }));
 app.use(cors({
     origin: process.env.ORIGIN,
     credentials: true
