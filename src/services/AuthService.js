@@ -18,7 +18,6 @@ export const login = async (username, password, setUser) => {
 }
 
 export const logout = async () => {
-    console.log(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/auth/logout`)
     const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/auth/logout`,  {
         method: "POST",
         body: '',
