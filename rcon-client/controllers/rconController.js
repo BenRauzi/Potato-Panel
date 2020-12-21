@@ -19,6 +19,7 @@ export const rconController = (app, rcon, sql) => {
             // Check users permissions here..
 
             try {
+
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
                     await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
@@ -52,7 +53,8 @@ export const rconController = (app, rcon, sql) => {
 
             return res.send(playersArray.map(player => ({
                 ...player,
-                ip: userData.adminLevel >= 5 ? player.ip : undefined
+                ip: undefined,
+                // ip: userData.adminLevel >= 5 ? player.ip : undefined,
             })));
         
         } catch (error) {

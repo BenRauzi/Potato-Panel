@@ -7,23 +7,31 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const authController = (app, sql, sqlAsync) => {
+    // app.post('/auth/test', async (req, res) => {
+    //     const { password } = req.body
+    //     hash(password, 10,(err, hashed) => {
+    //         if(err) return res.sendStatus(400)
+            
+    //        console.log(hashed)
+    //     });
+    // })
     app.post('/auth/login', async (req,res)=>{
         // get username from request's body, eg. from login form
         const body = req.body;
 
         const { username, password } = body
         sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password,
-                    players.name,
-                    panel_users.copLevel,
-                    panel_users.adminLevel,
-                    panel_users.emsLevel,
-                    players.coplevel AS copWhitelisting,
-                    players.mediclevel AS emsWhitelisting,
-                    players.adminlevel AS adminWhitelisting,
-                    players.developerlevel
-                    from panel_users
-                    INNER JOIN players ON players.pid = panel_users.pid
-                    WHERE panel_users.username = ?`, [
+                players.name,
+                panel_users.copLevel,
+                panel_users.adminLevel,
+                panel_users.emsLevel,
+                players.coplevel AS copWhitelisting,
+                players.mediclevel AS emsWhitelisting,
+                players.adminlevel AS adminWhitelisting,
+                players.developerlevel
+                from panel_users
+                INNER JOIN players ON players.pid = panel_users.pid
+                WHERE panel_users.username = ?`, [
             username
         ], (error, result) => {
             if(error) return console.log(error)
@@ -65,6 +73,7 @@ const authController = (app, sql, sqlAsync) => {
             if(data.adminLevel < 5) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, username, password } = body;
+          
             const hashedPassword = hash(password, 10,(err, hashed) => {
                 if(err) return res.sendStatus(400)
                 
