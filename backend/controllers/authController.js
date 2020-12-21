@@ -76,9 +76,10 @@ const authController = (app, sql, sqlAsync) => {
             const hashedPassword = hash(password, 10,(err, hashed) => {
                 if(err) return res.sendStatus(400)
                 
+                const newUsername = username.replace(/ /g,'') + Math.floor(1000 + Math.random() * 9000)
                 sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
                     pid,
-                    username,
+                    newUsername,
                     hashed
                 ], (error, results) => {
                     res.sendStatus(200)
