@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
-const { default: logAction } = require("../services/staffHelper");
+const { logAction } = require("../services/staffHelper");
 const { getSteamInfo } = require("../services/steamHelper");
 
 const userController = (app, sql, sqlAsync) => {
@@ -99,8 +99,9 @@ const userController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Cash Amount
+    
     app.post('/user/setCash', checkToken, (req, res) => {
-        
+
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -116,6 +117,8 @@ const userController = (app, sql, sqlAsync) => {
 
     // Set Users Bank Amount
     app.post('/user/setBank', checkToken, (req, res) => {
+        console.log(1)
+
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
@@ -129,10 +132,17 @@ const userController = (app, sql, sqlAsync) => {
 
     // Set Users Bank & Cash Amount
     app.post('/user/setFinance', checkToken, (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, cash, bank } = body;
+
+            const currentData = await sqlAsync.awaitQuery(`SELECT cash, bankacc FROM players WHERE pid = ?`, [
+                pid
+            ])
+
+            logAction(req.cookies.authcookie, pid, `Set cash from ${currentData[0].cash} to ${cash}, bankacc from ${currentData[0].bank} to ${bank}`, "comp", sqlAsync);
+
             sql.query(`UPDATE players SET cash = ?, bankacc = ? WHERE pid = ?`, [cash, bank, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);

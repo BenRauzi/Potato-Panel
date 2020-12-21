@@ -31,7 +31,6 @@ var corsOptions = {
 
 app.use(cors(corsOptions))
 
-
 app.use('/', router); 
 router.all(process.env.ORIGIN, cors());
 
