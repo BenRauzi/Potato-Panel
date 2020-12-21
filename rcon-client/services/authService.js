@@ -7,7 +7,7 @@ function checkToken (req, res, next) {
     // verify token which is in cookie value
     jwt.verify(authcookie, process.env.JWT_SECRET,(err,data)=>{
         if(err){
-            console.log(err)
+            console.log(err) 
             res.clearCookie("authcookie")
             res.sendStatus(403)
         }
