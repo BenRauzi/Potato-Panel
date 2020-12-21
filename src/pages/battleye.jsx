@@ -78,7 +78,7 @@ const BattleyePage = () => {
                 <div className="table-head">
                     <div>ID</div>
                     <div>Name</div>
-                    { showIP(user.adminLevel) ? <div>IP</div> : undefined }
+                    { false ? <div>IP</div> : undefined }
                     <div>Ping</div>
                     <div></div>
                 </div>
@@ -90,7 +90,7 @@ const BattleyePage = () => {
                             <div key={idx} className="table-row">
                                 <div>{id}</div>
                                 <div>{name}</div>
-                                { showIP(user.adminLevel) ? <div>{ip}</div> : undefined }
+                                { ip ? <div>{ip}</div> : undefined }
                                 <div>{ping}</div>
                                 <div>
                                     { user.adminLevel > 1 ? <FontAwesomeIcon className="delete-btn large" onClick={() => {messagePlayer(guid, window.prompt("Enter Message:", "Hello"))}} icon={faEnvelope}/> : undefined}
