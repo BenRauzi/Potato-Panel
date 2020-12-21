@@ -36,7 +36,7 @@ export const kickPlayer = async (guid, reason) => {
 
     const res = await response.status;
 
-    return res
+    return res 
 }
 
 
