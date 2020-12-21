@@ -1,13 +1,14 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const rconController = require("./controllers/rconController");
-const authController = require("./controllers/authController");
+import express from "express";
+import bodyParser from "body-parser";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
-const { sql } = require("./services/sqlService");
-const { rCon } = require("./services/rconService");
-const dotenv = require('dotenv');
+import rconController from "./controllers/rconController";
+import authController from "./controllers/authController";
+
+import { sql } from "./services/sqlService";
+import { rCon } from "./services/rconService";
+import dotenv from 'dotenv';
 
 const app = express();
 const router = express.Router();
@@ -40,8 +41,7 @@ dotenv.config();
 
 // init controllers
 
-
 rconController(router, rCon, sql);
 authController(router, sql);
 
-module.exports = app;
+export default app;
