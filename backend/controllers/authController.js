@@ -73,7 +73,6 @@ const authController = (app, sql, sqlAsync) => {
             if(data.adminLevel < 5) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, username, password } = body;
-          
             const hashedPassword = hash(password, 10,(err, hashed) => {
                 if(err) return res.sendStatus(400)
                 

@@ -86,7 +86,6 @@ const UserPage = ({ match }) => {
     }
 
     if (!currentUser) return <></>
-    console.log(currentUser)
     return (
         <>
             <TitleComponent title={currentUser.name} />
