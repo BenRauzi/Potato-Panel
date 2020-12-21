@@ -117,7 +117,6 @@ const userController = (app, sql, sqlAsync) => {
 
     // Set Users Bank Amount
     app.post('/user/setBank', checkToken, (req, res) => {
-        console.log(1)
 
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
@@ -128,7 +127,7 @@ const userController = (app, sql, sqlAsync) => {
                 res.sendStatus(200);
             });
         });
-    });
+    }); 
 
     // Set Users Bank & Cash Amount
     app.post('/user/setFinance', checkToken, (req, res) => {
