@@ -45,7 +45,7 @@ const authController = (app, sql, sqlAsync) => {
                     }, process.env.JWT_SECRET);
                     // save token in cookie
 
-                    res.cookie('authcookie',token,{ domain: process.env.DOMAIN, path: '/api', maxAge: 1000*60*60*60, httpOnly:true});
+                    res.cookie('authcookie',token,{ domain: process.env.DOMAIN, path: '/', maxAge: 1000*60*60*60, httpOnly:true});
 
                     res.send({...result[0], password: undefined});
                 } else {
@@ -56,7 +56,7 @@ const authController = (app, sql, sqlAsync) => {
     });
 
     app.post('/auth/logout', checkToken, (req, res) => {
-        res.clearCookie('authcookie', { domain: process.env.DOMAIN, path: "/api" })
+        res.clearCookie('authcookie', { domain: process.env.DOMAIN, path: "/" })
         res.sendStatus(200);
     });
 
