@@ -1,5 +1,5 @@
 export const getPlayers = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/players`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/players`,  {
         method: "GET",
         credentials: "include"
     })
