@@ -9,6 +9,13 @@
   status = 200
   force = true
   headers = { X-From = "Netlify" }
+  
+[[redirects]]
+  from = "/rcon/*"
+  to = "https://rcon.arma-studios.com/rcon"
+  status = 200
+  force = true
+  headers = { X-From = "Netlify" }
 
 [[redirects]]
   from = "/*"
