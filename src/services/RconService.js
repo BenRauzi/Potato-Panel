@@ -10,7 +10,7 @@ export const getPlayers = async () => {
 };
 
 export const getBans = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/bans`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/bans`,  {
         method: "GET",
         credentials: "include"
     })
@@ -22,7 +22,7 @@ export const getBans = async () => {
 
 export const kickPlayer = async (guid, reason) => {
     if(!reason) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/kick`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/kick`,  {
         method: "POST",
         credentials: "include",
         headers: {
@@ -42,7 +42,7 @@ export const kickPlayer = async (guid, reason) => {
 
 export const banPlayerGuid = async (guid, reason, length) => {
     if(!reason) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/ban`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/ban`,  {
         method: "POST",
         credentials: "include",
         headers: {
@@ -62,7 +62,7 @@ export const banPlayerGuid = async (guid, reason, length) => {
 
 export const banPlayerIP = async (ip, reason, length) => {
     if(!reason) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/ban`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/ban`,  {
         method: "POST",
         credentials: "include",
         headers: {
@@ -82,7 +82,7 @@ export const banPlayerIP = async (ip, reason, length) => {
 
 export const messagePlayer = async (playerId, message) => {
     if(!message) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/message`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/message`,  {
         method: "POST",
         credentials: "include",
         headers: {
@@ -101,7 +101,7 @@ export const messagePlayer = async (playerId, message) => {
 
 export const messageAll = async (message) => {
     if(!message) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/message`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/message`,  {
         method: "POST",
         credentials: "include",
         headers: {
@@ -121,7 +121,7 @@ export const messageAll = async (message) => {
 
 export const removeBan = async (id, reason) => {
     if(!reason) return 404
-    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:9000'}/rcon/unban`,  {
+    const response = await fetch(`${process.env.REACT_APP_RCON_URL || 'http://localhost:9000'}/rcon/unban`,  {
         method: "POST",
         credentials: "include",
         headers: {
