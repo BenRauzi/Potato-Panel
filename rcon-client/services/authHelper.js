@@ -1,10 +1,10 @@
-const { compare } = require('bcrypt');
-const dotenv = require('dotenv');
-const jwt = require("jsonwebtoken");
+import { compare } from 'bcrypt';
+import dotenv from 'dotenv';
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-const jwtVerify = (cookie) => {
+export const jwtVerify = (cookie) => {
     return new Promise((resolve, reject) => {
         jwt.verify(cookie, process.env.JWT_SECRET, async (err, data) => {
             if(err) return reject(err)
@@ -13,7 +13,7 @@ const jwtVerify = (cookie) => {
     })
 }
 
-const validatePass = (password, hashedPassword) => {
+export const validatePass = (password, hashedPassword) => {
     return new Promise((resolve, reject) => {
         compare(password, hashedPassword, (err, isValid) => {
             if(err) return reject(err)
@@ -26,7 +26,7 @@ const validatePass = (password, hashedPassword) => {
     })
 }
 
-module.exports = {
+export default {
     jwtVerify,
     validatePass
 }

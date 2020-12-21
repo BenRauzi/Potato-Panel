@@ -1,16 +1,15 @@
-const jwt = require("jsonwebtoken");
-const { checkToken } = require("../services/authService");
-const crypto = require("crypto");
-const CryptoJS = require("crypto-js");
-const moment = require('moment');
-const dotenv = require('dotenv');
+import jwt from "jsonwebtoken";
+import { checkToken } from "../services/authService";
+import crypto from "crypto";
+import CryptoJS from "crypto-js";
+import moment from 'moment';
+import dotenv from 'dotenv';
+import { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } from "../services/rconHelpers";
+import { jwtVerify } from "../services/authHelper";
 
 dotenv.config();
 
-const { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } = require("../services/rconHelpers");
-const { jwtVerify } = require("../services/authHelper");
-
-const rconController = (app, rcon, sql) => {
+export const rconController = (app, rcon, sql) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
@@ -277,4 +276,4 @@ const rconController = (app, rcon, sql) => {
     });
 };
 
-module.exports = rconController;
+export default rconController;

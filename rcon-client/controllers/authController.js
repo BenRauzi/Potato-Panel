@@ -1,11 +1,10 @@
 // Auth Controller for Testing
 
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-const { validatePass } = require("../services/authHelper");
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { validatePass } from "../services/authHelper";
 
 dotenv.config();
-
 
 const authController = (app, sql) => {
     app.post('/auth/login', async (req,res)=>{
@@ -56,4 +55,4 @@ const authController = (app, sql) => {
     });
 };
 
-module.exports = authController;
+export default authController;

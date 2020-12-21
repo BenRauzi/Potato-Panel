@@ -1,10 +1,10 @@
-const mysqlAsync = require("mysql-await");
+import mysqlAsync from "mysql-await";
 
-const dotenv = require('dotenv');
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const sql = mysqlAsync.createConnection({
+export const sql = mysqlAsync.createConnection({
     host: process.env.DB_URL,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -15,4 +15,4 @@ sql.on(`error`, (err) => {
     console.error(`Connection error ${err.code}`);
 });
 
-module.exports = { sql };
+export default { sql }

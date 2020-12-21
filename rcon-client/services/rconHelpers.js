@@ -1,10 +1,10 @@
-const dotenv = require('dotenv');
-const CryptoJS = require("crypto-js");
-const bigInt = require("big-integer");
+import dotenv from 'dotenv';
+import CryptoJS from "crypto-js";
+import bigInt from "big-integer";
 
 dotenv.config();
 
-const getPlayers = (rcon) => {
+export const getPlayers = (rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand('players', async (players) => {
             // Process raw string output from Battleye. Entire player list outputs as one string....
@@ -46,7 +46,7 @@ const getPlayers = (rcon) => {
     });
 };
 
-const disconnectRCON = (RCON) => {
+export const disconnectRCON = (RCON) => {
     return new Promise((resolve) => {
         try {
             console.log('RCON: Attempting to disconnect.');
@@ -62,13 +62,13 @@ const disconnectRCON = (RCON) => {
     }); 
 };
 
-const getUserByGUID = async (guid, rcon) => {
+export const getUserByGUID = async (guid, rcon) => {
     const players = await getPlayers(rcon);
     console.log(players.find(player => player.guid === guid));
     return players.find(player => player.guid === guid) || undefined;
 };
 
-const writeBans = (rcon) => {
+export const writeBans = (rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand('writeBans', async (err) => {
             if (err) {
@@ -79,7 +79,7 @@ const writeBans = (rcon) => {
     });
 };
 
-const loadBans = (rcon) => {
+export const loadBans = (rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand('loadBans', async (err) => {
             if (err) {
@@ -90,7 +90,7 @@ const loadBans = (rcon) => {
     });
 };
 
-const reloadServerBans = async (rcon) => {
+export const reloadServerBans = async (rcon) => {
     console.log("Now reloading the bans on the server"); // DEBUG ONLY
     try {
         await writeBans(rcon);
@@ -102,7 +102,7 @@ const reloadServerBans = async (rcon) => {
     return true;
 };
 
-const kickPlayer = (reason, id, rcon) => {
+export const kickPlayer = (reason, id, rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand(`kick ${id} ${reason}`, async (err) => {
             if (err) {
@@ -114,7 +114,7 @@ const kickPlayer = (reason, id, rcon) => {
     });
 };
 
-const banPlayer = (reason, guid, length, rcon) => {
+export const banPlayer = (reason, guid, length, rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand(`addBan ${guid} ${length} ${reason}`, async (err) => {
             if (err) {
@@ -126,7 +126,7 @@ const banPlayer = (reason, guid, length, rcon) => {
     });
 };
 
-const sendMessageRcon = (pid, message, rcon) => {
+export const sendMessageRcon = (pid, message, rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand(`say ${pid} ${message}`, async (err) => {
             if (err) {
@@ -138,7 +138,7 @@ const sendMessageRcon = (pid, message, rcon) => {
     });
 };
 
-const getBansFromRcon = (rcon) => {
+export const getBansFromRcon = (rcon) => {
     return new Promise((resolve) => {
         rcon.sendCommand('bans', async (bans) => {
             let bansStringArray = bans.split("\n");
@@ -163,7 +163,7 @@ const getBansFromRcon = (rcon) => {
     });
 };
 
-const getBanFromDb = async (sql, banId) => {
+export const getBanFromDb = async (sql, banId) => {
     const banColumn = banId.length === 11 ? "ip" : "guid";
     const banTable = banColumn === "ip" ? "ip_bans" : "bans";
     
@@ -184,7 +184,7 @@ const getBanFromDb = async (sql, banId) => {
     };
 };
 
-const removeBan = async (id, appealId, reason, staffId, sql, rcon) => {
+export const removeBan = async (id, appealId, reason, staffId, sql, rcon) => {
     return new Promise((resolve, reject) => {
         rcon.sendCommand(`removeBan ${id}`, async (err) => {
             if (err) {
@@ -205,7 +205,7 @@ const removeBan = async (id, appealId, reason, staffId, sql, rcon) => {
     });
 };
 
-const convertPID = async (pid) => {
+export const convertPID = async (pid) => {
     return new Promise((resolve, reject) => {
         if (!pid) return reject("No PID Given");
         let steamId = bigInt(pid);
@@ -221,7 +221,7 @@ const convertPID = async (pid) => {
     });
 };
 
-module.exports = {
+export default {
     disconnectRCON,
     getUserByGUID,
     reloadServerBans,
