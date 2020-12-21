@@ -38,7 +38,7 @@ const authController = (app, sql) => {
                         
                     }, process.env.JWT_SECRET);
 
-                    res.cookie('authcookie',token,{ path: '/', maxAge: 1000*60*60*60, httpOnly:true});
+                    res.cookie('authcookie',token,{ domain: process.env.DOMAIN, path: '/', maxAge: 1000*60*60*60, httpOnly:true});
 
                     res.send({...result[0], password: undefined});
                 } else {
