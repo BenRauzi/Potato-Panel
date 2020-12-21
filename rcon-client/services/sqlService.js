@@ -15,4 +15,5 @@ sql.on(`error`, (err) => {
     console.error(`Connection error ${err.code}`);
 });
 
+
 export default { sql }

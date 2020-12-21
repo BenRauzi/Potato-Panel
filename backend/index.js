@@ -34,6 +34,7 @@ app.use(cors({
     credentials: true
 }));
 
+
 app.use('/api', router);  // path must route to lambda
 
 router.get('/test' , (req,res)=>{
