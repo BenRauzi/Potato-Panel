@@ -121,7 +121,12 @@ const medicController = (app, sql, sqlAsync) => {
                     if(level >= 8) {
                         const generatedPassword = (Math.floor(Math.random() * 999999) + 100000).toString();
                         const hashedPassword = hash(generatedPassword, 10, async (err, hashed) => {
-                            const createAccount = await sqlAsync.awaitQuery("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, 0, 0, ?)", [pid, username, hashed, level]);
+                            const createAccount = await sqlAsync.awaitQuery("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, 0, 0, ?)", [
+                                    pid,
+                                    username.replace(/ /g,'') + Math.floor(1000 + Math.random() * 9000),
+                                    hashed,
+                                    level
+                                ]);
                             res.send({pass : generatedPassword});
                         });
                     };

@@ -98,7 +98,12 @@ const staffController = (app, sql, sqlAsync) => {
                     }
 
                     hash(pass, 10,(err, hashed) => {
-                        sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, ?, 0, 0)", [pid, username, hashed, level], (err, result) => {
+                        sql.query("INSERT INTO panel_users (pid, username, password, adminLevel, copLevel, emsLevel) VALUES (?, ?, ?, ?, 0, 0)", [
+                            pid, 
+                            username.replace(/ /g,'') + Math.floor(1000 + Math.random() * 9000), 
+                            hashed, 
+                            level
+                        ], (err, result) => {
                             if(err) return res.sendStatus(400);
                             res.send({pass : pass});
                         });
