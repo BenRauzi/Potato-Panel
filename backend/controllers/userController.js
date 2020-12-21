@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
+const { default: logAction } = require("../services/staffHelper");
 const { getSteamInfo } = require("../services/steamHelper");
 
 const userController = (app, sql, sqlAsync) => {
@@ -99,10 +100,13 @@ const userController = (app, sql, sqlAsync) => {
 
     // Set Users Cash Amount
     app.post('/user/setCash', checkToken, (req, res) => {
+        
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, amount } = body;
+
+            logAction(req.cookies.authcookie, pid, `Set cash to ${amount}`);
             sql.query(`UPDATE players SET cash = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);

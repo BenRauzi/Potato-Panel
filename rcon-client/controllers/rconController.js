@@ -19,7 +19,6 @@ export const rconController = (app, rcon, sql) => {
             // Check users permissions here..
 
             try {
-
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
                     await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
