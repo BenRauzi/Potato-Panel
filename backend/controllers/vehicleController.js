@@ -1,4 +1,6 @@
-const vehicleController = (app, sql) => {
+const { logAction } = require("../services/staffHelper");
+
+const vehicleController = (app, sql, sqlAsync) => {
     // Fetch Generic Vehicles 
     app.get('/vehicles', (req, res) => {
         const pageN = req.query.p || 1; // Page Number
@@ -60,6 +62,8 @@ const vehicleController = (app, sql) => {
         const { pid, classname, side, type, insured } = body;
         const plateNumber = Math.floor(Math.random() * 9999999) + 1000000;
 
+        logAction(req.cookies.authcookie, pid, `Added vehicle ${classname} to ${side} side`, "vehicles", sqlAsync);
+
         sql.query(`INSERT INTO vehicles (side, classname, type, pid, alive, blacklist, active, plate, color, inventory, gear, fuel, damage, impound, insured) VALUES (?, ?, ?, ?, 1, 0, 0, ?, "[[1,1,1,1],[1,1,1,1],0.5]", '"[[],0]"', '"[]"', 1, '"[]"', 0, ?)`, [side.toLowerCase(), classname, type.charAt(0).toUpperCase() + type.slice(1).toLowerCase(), pid, plateNumber, insured] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
@@ -71,6 +75,8 @@ const vehicleController = (app, sql) => {
         const body = req.body;
         const { vehicleID } = body;
 
+        logAction(req.cookies.authcookie, null, `Removed vehicle; ID: ${vehicleID}`, "vehicles", sqlAsync);
+
         sql.query("DELETE FROM vehicles WHERE id = ?", [vehicleID] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
@@ -81,6 +87,9 @@ const vehicleController = (app, sql) => {
     app.post('/vehicle/return', (req, res) => {
         const body = req.body;
         const { vehicleID } = body;
+
+        logAction(req.cookies.authcookie, null, `Returned vehicle; ID: ${vehicleID}`, "vehicles", sqlAsync);
+
         sql.query("UPDATE vehicles SET alive = 1, active = 0, impound = 0 WHERE id = ?", [vehicleID] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);

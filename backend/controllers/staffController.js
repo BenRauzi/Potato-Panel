@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
-const { hash } = require("bcrypt")
+const { hash } = require("bcrypt");
+const { logAction } = require("../services/staffHelper");
 
 function randomInt(min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -79,15 +80,18 @@ const staffController = (app, sql, sqlAsync) => {
     });
 
     // Change Users Admin Whitelist Level (Panel)  --> Senior Admins get admin level 2, rest get 1
-    app.post('/admin/setLevelP', checkToken, (req, res) => {
+    app.post('/admin/setLevelP', checkToken, async (req, res) => {
         const body = req.body;
         const { username, pid, level } = body;
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
             if (data.pid === pid) return res.sendStatus(403); // Can't edit your own staff rank
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
 
             // Prevent being able to change someones staff rank to the same as yours, or higher UNLESS you are a director :)
             if (data.adminLevel !== 7 && (data.adminLevel <= level)) return res.sendStatus(401);
+
+            const currentData = await sqlAsync.awaitQuery(`SELECT adminLevel FROM panel_users WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Set staff level from ${currentData[0].adminLevel} to ${level}`, "staff", sqlAsync);
 
             sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
                 if(result[0]["COUNT(*)"] === 0) {

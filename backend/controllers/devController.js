@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require("../services/authService");
+const { logAction } = require("../services/staffHelper");
 
 const devController = (app, sql, sqlAsync) => {
     // Fetch Dev Users 
@@ -45,9 +46,13 @@ const devController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Developer Whitelist Level
-    app.post('/dev/setLevel', checkToken, (req, res) => {
+    app.post('/dev/setLevel', checkToken, async (req, res) => {
         const body = req.body;
         const { pid, level } = body;
+
+        const currentData = await sqlAsync.awaitQuery(`SELECT developerlevel FROM players WHERE pid = ?`, [pid]);
+        logAction(req.cookies.authcookie, pid, `Set developer level from ${currentData[0].developerlevel} to ${level}`, "whitelist", sqlAsync);
+
         sql.query(`UPDATE players SET developerlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);
@@ -55,9 +60,13 @@ const devController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Developer Department Level
-    app.post('/dev/setDepartment', checkToken, (req, res) => {
+    app.post('/dev/setDepartment', checkToken, async (req, res) => {
         const body = req.body;
         const { pid, level } = body;
+
+        const currentData = await sqlAsync.awaitQuery(`SELECT developerdept FROM players WHERE pid = ?`, [pid]);
+        logAction(req.cookies.authcookie, pid, `Set developer department from ${currentData[0].developerdept} to ${level}`, "whitelist", sqlAsync);
+
         sql.query(`UPDATE players SET developerdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             if(err) return res.sendStatus(400);
             res.sendStatus(200);

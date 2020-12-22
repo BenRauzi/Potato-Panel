@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
-const { hash } = require("bcrypt")
+const { hash } = require("bcrypt");
+const { logAction } = require("../services/staffHelper");
 
 const policeController = (app, sql, sqlAsync) => {
     // Fetch Police Users 
@@ -113,6 +114,8 @@ const policeController = (app, sql, sqlAsync) => {
 
             if(data.adminLevel < 3 && data.pid === pid) return res.sendStatus(403); // Can't edit your own police rank unless you are Admin+
 
+            const currentData = await sqlAsync.awaitQuery(`SELECT coplevel FROM players WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Set police level from ${currentData[0].coplevel} to ${level}`, "whitelist", sqlAsync);
 
             try {
 
@@ -146,12 +149,16 @@ const policeController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Police Department
-    app.post('/police/setDepartment', (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    app.post('/police/setDepartment', async (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
             if(data.adminLevel < 2 && data.copWhitelisting < 6) return res.sendStatus(401); // Moderator+ AND Lieutenant+
 
             const body = req.body;
             const { pid, level } = body;
+
+            const currentData = await sqlAsync.awaitQuery(`SELECT copdept FROM players WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Set police department from ${currentData[0].copdept} to ${level}`, "whitelist", sqlAsync);
+
             sql.query(`UPDATE players SET copdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
