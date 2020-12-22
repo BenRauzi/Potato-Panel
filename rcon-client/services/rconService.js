@@ -3,16 +3,22 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const rCon = new BattleNode({
+
+let rCon = new BattleNode({
     ip: process.env.RCON_IP,
     port: parseInt(process.env.RCON_PORT),
     rconPassword: process.env.RCON_PASS,
 });
 
+
+export const getRcon = () => {
+    return rCon
+}
+
 let isConnected = false;
 rCon.login();
 
-rCon.on('login', (err, success) => {
+const onLogin = (err, success) => {
     if (err) return console.log('Unable to connect to the RCON server.');
     if (success) {
         isConnected = true; 
@@ -20,14 +26,24 @@ rCon.on('login', (err, success) => {
     } else {
         console.log('Unsuccessful logon attempt to RCON, please check inputs.');
     }
-});
+}
+rCon.on('login', onLogin);
 
 rCon.on('disconnected', async function() {
     isConnected = false;
     let reconnectCounter = 1;
     while(!isConnected) {
         console.log(`RCON Server disconnected. Attempting reconnect... Attempt ${reconnectCounter}`);
+
+        rCon = new BattleNode({
+            ip: process.env.RCON_IP,
+            port: parseInt(process.env.RCON_PORT),
+            rconPassword: process.env.RCON_PASS,
+        });
+        
         rCon.login();
+        rCon.on('login', onLogin);
+
 
         reconnectCounter++;
 
@@ -37,4 +53,4 @@ rCon.on('disconnected', async function() {
     }
   });
 
-export default { rCon };
+export default { getRcon };

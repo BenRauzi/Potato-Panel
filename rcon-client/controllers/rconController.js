@@ -9,9 +9,11 @@ import { jwtVerify } from "../services/authHelper";
 
 dotenv.config();
 
-export const rconController = (app, rcon, sql) => {
+export const rconController = (app, getRcon, sql) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
+        const rcon = getRcon();
+
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
             let { pid, message } = req.body;
             const user = data.user;
@@ -41,6 +43,7 @@ export const rconController = (app, rcon, sql) => {
 
     // Fetch All Players
     app.get('/rcon/players', checkToken, async(req, res) => {
+        const rcon = getRcon();
         try {
             const userData = await jwtVerify(req.cookies.authcookie);
             // Fetch Players List
@@ -63,6 +66,7 @@ export const rconController = (app, rcon, sql) => {
 
     // Fetch a Player (Single)
     app.get('/rcon/player', checkToken, async(req, res) => {
+        const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
             let playersID = req.query.pid || 0; // Players ID
 
@@ -83,6 +87,7 @@ export const rconController = (app, rcon, sql) => {
 
     // Kick a Player (By ID)
     app.post('/rcon/kick', checkToken, async(req, res) => { // Will add checkToken
+        const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             const { pid, reason } = req.body;
             const user = data.user;
@@ -101,6 +106,7 @@ export const rconController = (app, rcon, sql) => {
 
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
+        const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             const players = await getPlayers(rcon);
 
@@ -173,6 +179,7 @@ export const rconController = (app, rcon, sql) => {
 
     // Remove a Ban (By Ban Appeal ID or Players GUID / IP -- Unban)
     app.post('/rcon/unban', checkToken, async(req, res) => { // Will add checkToken
+        const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
             const { banID, reason } = req.body;
 
