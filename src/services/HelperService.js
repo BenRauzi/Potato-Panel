@@ -1,4 +1,4 @@
-import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions, dojRanks, dojDepartments} from "../config/config";
+import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions, dojRanks, dojDepartments, logTypes} from "../config/config";
 
 export const formatMoney = (string) => {
     const output = "$" + (string.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
@@ -124,6 +124,14 @@ export const getCasePosition = (position) => {
     }
 }
 
+export const getLogType = (position) => {
+
+    if(!logTypes) return "Error"
+    for (var [name, logType] of Object.entries(logTypes)) {
+        if(logType === position) return name
+    }
+}
+
 export const getTimeSince = (date, current_time = new Date()) => {
     var seconds = Math.floor((current_time - date) / 1000);
 
@@ -167,4 +175,5 @@ export default {
    getCaseType,
    getCasePosition,
    getTimeSince,
+   getLogType,
 }

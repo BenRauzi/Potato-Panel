@@ -19,6 +19,7 @@ import SingleCasePage from "../pages/single-case";
 import NewCasePage from "../pages/new-case";
 import BattleyePage from "../pages/battleye";
 import BansPage from "../pages/bans";
+import LogPage from "../pages/logs";
 
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -110,6 +111,7 @@ const Main = () => {
                 <GuardedRoute exact path='/battleye' roles={{ adminLevel: 3 }} component={BattleyePage} />
                 <GuardedRoute exact path='/bans' roles={{ adminLevel: 4 }} component={BansPage} />
                 <GuardedRoute exact path='/server-settings' roles={{ adminLevel: 7 }} component={ServerSettingsPage} />
+                <GuardedRoute exact path='/logs' roles={{ adminLevel: 4 }} component={LogPage} />
 
                 <Route exact path='/login' component={Login} />
 

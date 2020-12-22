@@ -135,5 +135,18 @@ export const dojRanks = {
     "Chief Justice": 14
 }
 
+export const logTypes = {
+    "Any": 0,
+    "Compensation": 1,
+    "Whitelisting": 2,
+    "Vehicles": 3,
+    "Staff Permissions": 4,
+    "RCON": 5,
+    "Licenses": 6,
+    "Case": 7,
+    "House": 8,
+    "Misc": 9,
+};
+
 export const GameSides = ["Any", "Cop", "Civ", "Med"]
 export const VehicleTypes = ["Any", "Air", "Car", "Ship"]

@@ -18,6 +18,7 @@ const casesController = require("./controllers/casesController");
 
 const serverless = require("serverless-http");
 const dojController = require("./controllers/dojController");
+const logsController = require("./controllers/logsController");
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: `${process.env.ORIGIN || "http://localhost:3000"}`,
+    origin: `${process.env.ORIGIN || "http://localhost:8888"}`,
     credentials: true
 }));
 
@@ -54,6 +55,7 @@ experienceController(router, connectionAsync);
 webController(router, connectionAsync);
 casesController(router, connectionAsync);
 dojController(router, connectionAsync);
+logsController(router, connectionAsync)
 
 module.exports = app;
 module.exports.handler = serverless(app);

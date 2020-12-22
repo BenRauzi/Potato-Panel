@@ -1,16 +1,17 @@
 const { jwtVerify } = require("./authHelper");
 
 const types = {
-    "comp": 0,
-    "whitelist": 1,
-    "vehicles": 2,
-    "staff": 3,
-    "rcon": 4,
-    "licenses": 5,
-    "case": 6,
-    "house": 7,
-    "misc": 8,
+    "comp": 1,
+    "whitelist": 2,
+    "vehicles": 3,
+    "staff": 4,
+    "rcon": 5,
+    "licenses": 6,
+    "case": 7,
+    "house": 8,
+    "misc": 9,
 };
+
 const logAction = async (staffCookie, member, log, type, sql) => {
     const userData = await jwtVerify(staffCookie);
     try {
