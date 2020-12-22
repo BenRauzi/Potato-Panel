@@ -145,7 +145,7 @@ export const rconController = (app, getRcon, sql) => {
             };
 
             try {
-                await reloadServerBans();
+                await reloadServerBans(rcon);
             } catch(err) {
                 console.log(err);
             };
