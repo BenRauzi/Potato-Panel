@@ -51,7 +51,8 @@ const devController = (app, sql, sqlAsync) => {
         const { pid, level } = body;
 
         const currentData = await sqlAsync.awaitQuery(`SELECT developerlevel FROM players WHERE pid = ?`, [pid]);
-        logAction(req.cookies.authcookie, pid, `Set developer level from ${currentData[0].developerlevel} to ${level}`, "whitelist", sqlAsync);
+
+        if(currentData[0].developerlevel !== level) logAction(req.cookies.authcookie, pid, `Set developer level from ${currentData[0].developerlevel} to ${level}`, "whitelist", sqlAsync);
 
         sql.query(`UPDATE players SET developerlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
             if(err) return res.sendStatus(400);
