@@ -27,7 +27,7 @@ const Header = () => {
             </div>
             <div className="header-right">
                 <div className="user-info">
-                    <span className="user-name"><b>{user ? user.username : "Arma Studios"}</b></span>
+                    <span className="user-name"><b>{user ? user.name : "Arma Studios"}</b></span>
                     <span className="role">{user ? getRole(user) : "Not signed in"}</span>
                 </div>
                 {profileUrl ? <img alt="avatar" className="avatar" src={profileUrl}/> : ''}

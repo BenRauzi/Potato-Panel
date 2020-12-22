@@ -66,10 +66,11 @@ const authController = (app, sql, sqlAsync) => {
             // console.log(result[0].password, password)
             compare(password, result[0].password, (err, isValid) => {
                 // console.log(isValid)
-                const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel} = result[0];
+                const { pid, copLevel, copWhitelisting, emsLevel, emsWhitelisting, adminLevel, name} = result[0];
                 if(isValid === true) {
                     const token = jwt.sign({
                         user:username, 
+                        name: name,
                         pid: pid,
                         copLevel: copLevel,
                         copWhitelisting: copWhitelisting,
