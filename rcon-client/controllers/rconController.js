@@ -218,7 +218,6 @@ export const rconController = (app, getRcon, sql) => {
 
         let bans = [];
         for (const ban of bansQuery) {
-            console.log(ban);
             let banType = 0;
             let bannedUser = ban["guid"];
             if (bannedUser.length > 35) {
