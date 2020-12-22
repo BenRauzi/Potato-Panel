@@ -23,7 +23,7 @@ const dojController = (app, sql) => {
 
         if(!pid || !department === undefined) return res.sendStatus(403)
         const userData = await jwtVerify(req.cookies.authcookie);
-        if(userData.adminLevel < 2) return res.send(401);
+        if(userData.adminLevel < 2) return res.sendStatus(401);
 
         try {
             await sql.awaitQuery("UPDATE players SET dojdept = ? WHERE pid = ?", [department, pid]);
