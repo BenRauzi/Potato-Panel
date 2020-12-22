@@ -15,6 +15,7 @@ export const rconController = (app, getRcon, sql) => {
         const rcon = getRcon();
 
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
+            if(err) return res.sendStatus(401)
             let { pid, message } = req.body;
             const { user, name } = data;
             // Check users permissions here..
@@ -66,6 +67,7 @@ export const rconController = (app, getRcon, sql) => {
     app.get('/rcon/player', checkToken, async(req, res) => {
         const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
+            if(err) return res.sendStatus(401)
             let playersID = req.query.pid || 0; // Players ID
 
             // Check users permissions here..
@@ -87,6 +89,7 @@ export const rconController = (app, getRcon, sql) => {
     app.post('/rcon/kick', checkToken, async(req, res) => { // Will add checkToken
         const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
+            if(err) return res.sendStatus(401)
             const { pid, reason } = req.body;
             const { name } = data;
 
@@ -106,6 +109,7 @@ export const rconController = (app, getRcon, sql) => {
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
         const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
+            if(err) return res.sendStatus(401)
             const players = await getPlayers(rcon);
 
             const { banID, banLength, reason } = req.body;
@@ -179,6 +183,7 @@ export const rconController = (app, getRcon, sql) => {
     app.post('/rcon/unban', checkToken, async(req, res) => { // Will add checkToken
         const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
+            if(err) return res.sendStatus(401)
             const { banID, reason } = req.body;
 
             // Check what type of ID was given
