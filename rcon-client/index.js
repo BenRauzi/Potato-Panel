@@ -7,7 +7,7 @@ import rconController from "./controllers/rconController";
 import authController from "./controllers/authController";
 
 import { sql } from "./services/sqlService";
-import { rCon } from "./services/rconService";
+import { getRcon } from "./services/rconService";
 import dotenv from 'dotenv';
 
 const app = express();
@@ -43,7 +43,7 @@ dotenv.config();
 
 // init controllers
 
-rconController(router, rCon, sql);
+rconController(router, getRcon, sql);
 authController(router, sql);
 
 export default app;
