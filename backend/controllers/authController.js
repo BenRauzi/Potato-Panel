@@ -20,7 +20,32 @@ const authController = (app, sql, sqlAsync) => {
         const body = req.body;
 
         const { username, password } = body
-        console.log(`Authentication attempted on user account ${username} - ${req.headers['x-forwarded-for']}`)
+
+        try {
+            const requests = await sqlAsync.awaitQuery(`SELECT COUNT(*) FROM auth_requests WHERE time > CURRENT_TIMESTAMP()- INTERVAL 1 HOUR AND username = ?`, [
+                username
+            ])
+    
+            const requestCount = requests[0]["COUNT(*)"];
+
+            const refuseRequest = requestCount > 5
+
+            console.log(`Authentication attempted on user account ${username} - ${req.headers['x-forwarded-for']} - ${refuseRequest ? "Unauthorised" : "Authorised"}`)
+
+            await sqlAsync.awaitQuery("INSERT into auth_requests (username, ip, authorised) VALUES (?, ?, ?)", [
+                username, 
+                req.headers['x-forwarded-for'], 
+                refuseRequest ? 0 : 1
+            ])
+             
+            if(refuseRequest) return res.sendStatus(429); 
+        } catch(err) {
+            console.log(err)
+            console.log(`Authentication attempted on user account ${username} - ${req.headers['x-forwarded-for']} - Error`)
+
+            return res.sendStatus(500)
+        }
+        
         sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password,
                 players.name,
                 panel_users.copLevel,

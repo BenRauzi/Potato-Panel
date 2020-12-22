@@ -7,6 +7,7 @@ import { validatePass } from "../services/authHelper";
 dotenv.config();
 
 const authController = (app, sql) => {
+    return true
     app.post('/auth/login', async (req,res)=>{
         // get username from request's body, eg. from login form
         const body = req.body;

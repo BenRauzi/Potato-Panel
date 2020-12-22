@@ -65,7 +65,7 @@ const BansPage = () => {
                                 <div>{name}</div>
                                 <div>{user}</div>
                                 <div>{reason}</div>
-                                <div>{time_expire ? getTimeSince(new Date(time_expire), new Date()) : "Permanent"}</div>
+                                <div>{time_expire ? getTimeSince(new Date(), new Date(time_expire)) : "Permanent"}</div>
                                 <div>
                                     <FontAwesomeIcon className="delete-btn large" onClick={() => {sendRemoveBan(id, window.prompt("Reason for ban removal", "Because I can"))}} icon={faTrashAlt}/>
                                 </div>
