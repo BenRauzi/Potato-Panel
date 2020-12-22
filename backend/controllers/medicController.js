@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { checkToken } = require( "../services/authService");
-const { hash } = require("bcrypt")
+const { hash } = require("bcrypt");
+const { logAction } = require("../services/staffHelper");
 
 const medicController = (app, sql, sqlAsync) => {
     // Fetch Medic Users 
@@ -111,6 +112,9 @@ const medicController = (app, sql, sqlAsync) => {
 
             if(data.adminLevel < 3 && data.pid === pid) return res.sendStatus(403); // Can't edit your own medic rank unless you are Admin+
 
+            const currentData = await sqlAsync.awaitQuery(`SELECT mediclevel FROM players WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Set medic level from ${currentData[0].mediclevel} to ${level}`, "whitelist", sqlAsync);
+
             try {
 
                 // Check if user already has an account on the panel
@@ -144,17 +148,29 @@ const medicController = (app, sql, sqlAsync) => {
     });
 
     // Set Users Medic Department
-    app.post('/medic/setDepartment', checkToken, (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    app.post('/medic/setDepartment', checkToken, async (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
             if(data.adminLevel < 2 && data.emsLevel === 8) return res.sendStatus(401); // Moderator+ AND Medic Whitelisting Access
 
             const body = req.body;
             const { pid, level } = body;
 
-            sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
-                if(err) return res.sendStatus(500);
-                res.sendStatus(200);
-            });
+            const currentData = await sqlAsync.awaitQuery(`SELECT medicdept FROM players WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Set medic department from ${currentData[0].medicdept} to ${level}`, "whitelist", sqlAsync);
+
+            try {
+                await sqlAsync.awaitQuery("UPDATE players SET medicdept = ? WHERE pid = ?", [level, pid]);
+                return res.sendStatus(200);
+            } catch (error) {
+                console.log(error);
+                return res.sendStatus(500);
+            };
+
+            // Left here incase of future reference - Foski
+            // sql.query(`UPDATE players SET medicdept = ? WHERE pid = ?`, [level, pid] , (err, result) => {
+                // if(err) return res.sendStatus(500);
+                // res.sendStatus(200);
+            // });
         });
     });
 };

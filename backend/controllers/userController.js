@@ -98,37 +98,6 @@ const userController = (app, sql, sqlAsync) => {
         });
     });
 
-    // Set Users Cash Amount
-    
-    app.post('/user/setCash', checkToken, (req, res) => {
-
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
-            const body = req.body;
-            const { pid, amount } = body;
-
-            logAction(req.cookies.authcookie, pid, `Set cash to ${amount}`);
-            sql.query(`UPDATE players SET cash = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
-                res.sendStatus(200);
-            });
-        });
-    });
-
-    // Set Users Bank Amount
-    app.post('/user/setBank', checkToken, (req, res) => {
-
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
-            const body = req.body;
-            const { pid, amount } = body;
-            sql.query(`UPDATE players SET bankacc = ? WHERE pid = ?`, [amount, pid] , (err, result) => {
-                if(err) return res.sendStatus(400);
-                res.sendStatus(200);
-            });
-        });
-    });
-
     // Set Users Bank & Cash Amount
     app.post('/user/setFinance', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
@@ -136,10 +105,7 @@ const userController = (app, sql, sqlAsync) => {
             const body = req.body;
             const { pid, cash, bank } = body;
 
-            const currentData = await sqlAsync.awaitQuery(`SELECT cash, bankacc FROM players WHERE pid = ?`, [
-                pid
-            ])
-
+            const currentData = await sqlAsync.awaitQuery(`SELECT cash, bankacc FROM players WHERE pid = ?`, [pid]);
             logAction(req.cookies.authcookie, pid, `Set cash from ${currentData[0].cash} to ${cash}, bankacc from ${currentData[0].bank} to ${bank}`, "comp", sqlAsync);
 
             sql.query(`UPDATE players SET cash = ?, bankacc = ? WHERE pid = ?`, [cash, bank, pid] , (err, result) => {
@@ -150,11 +116,15 @@ const userController = (app, sql, sqlAsync) => {
     });
 
     // Compensate User (Bank Account)
-    app.post('/user/compensate', checkToken, (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    app.post('/user/compensate', checkToken, async (req, res) => {
+        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
             const body = req.body;
             const { pid, amount } = body;
+
+            const currentData = await sqlAsync.awaitQuery(`SELECT bankacc FROM players WHERE pid = ?`, [pid]);
+            logAction(req.cookies.authcookie, pid, `Compensated '$${amount}', from '$${currentData[0].bankacc}' to now '$${currentData[0].bankacc + amount}'`, "comp", sqlAsync);
+
             sql.query(`UPDATE players SET bankacc = bankacc + ? WHERE pid = ?`, [amount, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 res.sendStatus(200);
@@ -168,6 +138,14 @@ const userController = (app, sql, sqlAsync) => {
             if(data.adminLevel < 2) return res.sendStatus(401); // Moderator+
             const body = req.body;
             const { pid, license, value } = body;
+
+            // Logging
+            if (value === 1) {
+                logAction(req.cookies.authcookie, pid, `Given license; '${license}'`, "misc", sqlAsync);
+            } else {
+                logAction(req.cookies.authcookie, pid, `Removed license; '${license}'`, "misc", sqlAsync);
+            };
+
             sql.query(`SELECT civ_licenses from players WHERE pid = ?`, [pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
                 const civLicences = result[0].civ_licenses.substring(3, result[0].civ_licenses.length-3).split('],[').map(x => {
@@ -205,11 +183,6 @@ const userController = (app, sql, sqlAsync) => {
        
         res.send(userSteamInfo);
     });
-
-    app.get('/user/test', async (req, res) => {
-        const result = await sqlAsync.awaitQuery(`SELECT * FROM vehicles WHERE pid = ?`, [`76561198099644981`]);
-        res.send(result)
-    })
 };
 
 module.exports = userController;
