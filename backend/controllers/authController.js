@@ -3,6 +3,7 @@ const { checkToken } = require("../services/authService");
 
 const { hash, compare } = require("bcrypt");
 const dotenv = require("dotenv");
+const CryptoJS = require("crypto-js");
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ const authController = (app, sql, sqlAsync) => {
 
             await sqlAsync.awaitQuery("INSERT into auth_requests (username, ip, authorised) VALUES (?, ?, ?)", [
                 username, 
-                req.headers['x-forwarded-for'], 
+                CryptoJS.AES.encrypt(req.headers['x-forwarded-for'], process.env.IP_SECRET).toString(), 
                 refuseRequest ? 0 : 1
             ])
              
