@@ -98,6 +98,27 @@ const userController = (app, sql, sqlAsync) => {
         });
     });
 
+    // Search User (By PID)
+    app.get('/user/searchPID', (req, res) => {
+        const upid = req.query.upid; // Players ID
+        const pageN = req.query.p || 1; // Page Number
+        const count = parseInt(req.query.c) || 10; // Total Entires Gathered
+        if(upid === undefined) return res.sendStatus(404);
+        const startingPoint = (pageN - 1) * count;
+    
+        sql.query(`SELECT COUNT(*) FROM players WHERE pid like concat('%', ?, '%') order by pid like concat(@?, '%') desc, ifnull(nullif(instr(pid, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(pid, @?), 0), 99999),pid`, [upid, upid, upid, upid, startingPoint, count], (err, countR) => {
+            if(err) return res.sendStatus(400);
+            sql.query(`SELECT uid, name, pid, exp_level, cash, bankacc, coplevel, mediclevel from players WHERE pid like concat('%', ?, '%') order by pid like concat(@?, '%') desc, ifnull(nullif(instr(pid, concat(' ', @?)), 0), 99999), ifnull(nullif(instr(pid, @?), 0), 99999),pid LIMIT ?, ?`, [upid, upid, upid, upid, startingPoint, count], (err, result) => {
+                if(err) return res.sendStatus(400);
+                const response = {
+                    count: countR[0]["COUNT(*)"],
+                    result: result
+                };
+                res.send(response);
+            });
+        });
+    });
+
     // Set Users Bank & Cash Amount
     app.post('/user/setFinance', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err,data)=>{
