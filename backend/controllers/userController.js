@@ -127,7 +127,7 @@ const userController = (app, sql, sqlAsync) => {
             const { pid, cash, bank } = body;
 
             const currentData = await sqlAsync.awaitQuery(`SELECT cash, bankacc FROM players WHERE pid = ?`, [pid]);
-            logAction(req.cookies.authcookie, pid, `Set cash from ${currentData[0].cash} to ${cash}, bankacc from ${currentData[0].bank} to ${bank}`, "comp", sqlAsync);
+            logAction(req.cookies.authcookie, pid, `Set cash from ${currentData[0].cash} to ${cash}, bankacc from ${currentData[0].bankacc} to ${bank}`, "comp", sqlAsync);
 
             sql.query(`UPDATE players SET cash = ?, bankacc = ? WHERE pid = ?`, [cash, bank, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
