@@ -64,7 +64,6 @@ export const disconnectRCON = (RCON) => {
 
 export const getUserByGUID = async (guid, rcon) => {
     const players = await getPlayers(rcon);
-    console.log(players.find(player => player.guid === guid));
     return players.find(player => player.guid === guid) || undefined;
 };
 

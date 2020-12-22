@@ -12,7 +12,7 @@ const authController = (app, sql) => {
         const body = req.body;
 
         const { username, password } = body
-
+        console.log(`Authentication attempted on user account ${username} - ${req.headers['x-forwarded-for']}`)
         try {
             const result = await sql.awaitQuery(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password, players.name
             from panel_users

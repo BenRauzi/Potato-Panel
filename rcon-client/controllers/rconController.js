@@ -23,13 +23,11 @@ export const rconController = (app, rcon, sql) => {
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
                     await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
+                    console.log(`RCON: '${user}' just sent the following message to ${player.name} - '${pid}': ${message}.`);
                 } else {
                     await sendMessageRcon(pid, `[${user}] ${message}`, rcon);
+                    console.log(`RCON: '${user}' just sent the following message globally: ${message}.`);
                 }
-
-
-                // Log to Console (DEBUG)
-                console.log(`RCON: '${user}' just sent the following message to '${pid}': ${message}.`);
 
                 // Disconnected RCON
 
@@ -74,7 +72,7 @@ export const rconController = (app, rcon, sql) => {
                 // If given ID is a GUID, then convert it to their player list ID
                 const player = await getUserByGUID(playersID, rcon);
                 if(!player) return res.sendStatus(404);
-                return res.send(player);
+                return res.send({...player, ip: undefined});
 
             } catch (error) {
                 console.log(error);
