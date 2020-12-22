@@ -20,6 +20,7 @@ const authController = (app, sql, sqlAsync) => {
         const body = req.body;
 
         const { username, password } = body
+        console.log(`Authentication attempted on user account ${username} - ${req.headers['x-forwarded-for']}`)
         sql.query(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password,
                 players.name,
                 panel_users.copLevel,
