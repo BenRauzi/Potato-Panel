@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWindowRestore, faCar, faUsers, faIdBadge, faUserNurse, faUserTie, faUserCog, faSlidersH, faSignOutAlt, faGavel, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faWindowRestore, faCar, faUsers, faIdBadge, faUserNurse, faUserTie, faUserCog, faSlidersH, faSignOutAlt, faGavel, faEye, faClipboard } from '@fortawesome/free-solid-svg-icons'
 
 import { faAccessibleIcon } from "@fortawesome/free-brands-svg-icons"
 
@@ -115,6 +115,19 @@ const MainNav = () => {
                             </Link>
                         </li> : undefined
                 }
+                {
+                    user.adminLevel >= 4 ?
+                        <li>
+                            <Link to="/logs">
+                                <div className="nav-icon">
+                                    <FontAwesomeIcon className="nav-icon" alt="Server Settings" icon={faClipboard} />
+                                </div>
+
+                                <span>Logs</span>
+                            </Link>
+                        </li> : undefined
+                }
+
 
                 <li>
                     <Link to="/settings">
@@ -138,7 +151,7 @@ const MainNav = () => {
                             </Link>
                         </li> : undefined
                 }
-
+                 
                 <li>
                     <Link to="/login" onClick={() => signOut(setUser)}>
                         <div className="nav-icon">
