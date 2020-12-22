@@ -23,6 +23,7 @@ import BansPage from "../pages/bans";
 //Protected Routes Are Pages that can only be accessed when signed in
 const ProtectedRoute = ({ component: Component, ...rest }) => {
     const { user } = useContext(UserContext);
+    if(!user) return  <Redirect to='/login' />
     return (
         <Route {...rest} render={(props) => (
             user !== undefined
@@ -35,6 +36,7 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
 // Guarded Routes are routes that require specific role permissions to access
 const GuardedRoute = ({ roles, component: Component, ...rest }) => {
     const { user } = useContext(UserContext);
+    if(!user) return  <Redirect to='/login' />
     return (
         <Route {...rest} render={(props) => (
             (
