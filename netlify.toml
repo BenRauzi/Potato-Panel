@@ -11,6 +11,13 @@
   headers = { X-From = "Netlify" }
 
 [[redirects]]
+  from = "https://admin-v2.netlify.app/*"
+  to = "https://new.arma-studios.com/"
+  status = 301
+  force = true
+  headers = { X-From = "Netlify" }
+
+[[redirects]]
   from = "/*"
   to = "index.html"
   status = 200
