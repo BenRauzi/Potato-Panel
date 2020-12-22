@@ -16,18 +16,16 @@ export const rconController = (app, getRcon, sql) => {
 
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
             let { pid, message } = req.body;
-            const user = data.user;
-
+            const { user, name } = data;
             // Check users permissions here..
-
             try {
 
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
-                    await sendMessageRcon(player.id, `[${user}] ${message}`, rcon);
+                    await sendMessageRcon(player.id, `[${name}] ${message}`, rcon);
                     console.log(`RCON: '${user}' just sent the following message to ${player.name} - '${pid}': ${message}.`);
                 } else {
-                    await sendMessageRcon(pid, `[${user}] ${message}`, rcon);
+                    await sendMessageRcon(pid, `[${name}] ${message}`, rcon);
                     console.log(`RCON: '${user}' just sent the following message globally: ${message}.`);
                 }
 
@@ -90,12 +88,12 @@ export const rconController = (app, getRcon, sql) => {
         const rcon = getRcon();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             const { pid, reason } = req.body;
-            const user = data.user;
+            const { name } = data;
 
             const player = await getUserByGUID(pid, rcon);
             if(!player) return res.sendStatus(404);
             try {
-                await kickPlayer(`${reason} | ${user}`, player.id, rcon)
+                await kickPlayer(`${reason} | ${name}`, player.id, rcon)
                 return res.sendStatus(200);
             } catch(err) {
                 console.log(err);
