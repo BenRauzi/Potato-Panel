@@ -48,7 +48,7 @@ const BattleyePage = () => {
         setPlayers(players.filter(x => x.id !== id))
     }
 
-    const showIP = (rank) => rank >= 5 ? true : false;
+    // const showIP = (rank) => rank >= 5 ? true : false;
 
     return (
         <>
