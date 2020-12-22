@@ -10,11 +10,6 @@ let rCon = new BattleNode({
     rconPassword: process.env.RCON_PASS,
 });
 
-
-export const getRcon = () => {
-    return rCon
-}
-
 let isConnected = false;
 rCon.login();
 
@@ -52,5 +47,10 @@ rCon.on('disconnected', async function() {
         })
     }
   });
+
+
+export const getRcon = () => {
+    return rCon
+}
 
 export default { getRcon };
