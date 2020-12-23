@@ -39,12 +39,11 @@ export const emsRanks = {
 
 export const emsDepartments = {
     "No Department": 0,
-    "Fire & Rescue": 1,
-    "Training Academy": 2,
-    "Search & Rescue": 3,
-    "Department Command": 4,
-    "Operations Command": 5,
-    "OOMC": 6
+    "EMS Operations": 1,
+    "Admin Operations": 2,
+    "Admin Operations Command": 3,
+    "EMS Operations Command": 4,
+    "OOMC": 5
 };
 
 export const staffRanks = {
