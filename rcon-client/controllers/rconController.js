@@ -7,13 +7,16 @@ import dotenv from 'dotenv';
 import { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } from "../services/rconHelpers";
 import { jwtVerify } from "../services/authHelper";
 import logAction from "../services/logHelper";
+import { sqlConnect } from "../services/sqlService";
 
 dotenv.config();
 
-export const rconController = (app, getRcon, sql) => {
+export const rconController = (app, getRcon) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
         const rcon = getRcon();
+
+        const sql = sqlConnect();
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
             if(err) return res.sendStatus(401)
             let { pid, message } = req.body;
@@ -24,14 +27,15 @@ export const rconController = (app, getRcon, sql) => {
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
                     await sendMessageRcon(player.id, `[${name}] ${message}`, rcon);
-                    logAction(req.cookies.authcookie, undefined, `Messaged ${player.name} - '${pid}': ${message}.`, 'rcon', sql);
 
                     console.log(`RCON: '${user}' just sent the following message to ${player.name} - '${pid}': ${message}.`);
+                    await logAction(req.cookies.authcookie, undefined, `Messaged ${player.name} - '${pid}': ${message}.`, 'rcon', sql);
                 } else {
                     await sendMessageRcon(pid, `[${name}] ${message}`, rcon);
-                    logAction(req.cookies.authcookie, undefined, `Globally Messaged: ${message}.`, 'rcon', sql);
 
                     console.log(`RCON: '${user}' just sent the following message globally: ${message}.`);
+                    await logAction(req.cookies.authcookie, undefined, `Globally Messaged: ${message}.`, 'rcon', sql);
+
                 }
 
                 // Disconnected RCON
@@ -40,13 +44,16 @@ export const rconController = (app, getRcon, sql) => {
             } catch (error) {
                 console.log(error);
                 return res.sendStatus(500);
-            };
+            } finally {
+                sql.awaitEnd();
+            };            
         });
     });
 
     // Fetch All Players
     app.get('/rcon/players', checkToken, async(req, res) => {
         const rcon = getRcon();
+        
         try {
             const userData = await jwtVerify(req.cookies.authcookie);
             // Fetch Players List
@@ -80,9 +87,6 @@ export const rconController = (app, getRcon, sql) => {
                 // If given ID is a GUID, then convert it to their player list ID
                 const player = await getUserByGUID(playersID, rcon);
 
-                logAction(req.cookies.authcookie, undefined, `Fetched player ${player.name}.`, 'rcon', sql);
-
-
                 if(!player) return res.sendStatus(404);
                 return res.send({...player, ip: undefined});
 
@@ -96,14 +100,14 @@ export const rconController = (app, getRcon, sql) => {
     // Kick a Player (By ID)
     app.post('/rcon/kick', checkToken, async(req, res) => { // Will add checkToken
         const rcon = getRcon();
+        const sql = sqlConnect();
+
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             if(err) return res.sendStatus(401)
             const { pid, reason } = req.body;
             const { name } = data;
 
             const player = await getUserByGUID(pid, rcon);
-
-            logAction(req.cookies.authcookie, undefined, `Kicked player ${player.name}.`, 'rcon', sql);
 
             if(!player) return res.sendStatus(404);
             try {
@@ -112,6 +116,9 @@ export const rconController = (app, getRcon, sql) => {
             } catch(err) {
                 console.log(err);
                 return res.sendStatus(500);
+            } finally {
+                await logAction(req.cookies.authcookie, undefined, `Kicked player ${player.name}.`, 'rcon', sql);
+                sql.awaitEnd()
             }
         });
     });
@@ -119,9 +126,12 @@ export const rconController = (app, getRcon, sql) => {
     // Ban a Player (By ID [If on server], IP or BattlEYE GUID)
     app.post('/rcon/ban', checkToken, async(req, res) => { // Will add checkToken
         const rcon = getRcon();
+
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async(err, data) => {
             if(err) return res.sendStatus(401)
             const players = await getPlayers(rcon);
+
+            const sql = sqlConnect();
 
             const { banID, banLength, reason } = req.body;
 
@@ -144,12 +154,11 @@ export const rconController = (app, getRcon, sql) => {
             if(userToBan) {
                 
                 try {
-                    logAction(req.cookies.authcookie, undefined, `Banned player ${userToBan.name}.`, 'rcon', sql);
-
                     const result = await kickPlayer(`Account Banned - ${banReason.substring(4)}`, userToBan.id, rcon);
                     if(result) console.log("Kicked Player");
                 }  catch(err) {
                     console.log(err)
+                    sql.awaitEnd()
                     return res.sendStatus(500);
                 }
             }
@@ -159,6 +168,7 @@ export const rconController = (app, getRcon, sql) => {
                 if(result) console.log("Banned Player");
             } catch(err) {
                 console.log(err);
+                sql.awaitEnd()
                 return res.sendStatus(500);
             };
 
@@ -189,6 +199,9 @@ export const rconController = (app, getRcon, sql) => {
             } catch (error) {
                 console.log(error)
                 return res.sendStatus(500)
+            } finally {
+                await logAction(req.cookies.authcookie, undefined, `Banned player ${userToBan.name}.`, 'rcon', sql);
+                sql.awaitEnd()
             };
         });
     });
@@ -200,28 +213,34 @@ export const rconController = (app, getRcon, sql) => {
             if(err) return res.sendStatus(401)
             const { banID, reason } = req.body;
 
+            const sql = sqlConnect();
+
+
             // Check what type of ID was given
                     
             // Now get all of the current bans on the server
             await reloadServerBans(rcon);
 
-            
             const [ bans, banUser ] = await Promise.all([getBansFromRcon(rcon), getBanFromDb(sql, banID)])
             if(bans.length === 0) return res.sendStatus(404);
 
             const ban = bans.find(({user}) => user == banUser.user);
             if(!ban) return res.sendStatus(404);
 
-            logAction(req.cookies.authcookie, undefined, `Unbanned player ${ban.name}.`, 'rcon', sql);
+            const log = logAction(req.cookies.authcookie, undefined, `Unbanned player ${ban.name}.`, 'rcon', sql);
+            const remove = removeBan(ban.id, banID, reason, data.pid, sql, rcon);
 
-            await removeBan(ban.id, banID, reason, data.pid, sql, rcon);
+            await Promise.all([log, remove])
 
+            sql.awaitEnd();
             return res.sendStatus(200);
         });
     });
 
     // Fetch All Active Bans (From DB)
     app.get('/rcon/bans', checkToken, async (req, res) => {
+        const sql = sqlConnect();
+
         const bansQuery = await sql.awaitQuery(`
             SELECT bans.*, players.name FROM bans 
                 INNER JOIN players 
@@ -249,14 +268,17 @@ export const rconController = (app, getRcon, sql) => {
                 guid: undefined
             });
         };
+
+        sql.awaitEnd();
         return res.send(bans);
     });
 
     // Fetch All Expired Bans (From DB)
     app.get('/rcon/expired_bans', checkToken, async (req, res) => {
-        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE time_expire < CURRENT_TIMESTAMP() UNION ALL SELECT * FROM ip_bans WHERE time_expire < CURRENT_TIMESTAMP()");
-        console.log(bansQuery);
+        const sql = sqlConnect();
 
+        const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE time_expire < CURRENT_TIMESTAMP() UNION ALL SELECT * FROM ip_bans WHERE time_expire < CURRENT_TIMESTAMP()");
+        
         let bans = [];
         for (const ban of bansQuery) {
             console.log(ban);
@@ -277,24 +299,9 @@ export const rconController = (app, getRcon, sql) => {
                 reason: ban["reason"]
             });
         };
-        return res.send(bans);
-    });
 
-    // Set GUID
-    app.get('/rcon/setGUID', async (req, res) => {
-        const apiKey = req.query.k;
-        const pid = req.query.pid;
-        if (!apiKey || !pid) return res.sendStatus(500);
-        if (apiKey !== process.env.WEB_API_KEY) return res.sendStatus(401);
-        try {
-            const guid = await convertPID(pid);
-            const updateQuery = await sql.awaitQuery('UPDATE players SET guid = ? WHERE pid = ?', [guid, pid]);
-            if (updateQuery.length === 0) return res.sendStatus(400);
-            return res.sendStatus(200);
-        } catch (error) {
-            console.log(error);
-            return res.sendStatus(500);
-        };
+        sql.awaitEnd();
+        return res.send(bans);
     });
 };
 
