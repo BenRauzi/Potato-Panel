@@ -2,9 +2,8 @@ import React, {useContext, useEffect} from 'react';
 import UserContext from '../services/UserContext';
 import { getRole } from "../services/HelperService";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWheelchair } from '@fortawesome/free-solid-svg-icons'
 import { getUserSteam } from '../services/UserService';
+import {ReactComponent as ASLogo} from "../assets/logo-white.svg";
 
 const Header = () => {
     const { user } = useContext(UserContext);
@@ -23,7 +22,7 @@ const Header = () => {
     return (
         <header>
             <div className="header-left">
-                <FontAwesomeIcon icon={faWheelchair}/> ARMA STUDIOS
+                <ASLogo className="header-logo"/> ARMA STUDIOS
             </div>
             <div className="header-right">
                 <div className="user-info">

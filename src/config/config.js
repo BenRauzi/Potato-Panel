@@ -26,15 +26,15 @@ export const copDepartments = {
 export const emsRanks = {
     "Civilian": 0,
     "Volunteer": 1,
-    "Trainee": 2,
-    "Junior EMT": 3,
-    "EMT": 4,
-    "Paramedic": 5,
-    "Senior Paramedic": 6,
-    "Shift Manager": 7,
-    "Lieutenant": 8,
-    "Captain": 9,
-    "OOMC": 10
+    "Trainee / Junior EMT": 2,
+    "EMT": 3,
+    "Paramedic": 4,
+    "Senior Paramedic": 5,
+    "Shift Manager": 6,
+    "Lieutenant": 7,
+    "Captain": 8,
+    "OOMC": 9,
+    "Medical Chief": 10
 };
 
 export const emsDepartments = {

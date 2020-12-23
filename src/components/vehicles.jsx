@@ -25,7 +25,6 @@ const VehiclesList = ({pid, side}) => {
 
         setVehicles(vehicles.filter(x => x.id !== uid))
     }
-
     return (
         <>
             <div className="table">
@@ -47,7 +46,7 @@ const VehiclesList = ({pid, side}) => {
                                     <div>{classname}</div>
                                     <div>{type}</div>
                                     <div>{active === 1 ? "True" : "False"}</div>
-                                    { user.adminLevel > 2 ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>: <div></div>}
+                                    { user.adminLevel > 2 || (side === "med" && user.emsWhitelisting > 7) || (side === "cop" && user.copWhitelisting > 7) ? <div><FontAwesomeIcon className="delete-btn" onClick={() => deleteVehicle(id)} icon={faTrashAlt}/></div>: <div></div>}
                                 </div>
                             ))
                         }

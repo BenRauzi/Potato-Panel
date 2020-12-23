@@ -37,4 +37,10 @@ header {
     line-height: 40px;
     font-weight: bolder;
     margin-left: 15px;
+    display: flex;
+}
+.header-logo {
+    align-items: center;
+    width: 40px;
+    margin-right: 10px;
 }
