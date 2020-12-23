@@ -92,25 +92,25 @@ const authController = (app, sql, sqlAsync) => {
         res.sendStatus(200);
     });
 
-    app.post('/auth/user/create', checkToken, (req, res) => {
-        jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
-            if(data.adminLevel < 5) return res.sendStatus(401); // Senior Admin+
-            const body = req.body;
-            const { pid, username, password } = body;
-            const hashedPassword = hash(password, 10,(err, hashed) => {
-                if(err) return res.sendStatus(400)
+    // app.post('/auth/user/create', checkToken, (req, res) => {
+    //     jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+    //         if(data.adminLevel < 5) return res.sendStatus(401); // Senior Admin+
+    //         const body = req.body;
+    //         const { pid, username, password } = body;
+    //         const hashedPassword = hash(password, 10,(err, hashed) => {
+    //             if(err) return res.sendStatus(400)
                 
-                const newUsername = username.replace(/ /g,'') + Math.floor(1000 + Math.random() * 9000)
-                sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
-                    pid,
-                    newUsername,
-                    hashed
-                ], (error, results) => {
-                    res.sendStatus(200)
-                });
-            });
-        });
-    });
+    //             const newUsername = username.replace(/ /g,'') + Math.floor(1000 + Math.random() * 9000)
+    //             sql.query("INSERT INTO panel_users (pid, username, password) VALUES (?, ?, ?)", [
+    //                 pid,
+    //                 newUsername,
+    //                 hashed
+    //             ], (error, results) => {
+    //                 res.sendStatus(200)
+    //             });
+    //         });
+    //     });
+    // });
 
     //Create new User (Testing)
 
