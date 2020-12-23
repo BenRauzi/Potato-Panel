@@ -17,11 +17,11 @@ const logsController = (app, sqlAsync) => {
             let resultCount;
             if(!type) {
                 resultCount = await sqlAsync.awaitQuery("SELECT COUNT(*) from panel_logs");
-                result = await sqlAsync.awaitQuery(`SELECT panel_logs.*, panel_users.username AS staff_member_name, players.name as member_name FROM panel_logs
-                INNER JOIN panel_users
-                ON panel_logs.staff_member = panel_users.pid
-                LEFT JOIN players
-                ON panel_logs.member = players.pid
+                result = await sqlAsync.awaitQuery(`SELECT panel_logs.*, CURRENT_TIMESTAMP, p1.name AS staff_member_name, p2.name as member_name FROM panel_logs
+                INNER JOIN players p1
+                ON panel_logs.staff_member = p1.pid
+                LEFT JOIN players p2
+                ON panel_logs.member = p2.pid
                 ORDER BY ID 
                 DESC LIMIT ?, ?`, [
                     startingPoint,
