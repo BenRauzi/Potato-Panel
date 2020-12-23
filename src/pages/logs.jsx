@@ -34,9 +34,6 @@ const LogPage = () => {
         fetchLogs()
     }, [page, pageLength, logType, query])
 
-
-    
-
     useEffect(() => {
         if(query === "") return 
 
