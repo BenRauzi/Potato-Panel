@@ -1,16 +1,16 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { debounce } from "lodash";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import Title from "../components/title";
 import { logTypes } from "../config/config";
 import { getLogType } from "../services/HelperService";
-import { getLogs } from "../services/LogService";
+import { getLogs, searchLogs } from "../services/LogService";
 
 const LogPage = () => {
-    const [page, setPage] = React.useState(0);
+    const [page, setPage] = React.useState(1);
     const [pageLength, setPageLength] = React.useState(10);
 
     const [query, setQuery] = React.useState("");
@@ -26,14 +26,31 @@ const LogPage = () => {
     })
 
     useEffect(() => {
+        if(query !== "") return
         const fetchLogs = async () => {
             const result = await getLogs(page, pageLength, logType);
             setLogs(result)
         }
         fetchLogs()
-    }, [page, pageLength, logType])
+    }, [page, pageLength, logType, query])
 
-   
+
+    
+
+    useEffect(() => {
+        if(query === "") return 
+
+        const fetchLogs = async () => {
+            const result = await searchLogs(page, pageLength, logType, query);
+            setLogs(result)
+        }
+        fetchLogs()
+    }, [page, pageLength, logType, query])
+
+    useEffect(() => {
+        if(query === "") return 
+        setPage(1)
+    }, [query, setPage])
 
     return (
         <>
@@ -54,7 +71,7 @@ const LogPage = () => {
                 </div>
                     
                 <div className="search-box">
-                    <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
+                    <input type="text" placeholder="Search"  onChange={(e) => debouncedSearch(e.target.value)}/>
                     <button>
                         <FontAwesomeIcon icon={faSearch}/>
                     </button>
@@ -100,7 +117,8 @@ const LogPage = () => {
                         pageCount={Math.ceil(logs.count / pageLength)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
-                        onPageChange={(e) => {setPage(e.selected + 1)}}
+                        forcePage={page - 1}
+                        onPageChange={(e) => {console.log(e.selected); setPage(e.selected + 1)}}
                         containerClassName={'pagination'}
                         subContainerClassName={'pages pagination'}
                         activeClassName={'active'}
