@@ -11,10 +11,11 @@ export const login = async (username, password, setUser) => {
 
     const code = await response.status;
     
-    if (code === 401) return false;
+    if (code === 401) return 401;
+    if (code === 429) return 429
     const data = await response.json();
     setUser(data)
-    return true;
+    return 200;
 }
 
 export const logout = async () => {
