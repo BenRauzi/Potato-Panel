@@ -15,6 +15,7 @@ const types = {
 const logAction = async (staffCookie, member, log, type, sql) => {
     const userData = await jwtVerify(staffCookie);
     try {
+        console.log(log)
         await sql.awaitQuery(`INSERT into panel_logs (staff_member, member, log, type) VALUES (?, ?, ?, ?)`, [
             userData.pid,
             member,
