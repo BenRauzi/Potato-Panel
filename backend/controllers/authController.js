@@ -84,7 +84,11 @@ const authController = (app, sql, sqlAsync) => {
                     res.cookie('authcookie',token,{ domain: process.env.DOMAIN, path: '/', maxAge: 1000*60*60*60, httpOnly:true});
 
                     res.send({...result[0], password: undefined});
+                    console.log(`Authentication attempted on user account ${username} successful`)
+
                 } else {
+                    console.log(`Authentication attempted on user account ${username} unsuccessful. Invalid credentials`)
+
                     res.sendStatus(401);
                 };
             }); 
