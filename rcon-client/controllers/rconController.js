@@ -29,7 +29,7 @@ export const rconController = (app, getRcon) => {
                     await sendMessageRcon(player.id, `[${name}] ${message}`, rcon);
 
                     console.log(`RCON: '${user}' just sent the following message to ${player.name} - '${pid}': ${message}.`);
-                    await logAction(req.cookies.authcookie, undefined, `Messaged ${player.name} - '${pid}': ${message}.`, 'rcon', sql);
+                    await logAction(req.cookies.authcookie, undefined, `Messaged ${player.name}: ${message}.`, 'rcon', sql);
                 } else {
                     await sendMessageRcon(pid, `[${name}] ${message}`, rcon);
 
