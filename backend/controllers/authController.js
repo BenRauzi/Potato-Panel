@@ -8,14 +8,6 @@ const CryptoJS = require("crypto-js");
 dotenv.config();
 
 const authController = (app, sql, sqlAsync) => {
-    // app.post('/auth/test', async (req, res) => {
-    //     const { password } = req.body
-    //     hash(password, 10,(err, hashed) => {
-    //         if(err) return res.sendStatus(400)
-            
-    //        console.log(hashed)
-    //     });
-    // })
     app.post('/auth/login', async (req,res)=>{
         // get username from request's body, eg. from login form
         const body = req.body;
