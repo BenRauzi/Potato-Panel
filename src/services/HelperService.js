@@ -1,9 +1,14 @@
 import { staffRanks, copRanks, emsRanks, developerRanks, copDepartments, emsDepartments, Whitelist, developerDepartments, LicenseList, CaseTypes, CasePositions, dojRanks, dojDepartments, logTypes} from "../config/config";
 
 export const formatMoney = (string) => {
-    const output = "$" + (string.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
-    return output
-}
+    const output = "$" + (string.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+    return output;
+};
+
+export const formatNumber = (string) => {
+    const output = (string.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+    return output;
+};
 
 export const getRole = (user) => {
     
@@ -160,19 +165,20 @@ export const getTimeSince = (date, current_time = new Date()) => {
 
 
 export default {
-   formatMoney,
-   getRole,
-   getCopRank,
-   getStaffRank,
-   getEmsRank,
-   getEmsDept,
-   getCopDept,
-   getPerms,
-   getDevRank,
-   getDevDept,
-   getLicenseName,
-   getCaseType,
-   getCasePosition,
-   getTimeSince,
-   getLogType,
-}
+    formatMoney,
+    formatNumber,
+    getRole,
+    getCopRank,
+    getStaffRank,
+    getEmsRank,
+    getEmsDept,
+    getCopDept,
+    getPerms,
+    getDevRank,
+    getDevDept,
+    getLicenseName,
+    getCaseType,
+    getCasePosition,
+    getTimeSince,
+    getLogType
+};
