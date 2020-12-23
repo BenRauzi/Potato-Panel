@@ -6,6 +6,7 @@ import moment from 'moment';
 import dotenv from 'dotenv';
 import { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } from "../services/rconHelpers";
 import { jwtVerify } from "../services/authHelper";
+import logAction from "../services/logHelper";
 
 dotenv.config();
 
@@ -13,7 +14,6 @@ export const rconController = (app, getRcon, sql) => {
     // Send a Message (Global & Private)
     app.post('/rcon/message', checkToken, async(req, res) => {
         const rcon = getRcon();
-
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err, data) => {
             if(err) return res.sendStatus(401)
             let { pid, message } = req.body;
@@ -24,9 +24,13 @@ export const rconController = (app, getRcon, sql) => {
                 if(pid !== -1) {
                     const player = await getUserByGUID(pid, rcon);
                     await sendMessageRcon(player.id, `[${name}] ${message}`, rcon);
+                    logAction(req.cookies.authcookie, undefined, `Messaged ${player.name} - '${pid}': ${message}.`, 'rcon', sql);
+
                     console.log(`RCON: '${user}' just sent the following message to ${player.name} - '${pid}': ${message}.`);
                 } else {
                     await sendMessageRcon(pid, `[${name}] ${message}`, rcon);
+                    logAction(req.cookies.authcookie, undefined, `Globally Messaged: ${message}.`, 'rcon', sql);
+
                     console.log(`RCON: '${user}' just sent the following message globally: ${message}.`);
                 }
 
@@ -49,6 +53,8 @@ export const rconController = (app, getRcon, sql) => {
             const playersArray = await getPlayers(rcon);
                 // Log to Console (DEBUG)
             console.log(`RCON: '${userData.user}' has just fetched the players list.`);
+            
+            logAction(req.cookies.authcookie, undefined, `Fetched the players list.`, 'rcon', sql);
 
 
             return res.send(playersArray.map(player => ({
@@ -75,6 +81,10 @@ export const rconController = (app, getRcon, sql) => {
             try {        
                 // If given ID is a GUID, then convert it to their player list ID
                 const player = await getUserByGUID(playersID, rcon);
+
+                logAction(req.cookies.authcookie, undefined, `Fetched player ${player.name}.`, 'rcon', sql);
+
+
                 if(!player) return res.sendStatus(404);
                 return res.send({...player, ip: undefined});
 
@@ -94,6 +104,9 @@ export const rconController = (app, getRcon, sql) => {
             const { name } = data;
 
             const player = await getUserByGUID(pid, rcon);
+
+            logAction(req.cookies.authcookie, undefined, `Kicked player ${player.name}.`, 'rcon', sql);
+
             if(!player) return res.sendStatus(404);
             try {
                 await kickPlayer(`${reason} | ${name}`, player.id, rcon)
@@ -131,7 +144,10 @@ export const rconController = (app, getRcon, sql) => {
             const banReason = `(   Ban ID: ${banAppealID} - appeal.arma-studios.com`;
 
             if(userToBan) {
+                
                 try {
+                    logAction(req.cookies.authcookie, undefined, `Banned player ${userToBan.name}.`, 'rcon', sql);
+
                     const result = await kickPlayer(`Account Banned - ${banReason.substring(4)}`, userToBan.id, rcon);
                     if(result) console.log("Kicked Player");
                 }  catch(err) {
@@ -193,13 +209,13 @@ export const rconController = (app, getRcon, sql) => {
 
             
             const [ bans, banUser ] = await Promise.all([getBansFromRcon(rcon), getBanFromDb(sql, banID)])
-            console.log(bans)
-            console.log(banUser)
             if(bans.length === 0) return res.sendStatus(404);
 
             const ban = bans.find(({user}) => user == banUser.user);
             if(!ban) return res.sendStatus(404);
- 
+
+            logAction(req.cookies.authcookie, undefined, `Unbanned player ${ban.name}.`, 'rcon', sql);
+
             await removeBan(ban.id, banID, reason, data.pid, sql, rcon);
 
             return res.sendStatus(200);
@@ -208,6 +224,8 @@ export const rconController = (app, getRcon, sql) => {
 
     // Fetch All Active Bans (From DB)
     app.get('/rcon/bans', checkToken, async (req, res) => {
+        logAction(req.cookies.authcookie, undefined, `Fetched the ban list`, 'rcon', sql);
+
         const bansQuery = await sql.awaitQuery(`
             SELECT bans.*, players.name FROM bans 
                 INNER JOIN players 
@@ -240,6 +258,8 @@ export const rconController = (app, getRcon, sql) => {
 
     // Fetch All Expired Bans (From DB)
     app.get('/rcon/expired_bans', checkToken, async (req, res) => {
+        logAction(req.cookies.authcookie, undefined, `Fetched the expired ban list`, 'rcon', sql);
+
         const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE time_expire < CURRENT_TIMESTAMP() UNION ALL SELECT * FROM ip_bans WHERE time_expire < CURRENT_TIMESTAMP()");
         console.log(bansQuery);
 
