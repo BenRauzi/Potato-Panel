@@ -1,7 +1,7 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { debounce } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import Title from "../components/title";
