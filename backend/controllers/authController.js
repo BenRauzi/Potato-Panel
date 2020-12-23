@@ -133,6 +133,7 @@ const authController = (app, sql, sqlAsync) => {
 
     app.get('/auth/verifyToken', checkToken, (req, res) => {
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            console.log(`${data.user} Reauthenticated`)
             if(err){
                 res.clearCookie("authCookie");
                 res.sendStatus(403)
