@@ -6,7 +6,6 @@ import cors from 'cors';
 import rconController from "./controllers/rconController";
 import authController from "./controllers/authController";
 
-import { sql } from "./services/sqlService";
 import { getRcon } from "./services/rconService";
 import dotenv from 'dotenv';
 
@@ -43,7 +42,7 @@ dotenv.config();
 
 // init controllers
 
-rconController(router, getRcon, sql);
-authController(router, sql);
+rconController(router, getRcon);
+authController(router);
 
 export default app;
