@@ -70,11 +70,12 @@ const staffController = (app, sql, sqlAsync) => {
         const body = req.body;
         const { pid, level } = body;
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET,(err,data)=>{
+            if(err) return res.sendStatus(500);
             if(data.adminLevel < 4) return res.sendStatus(401); // Trial Staff+
 
             sql.query(`UPDATE players SET adminlevel = ? WHERE pid = ?`, [level, pid] , (err, result) => {
                 if(err) return res.sendStatus(400);
-                res.sendStatus(200);
+                return res.sendStatus(200);
             });
         });
     });
@@ -84,6 +85,7 @@ const staffController = (app, sql, sqlAsync) => {
         const body = req.body;
         const { username, pid, level } = body;
         jwt.verify(req.cookies.authcookie, process.env.JWT_SECRET, async (err,data)=>{
+            if(err) return res.sendStatus(500);
             if (data.pid === pid) return res.sendStatus(403); // Can't edit your own staff rank
             if(data.adminLevel < 4) return res.sendStatus(401); // Senior Admin+
 
@@ -91,7 +93,7 @@ const staffController = (app, sql, sqlAsync) => {
             if (data.adminLevel !== 7 && (data.adminLevel <= level)) return res.sendStatus(401);
 
             const currentData = await sqlAsync.awaitQuery(`SELECT adminLevel FROM panel_users WHERE pid = ?`, [pid]);
-            logAction(req.cookies.authcookie, pid, `Set staff level from ${currentData[0].adminLevel} to ${level}`, "staff", sqlAsync);
+            logAction(req.cookies.authcookie, pid, `Set staff level from ${currentData[0] ? currentData[0].adminLevel : 0} to ${level}`, "staff", sqlAsync);
 
             sql.query("SELECT COUNT(*) FROM panel_users WHERE pid = ?", [pid], (err, result) => {
                 if(result[0]["COUNT(*)"] === 0) {
