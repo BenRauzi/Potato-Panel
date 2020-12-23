@@ -54,8 +54,6 @@ export const rconController = (app, getRcon, sql) => {
                 // Log to Console (DEBUG)
             console.log(`RCON: '${userData.user}' has just fetched the players list.`);
             
-            logAction(req.cookies.authcookie, undefined, `Fetched the players list.`, 'rcon', sql);
-
 
             return res.send(playersArray.map(player => ({
                 ...player,
@@ -224,8 +222,6 @@ export const rconController = (app, getRcon, sql) => {
 
     // Fetch All Active Bans (From DB)
     app.get('/rcon/bans', checkToken, async (req, res) => {
-        logAction(req.cookies.authcookie, undefined, `Fetched the ban list`, 'rcon', sql);
-
         const bansQuery = await sql.awaitQuery(`
             SELECT bans.*, players.name FROM bans 
                 INNER JOIN players 
@@ -258,8 +254,6 @@ export const rconController = (app, getRcon, sql) => {
 
     // Fetch All Expired Bans (From DB)
     app.get('/rcon/expired_bans', checkToken, async (req, res) => {
-        logAction(req.cookies.authcookie, undefined, `Fetched the expired ban list`, 'rcon', sql);
-
         const bansQuery = await sql.awaitQuery("SELECT * FROM bans WHERE time_expire < CURRENT_TIMESTAMP() UNION ALL SELECT * FROM ip_bans WHERE time_expire < CURRENT_TIMESTAMP()");
         console.log(bansQuery);
 
