@@ -154,8 +154,6 @@ const authController = (app, sql, sqlAsync) => {
                     data.pid
                 ], (err, result) => {
                     if(err){
-                        
-
                         res.sendStatus(403);
                     } else {
                        
