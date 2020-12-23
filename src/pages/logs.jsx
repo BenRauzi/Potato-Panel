@@ -54,7 +54,7 @@ const LogPage = () => {
                 </div>
                     
                 <div className="search-box">
-                    <input type="text" placeholder="Search" value={query} onChange={(e) => debouncedSearch(e.target.value)}/>
+                    <input type="text" placeholder="Search" onChange={(e) => debouncedSearch(e.target.value)}/>
                     <button>
                         <FontAwesomeIcon icon={faSearch}/>
                     </button>
