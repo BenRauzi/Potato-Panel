@@ -1,8 +1,8 @@
 // Auth Controller for Testing
 
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { validatePass } from "../services/authHelper";
+// import { validatePass } from "../services/authHelper";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ const authController = (app) => {
     //     try {
     //         const result = await sql.awaitQuery(`SELECT panel_users.uid, panel_users.pid, panel_users.username, panel_users.password, players.name
     //         from panel_users
-    //         INNER JOIN players ON players.pid = panel_users.pid`````
+    //         INNER JOIN players ON players.pid = panel_users.pid
     //         WHERE panel_users.username = ?`, [ username ]);
 
     //         if(result.length === 0) return res.sendStatus(401);

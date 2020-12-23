@@ -4,7 +4,7 @@ import crypto from "crypto";
 import CryptoJS from "crypto-js";
 import moment from 'moment';
 import dotenv from 'dotenv';
-import { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan, convertPID } from "../services/rconHelpers";
+import { getPlayers, getUserByGUID, reloadServerBans, sendMessageRcon, kickPlayer, banPlayer, getBansFromRcon, getBanFromDb, removeBan } from "../services/rconHelpers";
 import { jwtVerify } from "../services/authHelper";
 import logAction from "../services/logHelper";
 import { sqlConnect } from "../services/sqlService";
@@ -214,9 +214,6 @@ export const rconController = (app, getRcon) => {
             const { banID, reason } = req.body;
 
             const sql = sqlConnect();
-
-
-            // Check what type of ID was given
                     
             // Now get all of the current bans on the server
             await reloadServerBans(rcon);
@@ -224,7 +221,7 @@ export const rconController = (app, getRcon) => {
             const [ bans, banUser ] = await Promise.all([getBansFromRcon(rcon), getBanFromDb(sql, banID)])
             if(bans.length === 0) return res.sendStatus(404);
 
-            const ban = bans.find(({user}) => user == banUser.user);
+            const ban = bans.find(({user}) => user === banUser.user);
             if(!ban) return res.sendStatus(404);
 
             const log = logAction(req.cookies.authcookie, undefined, `Unbanned player ${ban.name}.`, 'rcon', sql);
