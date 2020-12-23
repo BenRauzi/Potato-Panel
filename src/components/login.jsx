@@ -10,6 +10,13 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import {ReactComponent as ASLogo} from "../assets/logo.svg";
+import { Snackbar } from '@material-ui/core';
+
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -36,17 +43,32 @@ const Login = () => {
 
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
-
+    const [snackBarOpen, setSnackBarOpen] = React.useState(0);
     const { user, setUser } = useContext(UserContext);
+
+    const snackBarCodes = {
+        "Invalid username or password.": 401,
+        "Too many authentication requests. Account has been locked.": 429
+    }
+
+    const getSnackBarCode = (code) => {
+        if(!snackBarCodes) return "Error"
+        for (var [name, snackBarCode] of Object.entries(snackBarCodes)) {
+            if(snackBarCode === code) return name
+        }
+    }
 
     if(user) return <Redirect to="/"/>
 
     let validateForm = () => (username.length > 0 && password.length > 0);
     
-    const handleLogin = (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault();
 
-        login(username, password, setUser);
+        const result = await login(username, password, setUser);
+
+        if(result === 200) return 
+        setSnackBarOpen(result)
     }
 
     return (
@@ -78,6 +100,13 @@ const Login = () => {
             </Grid>
             </Grid>
         </form>
+        <Snackbar open={snackBarOpen !== 0} autoHideDuration={6000} onClose={() => setSnackBarOpen(0)}>
+            <Alert onClose={() => setSnackBarOpen(0)} severity="error">
+                {
+                  getSnackBarCode(snackBarOpen)
+                }
+            </Alert>
+        </Snackbar>
     </Container>
     )
 }

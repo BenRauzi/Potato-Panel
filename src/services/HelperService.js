@@ -115,7 +115,6 @@ export const getCaseType = (type) => {
 
 }
 
-
 export const getCasePosition = (position) => {
 
     if(!CasePositions) return "Error"
