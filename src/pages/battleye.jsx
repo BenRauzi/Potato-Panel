@@ -59,6 +59,10 @@ const BattleyePage = () => {
                <div></div>
 
                 <div className="filters">
+                    <div onClick={() => messagePlayer(-1, window.prompt("Enter Global Message:", "Hello"))} className="table-heading-button">
+                        <FontAwesomeIcon icon={faEnvelope}/>
+                        <span>Message</span>
+                    </div>
                     <Link to="/bans" className="table-heading-button">
                         <FontAwesomeIcon icon={faBan}/>
                         <span>Bans</span>
