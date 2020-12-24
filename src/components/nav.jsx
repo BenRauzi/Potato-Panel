@@ -104,7 +104,7 @@ const MainNav = () => {
                         </li> : undefined
                 }
                 {
-                    user.adminLevel > 4 ?
+                    user.adminLevel > 2 ?
                         <li>
                             <Link to="/battleye">
                                 <div className="nav-icon">
