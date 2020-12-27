@@ -5,7 +5,7 @@ Licensed Under a GPL License. All copies and modified versions of this software 
 
 This tool is completed is a proof of concept but is still under active development and therefore design is not finalised as functionality was prioritised. It is currently lacking unit testing and API is in the middle of a restructure.
 
-(Link):(https://new.arma-studios.com)
+[Link](https://new.arma-studios.com)
 
 ## Instructions
 
